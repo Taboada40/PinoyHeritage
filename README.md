@@ -75,7 +75,7 @@ Use the following three-part naming structure: `<Main Task Type>/<Module>/<short
 | **Technical** | `tech/` | For non-functional changes (e.g., refactoring, optimizing). | `tech/login/change_validation_library` |
 | **Setup** | `setup/` | For configuration, dependencies, or environment changes. | `setup/login/add_authentication_library` |
 
-### 2. Standard Workflow Steps
+### 2. Standard Workflow Steps 
 
 #### **Step A: Start & Update**
 
@@ -86,26 +86,37 @@ git status
 # 2. Update Local Main
 git checkout main
 git pull origin main
+```
 
 #### **Step B: Create & Work**
 
+```bash
 # 3. Create a New Branch
 git checkout -b feature/your-feature-name 
+```
 
 #### **Step C: Commit Changes**
+
+```bash
 # 4. Stage & Commit Changes
 git add .
 git commit -m "feature(login): create login UI" 
 # Example: git commit -m "tech(homepage): improve image loading"
+```
 
 #### **Step D: Push & Submit**
+
+```bash
 # 5. Push Branch to GitHub
 git push origin feature/your-feature-name
 
 # 6. Open Pull Request (PR) on GitHub
 # PRs must be reviewed and approved before merging into main.
+```
 
 #### **Step E: Sync & Cleanup (After Merge)**
+
+```bash
 # 7. Sync After Merge
 git checkout main
 git pull origin main
@@ -113,3 +124,4 @@ git pull origin main
 # 8. Clean Up Old Branches (Optional but Recommended)
 git branch -d feature/your-feature-name               # Delete locally
 git push origin --delete feature/your-feature-name    # Delete on GitHub
+```
