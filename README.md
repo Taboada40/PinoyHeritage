@@ -87,20 +87,25 @@ git status
 git checkout main
 git pull origin main
 
+#### **Step B: Create & Work**
+
 # 3. Create a New Branch
 git checkout -b feature/your-feature-name 
 
+#### **Step C: Commit Changes**
 # 4. Stage & Commit Changes
 git add .
 git commit -m "feature(login): create login UI" 
 # Example: git commit -m "tech(homepage): improve image loading"
 
+#### **Step D: Push & Submit**
 # 5. Push Branch to GitHub
 git push origin feature/your-feature-name
 
 # 6. Open Pull Request (PR) on GitHub
 # PRs must be reviewed and approved before merging into main.
 
+#### **Step E: Sync & Cleanup (After Merge)**
 # 7. Sync After Merge
 git checkout main
 git pull origin main
