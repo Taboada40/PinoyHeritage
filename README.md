@@ -64,16 +64,18 @@ You need the following software installed on your system:
 
 To ensure a clean, traceable, and collaborative repository, all team members must follow these standardized Git workflow practices.
 
-### 1. Branch Naming Convention
+### 1. Branch Naming Convention (Frontend & Backend)
 
-Use the following three-part naming structure: `<Main Task Type>/<Module>/<short_description>`
+All branch names must clearly identify the **Type**, the **Scope** (where the change is happening), and a short, descriptive name.
 
-| Main Task Type | Prefix | Description | Example Branch Name |
-| :--- | :--- | :--- | :--- |
-| **Feature** | `feature/` | For adding new user-facing functionality. | `feature/user-accounts/create_profile_page` |
-| **Bug Fix** | `fix/` | For fixing a bug or unexpected behavior. | `fix/login/color_of_the_button` |
-| **Technical** | `tech/` | For non-functional changes (e.g., refactoring, optimizing). | `tech/login/change_validation_library` |
-| **Setup** | `setup/` | For configuration, dependencies, or environment changes. | `setup/login/add_authentication_library` |
+The format is: `<type>/<scope>/<description>` (Use hyphens or underscores for spaces)
+
+| Main Task Type | Prefix | Scope Options | Description | Example Branch Name |
+| :--- | :--- | :--- | :--- | :--- |
+| **Feature** | `feature/` | `frontend/` or `backend/` | For adding new user-facing functionality. | `feature/frontend/user-profile-ui` |
+| **Bug Fix** | `fix/` | `frontend/` or `backend/` | For fixing a bug or unexpected behavior. | `fix/backend/auth-endpoint-bug` |
+| **Technical** | `tech/` | `frontend/` or `backend/` | For non-functional changes (refactoring, optimizing, etc.). | `tech/frontend/optimize-image-loading` |
+| **Setup** | `setup/` | `infra/` or `deps/` | For configuration, dependencies, or environment changes. | `setup/backend/add-flyway-migration` |
 
 ### 2. Standard Workflow Steps 
 
@@ -95,13 +97,13 @@ git pull origin main
 git checkout -b feature/your-feature-name 
 ```
 
-#### **Step C: Commit Changes**
+#### Step C: Commit Changes
 
 ```bash
-# 4. Stage & Commit Changes
+# 4. Stage & Commit Changes (Use the Conventional Commit Format: Main task(scope): short description)
 git add .
-git commit -m "feature(login): create login UI" 
-# Example: git commit -m "tech(homepage): improve image loading"
+git commit -m "feature(frontend): create login UI" 
+# Example: git commit -m "fix(backend): correct inventory deduction logic"
 ```
 
 #### **Step D: Push & Submit**
