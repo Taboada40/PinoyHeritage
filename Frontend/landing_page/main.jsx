@@ -1,10 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import LandingPage from "./templates/landingpage.jsx";
-  
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <LandingPage />
-  </StrictMode>,
-)
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "./templates/LandingPage.jsx";
+import ProductCatalog from "../products/templates/ProductCatalog.jsx"
+import ProductDetail from "../products/templates/ProductDetails.jsx";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/catalog" element={<ProductCatalog />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>
+);
