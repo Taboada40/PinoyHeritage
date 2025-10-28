@@ -7,7 +7,7 @@ function HomePageSection() {
     <div
       className="home-background"
       style={{
-        backgroundImage: `url(${homeBackground})`,
+        backgroundImage: `url(${homeBackground.jpg})`,
         width: "100%",
         height: "100vh",           // Full viewport height
         position: "fixed",
