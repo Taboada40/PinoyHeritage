@@ -1,12 +1,12 @@
 import { useState } from "react";
 import "../assets/styles/landingpage.css"; 
 
-import Header from "/components/Header";
-import HeroSection from "/components/HeroSection";
-import WhySection from "/components/WhySection";
-import CategorySection from "/components/CategorySection";
-import IslandSection from "/components/IslandSection";
-import Footer from "/components/Footer";
+import Header from "../components/Header.jsx";
+import HeroSection from "../components/HeroSection.jsx";
+import WhySection from "../components/WhySection.jsx";
+import CategorySection from "../components/CategorySection.jsx";
+import IslandSection from "../components/IslandSection.jsx";
+import Footer from "../components/Footer.jsx";
 
 function LandingPage() {
   const [email, setEmail] = useState("");

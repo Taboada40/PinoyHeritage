@@ -656,3 +656,15 @@ body {
     width: 100%;
   }
 }
+
+.login-text {
+  margin-left: 10px;
+  font-weight: 500;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-text:hover {
+  color: #ff5722; /* Adjust this to your theme color */
+}
