@@ -1,7 +1,8 @@
-import "../assets/styles/landingpage.css";
+import React from "react";
+import "../assets/styles/homepage.css";
 import { Link } from "react-router-dom";
 
-function Header({ showNav = true }) {
+function Header() {
   return (
     <header className="header">
       <div className="container">
@@ -10,15 +11,6 @@ function Header({ showNav = true }) {
             <div className="logo-icon">PH</div>
             <span>Pinoy Heritage</span>
           </div>
-
-          {/* Only show navigation if showNav is true */}
-          {showNav && (
-            <nav className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link>
-              <a href="#about" className="nav-link">About</a>
-              <Link to="/catalog" className="nav-link">Shop</Link>
-            </nav>
-          )}
 
           <div className="nav-icons">
             <button className="search-btn" aria-label="Search"></button>
