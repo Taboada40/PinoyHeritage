@@ -1,26 +1,13 @@
-import React from "react";
-import Header from "../components/Header";
-import { HomePageSection } from "../components/HomePageSection.jsx";
-import "../assets/styles/homepage.css";
+import "../assets/styles/homepage.css"; 
+
+import Header from "../../landing_page/components/Header"; // Use landing page header
+import HomePageSection from "../components/HomePageSection.jsx";
 
 function HomePage() {
   return (
     <div className="homepage">
-      <Header />
+      <Header showNav={true} />
       <HomePageSection />
-      <main
-        className="home-content"
-        style={{
-          position: "relative", // ensures content is above background
-          zIndex: 1,
-          paddingTop: "100px",
-          textAlign: "center",
-          color: "white",
-        }}
-      >
-        <h1>Welcome to Pinoy Heritage</h1>
-        <p>Discover the richness of Filipino culture.</p>
-      </main>
     </div>
   );
 }
