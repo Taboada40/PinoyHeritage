@@ -1,15 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../assets/styles/auth.css"; // correct path from components/
+import "../assets/styles/auth.css";
 
 function Signup() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>Sign Up</h2>
-        <form className="auth-form">
+        <div className="auth-header">
+          <Link to="/" className="back-icon" aria-label="Back to Home">
+            ←
+          </Link>
+          <h2>Sign Up</h2>
+        </div>
 
-          {/* --- First & Last Name Row --- */}
+        <form className="auth-form">
           <div className="form-row">
             <div className="form-group half-width">
               <label>First Name</label>

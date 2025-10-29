@@ -23,9 +23,14 @@ function Header({ showNav = true }) {
           <div className="nav-icons">
             <button className="search-btn" aria-label="Search"></button>
             <button className="cart-btn" aria-label="Cart"></button>
-            <button className="acc-btn" aria-label="Account"></button>
-            <Link to="/login" className="login-text">Login</Link>
+
+            <Link to="/login" aria-label="Account">
+              <button className="acc-btn"></button>
+            </Link>
           </div>
+
+
+
         </div>
       </div>
     </header>

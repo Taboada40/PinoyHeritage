@@ -150,6 +150,39 @@
   text-decoration: underline;
 }
 
+/* --- Auth Header with Back Icon --- */
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+/* Back arrow link */
+.back-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.back-icon:hover {
+  color: #6b73ff;
+}
+
+.auth-header h2 {
+  color: #fff;
+  font-weight: 600;
+  margin: 0;
+}
+
+
 /* --- Animation --- */
 @keyframes fadeInUp {
   from {

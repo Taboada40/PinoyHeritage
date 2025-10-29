@@ -5,8 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./templates/LandingPage.jsx";
 import ProductCatalog from "../products/templates/ProductCatalog.jsx";
 import ProductDetail from "../products/templates/ProductDetails.jsx";
-import Login from "./components/login.jsx";
-import Signup from "./components/signup.jsx";
+import Login from "./templates/login.jsx";
+import Signup from "./templates/signup.jsx";
 
 import "./index.css";
 import "./assets/styles/auth.css";
