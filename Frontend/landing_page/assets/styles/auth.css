@@ -42,11 +42,10 @@
   position: relative;
   z-index: 1; /* sits above the background */
   background: rgba(255, 255, 255, 0.1); /* very transparent */
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px); /* Safari support */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); /* Safari support */
   padding: 40px 50px;
   border-radius: 16px;
-  border: 1px solid rgba(107, 115, 255, 0.4); /* subtle blue border */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 500px;
@@ -95,8 +94,8 @@
 .auth-form input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #6b73ff;       /* blue border */
-  border-radius: 6px;
+  border: 0.9px solid #0038A8;       /* blue border */
+  border-radius: 10px;
   font-size: 15px;
   outline: none;
   background: rgba(255, 255, 255, 0.05); /* transparent */
@@ -109,7 +108,7 @@
 }
 
 .auth-form input:focus {
-  border-color: #5a61e0;
+  border-color: #0038A8;
   box-shadow: 0 0 8px rgba(91, 97, 224, 0.5);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -118,9 +117,9 @@
 .auth-btn {
   width: 100%;
   padding: 12px;
-  background: #6b73ff; /* solid original button */
+  background: #0038A8; /* solid original button */
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -129,7 +128,7 @@
 }
 
 .auth-btn:hover {
-  background: #5a61e0;
+  background: #FCD116;
   box-shadow: 0 0 10px rgba(91, 97, 224, 0.3);
 }
 
@@ -141,13 +140,13 @@
 }
 
 .auth-footer a {
-  color: #6b73ff;
+  color: #0038A8;
   text-decoration: none;
   font-weight: 500;
 }
 
 .auth-footer a:hover {
-  text-decoration: underline;
+  color: #FCD116;
 }
 
 /* --- Auth Header with Back Icon --- */
@@ -173,7 +172,7 @@
 }
 
 .back-icon:hover {
-  color: #6b73ff;
+  color: #FCD116;
 }
 
 .auth-header h2 {
