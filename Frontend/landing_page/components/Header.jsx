@@ -1,9 +1,39 @@
 import "../assets/styles/landingpage.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Header({ showNav = true }) {
+  const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Detect if we’re on the landing page
+  const isLandingPage = location.pathname === "/" || location.pathname === "/home";
+
+  // Add scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 80) { // adjust threshold as needed
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Determine header style
+  const headerClass = `header ${
+    isLandingPage
+      ? isScrolled
+        ? "header--scrolled"
+        : "header--transparent"
+      : ""
+  }`;
+
   return (
-    <header className="header">
+    <header className={headerClass}>
       <div className="container">
         <div className="nav-content">
           <div className="logo">
@@ -11,7 +41,6 @@ function Header({ showNav = true }) {
             <span>Pinoy Heritage</span>
           </div>
 
-          {/* Only show navigation if showNav is true */}
           {showNav && (
             <nav className="nav-menu">
               <Link to="/home" className="nav-link">Home</Link>
@@ -23,14 +52,10 @@ function Header({ showNav = true }) {
           <div className="nav-icons">
             <button className="search-btn" aria-label="Search"></button>
             <button className="cart-btn" aria-label="Cart"></button>
-
             <Link to="/login" aria-label="Account">
               <button className="acc-btn"></button>
             </Link>
           </div>
-
-
-
         </div>
       </div>
     </header>
