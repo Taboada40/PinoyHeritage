@@ -702,6 +702,11 @@ line-height: 1.7;
   color: var(--gray-dark);
   margin-bottom: 1.5rem;
   line-height: 1.6;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .island-link {
