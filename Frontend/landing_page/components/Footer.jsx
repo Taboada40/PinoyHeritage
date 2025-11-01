@@ -12,7 +12,7 @@ function Footer() {
             <span>Pinoy Heritage</span>
           </div>
           <p className="footer-desc">
-            Your trusted marketplace for authentic Filipino handcrafted products. Supporting local artisans since 2020.
+            Your trusted marketplace for authentic Filipino handcrafted products. Supporting local artisans since 2025.
           </p>
           <div className="social-links">
             <a href="#" className="social-btn" aria-label="Facebook">f</a>

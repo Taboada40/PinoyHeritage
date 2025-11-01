@@ -16,7 +16,7 @@ function HeroSection() {
       <div className="hero-content">
         {/* Hero Text */}
         <div className="hero-text">
-          <div className="hero-badge">✨ Authentic Filipino Crafts</div>
+          <div className="hero-badge">Authentic Filipino Crafts</div>
           <h1 className="hero-title">
             Discover the <span className="highlight">Beauty</span> of Filipino Craftsmanship
           </h1>
