@@ -1,23 +1,15 @@
 import { useState } from "react";
 import "../assets/styles/landingpage.css"; 
 
-import Header from "/components/Header";
-import HeroSection from "/components/HeroSection";
-import WhySection from "/components/WhySection";
-import CategorySection from "/components/CategorySection";
-import IslandSection from "/components/IslandSection";
-import Footer from "/components/Footer";
+import Header from "../components/Header.jsx";
+import HeroSection from "../components/HeroSection.jsx";
+import WhySection from "../components/WhySection.jsx";
+import CategorySection from "../components/CategorySection.jsx";
+import IslandSection from "../components/IslandSection.jsx";
+import Footer from "../components/Footer.jsx";
+import NewsletterSection from "../components/NewsletterSection.jsx";
 
 function LandingPage() {
-  const [email, setEmail] = useState("");
-
-  function handleNewsletterSubmit() {
-    if (email) {
-      alert(`Thank you for subscribing with us!`);
-      setEmail("");
-    }
-  }
-
   return (
     <div className="landing-page">
       <Header showNav={true} />
@@ -25,11 +17,8 @@ function LandingPage() {
       <WhySection />
       <CategorySection />
       <IslandSection />
-      <Footer
-        email={email}
-        setEmail={setEmail}
-        handleNewsletterSubmit={handleNewsletterSubmit}
-      />
+      <NewsletterSection />
+      <Footer />
     </div>
   );
 }
