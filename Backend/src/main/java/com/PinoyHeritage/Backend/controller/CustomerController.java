@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customer")
-@CrossOrigin(origins = "http://localhost:5173") // your frontend dev server
+@CrossOrigin(origins = "http://localhost:5173") // frontend dev server
 public class CustomerController {
 
     @Autowired
@@ -27,5 +27,17 @@ public class CustomerController {
             throw new RuntimeException("Invalid credentials");
         }
         return customer;
+    }
+
+    // Get customer by ID
+    @GetMapping("/{id}")
+    public Customer getCustomer(@PathVariable Long id) {
+        return customerService.getCustomerById(id);
+    }
+
+    // Update profile (only optional fields)
+    @PutMapping("/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
+        return customerService.updateCustomerProfile(id, updatedCustomer);
     }
 }

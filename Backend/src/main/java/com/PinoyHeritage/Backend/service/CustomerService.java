@@ -14,7 +14,6 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer registerCustomer(Customer customer) {
-        // Ideally hash password here
         return customerRepository.save(customer);
     }
 
@@ -26,6 +25,23 @@ public class CustomerService {
                 return customer;
             }
         }
-        return null; // invalid login
+        return null;
+    }
+
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+
+    public Customer updateCustomerProfile(Long id, Customer updatedCustomer) {
+        Customer existing = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Update optional fields only
+        existing.setFirstName(updatedCustomer.getFirstName());
+        existing.setLastName(updatedCustomer.getLastName());
+        existing.setPhoneNumber(updatedCustomer.getPhoneNumber());
+
+        return customerRepository.save(existing);
     }
 }
