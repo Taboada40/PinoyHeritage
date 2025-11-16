@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.4",
     "lucide-react": "^0.548.0",
+    "npm": "^11.6.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"
