@@ -1,51 +1,59 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/styles/auth.css";
 
 function Signup() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:8080/api/customer/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        alert("Registration successful!");
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error signing up.");
+    }
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-box">
         <div className="auth-header">
-          <Link to="/" className="back-icon" aria-label="Back to Home">
-            ←
-          </Link>
+          <Link to="/" className="back-icon">←</Link>
           <h2>Sign Up</h2>
         </div>
-
-        <form className="auth-form">
-          <div className="form-row">
-            <div className="form-group half-width">
-              <label>First Name</label>
-              <input type="text" placeholder="First Name" required />
-            </div>
-
-            <div className="form-group half-width">
-              <label>Last Name</label>
-              <input type="text" placeholder="Last Name" required />
-            </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Username</label>
+            <input type="text" name="username" onChange={handleChange} required />
           </div>
-
           <div className="form-group">
             <label>Email</label>
-            <input type="email" placeholder="Email" required />
+            <input type="email" name="email" onChange={handleChange} required />
           </div>
-
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Password" required />
+            <input type="password" name="password" onChange={handleChange} required />
           </div>
-
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input type="password" placeholder="Confirm Password" required />
-          </div>
-
           <button type="submit" className="auth-btn">Sign Up</button>
-
-          <p className="auth-footer">
-            Already have an account? <Link to="/login">Login</Link>
-          </p>
+          <p className="auth-footer">Already have an account? <Link to="/login">Login</Link></p>
         </form>
       </div>
     </div>
