@@ -18,10 +18,17 @@ function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       if (res.ok) {
         const data = await res.json();
         alert(`Welcome ${data.username}`);
-        navigate("/");
+
+        // store logged-in user ID in localStorage
+        localStorage.setItem("userId", data.id); 
+        localStorage.setItem("username", data.username); // optional
+        localStorage.setItem("email", data.email);       // optional
+
+        navigate("/profile"); // redirect to profile page
       } else {
         alert("Invalid credentials");
       }
@@ -30,6 +37,7 @@ function Login() {
       alert("Error logging in.");
     }
   };
+
 
   return (
     <div className="auth-container">
