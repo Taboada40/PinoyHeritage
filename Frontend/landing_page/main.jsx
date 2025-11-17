@@ -10,6 +10,8 @@ import Login from "./templates/login.jsx";
 import Signup from "./templates/signup.jsx";
 import Profile from "./templates/profile.jsx";
 import Review from "./templates/review.jsx"; // ✅ Added Review page
+import Profile from "./templates/profile.jsx"; // ✅ Added this line
+import AdminCategories from "../admin/templates/AdminCategories.jsx";
 
 import "./index.css";
 import "./assets/styles/auth.css";
@@ -34,6 +36,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           CHANGE this → <Route path="/product/:id/review" element={<Review />} />
         */}
         <Route path="/review" element={<Review />} />
+        <Route path="/profile" element={<Profile />} /> {/* ✅ New route */}
+        <Route path="/admin/categories" element={<AdminCategories />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

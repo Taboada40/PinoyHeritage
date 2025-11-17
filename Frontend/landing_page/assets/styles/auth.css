@@ -200,6 +200,6 @@
     padding: 30px 25px;
   }
   .form-row {
-    flex-direction: column; /* stack first/last name on mobile */
+    flex-direction: column; 
   }
 }
