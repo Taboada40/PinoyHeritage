@@ -15,19 +15,19 @@
 }
 
 .login-text:hover {
-  color: #FCD116;
+  color: var(--yellow);
 }
 
 /* Home Page Hero Section */
 .home-hero {
   position: relative;
-  width: 100vw;             /* Full viewport width */
-  height: 100vh;            /* Full viewport height */
-  margin: 0;                /* Remove default margins */
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
   padding: 0;
-  background-image: url('../imgs/homebackground.jpg'); /* Replace with your image */
-  background-size: cover;      /* Cover full area */
-  background-position: center; /* Center image */
+  background-image: url('../imgs/homebackground.jpg');
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
   display: flex;
@@ -41,10 +41,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3); /* Overlay for readability */
+  background-color: rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
+/* Responsive text */
 .home-hero-content {
   position: relative;
   z-index: 2;
@@ -62,43 +63,61 @@
   font-size: 1.5rem;
 }
 
-/* Make responsive for smaller screens */
 @media (max-width: 768px) {
   .home-hero-content h1 {
     font-size: 2rem;
   }
-
   .home-hero-content p {
     font-size: 1rem;
   }
 }
 
-/* Container for the vertical bars */
-.home-bars-container {
+/* ----------- CONTAINER & LAYOUT ----------- */
+.home-container {
   position: relative;
-  z-index: 2;
   display: flex;
-  flex-direction: column;  /* Stack vertically */
-  gap: 20px;               /* Space between bars */
   align-items: center;
+  gap: 40px;
+  transition: transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: 2;
 }
 
-/* Each bar styling with blur effect - wider version */
+.home-container.shift-left {
+  transform: translateX(-150px);
+}
+
+/* ----------- LEFT BARS ----------- */
+.home-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  transition: transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1), scale 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.home-container.shift-left .home-bars-container {
+  transform: translateX(-200px);
+  scale: 0.85;
+}
+
 .home-bar {
   height: auto;
-  width: 750px;                  /* increased width */
-  max-width: 100%;                /* responsive max-width */
-  padding: 50px 20px;            /* slightly more padding */
-  background-color: rgba(255, 255, 255, 0.25); /* semi-transparent */
-  backdrop-filter: blur(10px);   /* blur background */
-  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  width: 750px;
+  max-width: 100%;
+  padding: 50px 20px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
   border-radius: 15px;
   color: white;
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
-  cursor: default;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+  transition:
+    transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+    background-color 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+    width 0.9s cubic-bezier(0.25, 0.1, 0.25, 1),
+    padding 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .home-bar:hover {
@@ -106,11 +125,77 @@
   background-color: rgba(255, 255, 255, 0.35);
 }
 
-/* Responsive adjustment */
+.home-container.shift-left .home-bar {
+  width: 600px;
+  padding: 35px 20px;
+}
+
+/* Responsive bars */
 @media (max-width: 768px) {
   .home-bar {
     width: 90%;
     padding: 40px 15px;
     font-size: 1.3rem;
+  }
+}
+
+/* ----------- RIGHT DESCRIPTION PANEL ----------- */
+.island-description {
+  width: 450px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+  transform: translateX(50px);
+  transition:
+    transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1),
+    width 0.9s cubic-bezier(0.25, 0.1, 0.25, 1),
+    opacity 0.5s ease;
+}
+
+.home-container.shift-left .island-description {
+  width: 650px;
+  transform: translateX(130px);
+}
+
+.island-description h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 5px;
+}
+
+.island-description p {
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.close-btn {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+  background-color: #ffd93d;
+}
+
+/* Fade animation for description */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(70px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(50px);
   }
 }
