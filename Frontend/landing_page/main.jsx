@@ -9,6 +9,8 @@ import ProductDetail from "../products/templates/ProductDetails.jsx";
 import Login from "./templates/login.jsx";
 import Signup from "./templates/signup.jsx";
 import Profile from "./templates/profile.jsx";
+import Review from "./templates/review.jsx"; 
+import Payment from "./templates/payment.jsx"; // ✅ Added Payment page
 import Review from "./templates/review.jsx"; // ✅ Added Review page
 import Profile from "./templates/profile.jsx"; // ✅ Added this line
 import AdminCategories from "../admin/templates/AdminCategories.jsx";
@@ -16,6 +18,8 @@ import AdminCategories from "../admin/templates/AdminCategories.jsx";
 import "./index.css";
 import "./assets/styles/auth.css";
 import "./assets/styles/profile.css";
+import "./assets/styles/review.css";
+import "./assets/styles/payment.css"; // ✅ Payment page CSS
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -29,13 +33,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
 
-        {/* 
-          ⭐ REVIEW PAGE
-          Current route: /review
-          If later you want product-specific reviews:
-          CHANGE this → <Route path="/product/:id/review" element={<Review />} />
-        */}
+        {/* ⭐ REVIEW PAGE */}
         <Route path="/review" element={<Review />} />
+
+        {/* ⭐ PAYMENT PAGE */}
+        <Route path="/payment" element={<Payment />} />
         <Route path="/profile" element={<Profile />} /> {/* ✅ New route */}
         <Route path="/admin/categories" element={<AdminCategories />} />
       </Routes>
