@@ -9,6 +9,7 @@ import ProductDetail from "../products/templates/ProductDetails.jsx";
 import Login from "./templates/login.jsx";
 import Signup from "./templates/signup.jsx";
 import Profile from "./templates/profile.jsx"; // ✅ Added this line
+import AdminCategories from "../admin/templates/AdminCategories.jsx";
 
 import "./index.css";
 import "./assets/styles/auth.css";
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} /> {/* ✅ New route */}
+        <Route path="/admin/categories" element={<AdminCategories />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
