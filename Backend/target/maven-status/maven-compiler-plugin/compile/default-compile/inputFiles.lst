@@ -1,6 +1,8 @@
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\BackendApplication.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\controller\AdminController.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\controller\CategoryController.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\controller\CustomerController.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\controller\ItemController.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\controller\TemplateController.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\entity\Admin.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\entity\Cart.java
@@ -12,9 +14,13 @@ C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\ent
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\entity\Order.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\entity\Payment.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\entity\Review.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\repository\AdminRepository.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\repository\CategoryRepository.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\repository\CustomerRepository.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\repository\ItemRepository.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\repository\TemplateRepository.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\service\AdminService.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\service\CategoryService.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\service\CustomerService.java
+C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\service\ItemService.java
 C:\Users\quinn\PinoyHeritage\Backend\src\main\java\com\PinoyHeritage\Backend\service\TemplateService.java

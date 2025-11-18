@@ -1,7 +1,6 @@
 package com.PinoyHeritage.Backend.entity;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @Entity
@@ -14,34 +13,32 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 1000) // Increased length for description
+    @Column(nullable = false, columnDefinition = "TEXT") // Use TEXT for long descriptions
     private String description;
 
     @Column(nullable = false)
     private Double price;
-
-    private Integer stock; // Added for Frontend compatibility
-
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String image; // Added to store Base64 image string
+    
+    // ⭐ NEW: Field to store the Item's main image URL/path
+    @Column(nullable = true) 
+    private String imageUrl; 
+    // ⭐ If you want stock (from the admin form)
+    // @Column(nullable = false)
+    // private Integer stock;
 
     // Relationships
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    @JsonIgnoreProperties("items") // Prevent infinite recursion
     private Category category;
     
     @ManyToOne
     @JoinColumn(name = "order_id") 
     private Order order; 
-
+    
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("item")
     private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("item")
     private List<Review> reviews;
 
     // Getters and Setters
@@ -57,12 +54,6 @@ public class Item {
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
 
-    public Integer getStock() { return stock; }
-    public void setStock(Integer stock) { this.stock = stock; }
-
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
-
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
 
@@ -74,4 +65,8 @@ public class Item {
 
     public List<Review> getReviews() { return reviews; }
     public void setReviews(List<Review> reviews) { this.reviews = reviews; }
+    
+    // ⭐ NEW Getter and Setter for imageUrl
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

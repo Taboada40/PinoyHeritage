@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/products") // Matches the endpoint in AdminCategories.jsx
-@CrossOrigin(origins = "http://localhost:5173") // React dev server
 public class ItemController {
 
     private final ItemService itemService;
