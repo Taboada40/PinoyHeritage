@@ -1,6 +1,7 @@
 package com.PinoyHeritage.Backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @Entity
@@ -13,28 +14,34 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000) // Increased length for description
     private String description;
 
     @Column(nullable = false)
     private Double price;
 
+    private Integer stock; // Added for Frontend compatibility
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String image; // Added to store Base64 image string
+
     // Relationships
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnoreProperties("items") // Prevent infinite recursion
     private Category category;
     
-    // -----------------------------------------------------------------
-    // FIX: Added the relationship back to the Order entity
     @ManyToOne
     @JoinColumn(name = "order_id") 
     private Order order; 
-    // -----------------------------------------------------------------
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("item")
     private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("item")
     private List<Review> reviews;
 
     // Getters and Setters
@@ -50,14 +57,17 @@ public class Item {
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
 
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
+
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
+
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
 
-    // -----------------------------------------------------------------
-    // Getter and Setter for the new 'order' field
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
-    // -----------------------------------------------------------------
 
     public List<CartItem> getCartItems() { return cartItems; }
     public void setCartItems(List<CartItem> cartItems) { this.cartItems = cartItems; }
