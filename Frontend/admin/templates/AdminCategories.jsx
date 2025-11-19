@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Sidebar from "../components/Sidebar"; 
 import "../assets/styles/AdminCategories.css";
 
 // API instances
@@ -10,38 +11,6 @@ const categoriesApi = axios.create({
 const productsApi = axios.create({
   baseURL: "http://localhost:8080/api/admin/products",
 });
-
-// Sidebar Component
-const Sidebar = () => (
-  <aside className="sidebar">
-    <a href="#" className="logo-admin">
-      <div className="logo-icon">PH</div>
-      <span>Pinoy Heritage</span>
-    </a>
-    <nav className="sidebar-menu">
-      <a href="#" className="menu-item">
-        <span className="menu-icon">📊</span>
-        <span>Dashboard</span>
-      </a>
-      <a href="#" className="menu-item">
-        <span className="menu-icon">👥</span>
-        <span>Users</span>
-      </a>
-      <a href="#" className="menu-item active">
-        <span className="menu-icon">📦</span>
-        <span>Manage</span>
-      </a>
-      <a href="#" className="menu-item">
-        <span className="menu-icon">📈</span>
-        <span>Monitor</span>
-      </a>
-    </nav>
-    <a href="#" className="menu-item logout-item">
-      <span className="menu-icon">🚪</span>
-      <span>Logout</span>
-    </a>
-  </aside>
-);
 
 // Tabs Component
 const Tabs = ({ activeTab, setActiveTab }) => (
@@ -233,16 +202,6 @@ const CategoriesSection = () => {
     <div className="admin-categories-section">
       <div className="admin-section-header">
         <div className="category-search">
-          <div className="search-bar">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search categories"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
         </div>
         <button className="add-category-btn" onClick={() => openModal("add")}>
           <span>+</span>
@@ -397,8 +356,7 @@ const ProductsSection = () => {
     formDataToSend.append("name", formData.name);
     formDataToSend.append("category", formData.category);
     formDataToSend.append("price", formData.price);
-    formDataToSend.append("color", formData.color);
-    formDataToSend.append("size", formData.size);
+    formDataToSend.append("stock", formData.stock); 
     formDataToSend.append("description", formData.description);
     
     formData.images.forEach(image => {
@@ -455,7 +413,7 @@ const ProductsSection = () => {
 
   return (
     <div className="products-section">
-      <div className="section-header">
+      <div className="products-header">
         <button className="add-product-btn" onClick={() => openModal("add")}>
           <span>+</span>
           <span>Add New Product</span>
@@ -683,10 +641,6 @@ const AdminCategories = () => {
       <Sidebar />
       <main className="main-content">
         <div className="page-header">
-          <div className="search-bar">
-            <span className="search-icon">🔍</span>
-            <input type="text" className="search-input" placeholder="Search" />
-          </div>
         </div>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
         {activeTab === "categories" && <CategoriesSection />}
