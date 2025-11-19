@@ -57,7 +57,7 @@ export default function ProductCatalog() {
 
   return (
     <div className="product-catalog-page">      
-      <Header showNav={false} />
+      <Header showNav={true} />
       
         <div className="catalog-header">
             <div className="catalog-header-top">

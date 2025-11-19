@@ -7,13 +7,30 @@
    - Promo code
    - Modern UI, soft shadows, gradient buttons
    ======================================================================= */
+/* Root Variables */
+:root {
+  --blue: #0038A8;
+  --sapphire: #213a56;
+  --yellow: #FCD116;
+  --red: #6B0C04;
+  --black: #000000;
+  --white: #FFFFFF;
+  --gray-light: #F5F5F5;
+  --gray-medium: #E0E0E0;
+  --gray-dark: #666666;
+}
 
-.payment-page,
-.payment-page * {
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+/* Reset & Base Styles */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  background-color: #E7E6E3;
 }
 
 .payment-page {

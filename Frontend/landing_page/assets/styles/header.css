@@ -1,0 +1,121 @@
+/* Header Section */
+.header {
+  position: fixed;        
+  top: 0;
+  left: 0;
+  width: 100%;           
+  z-index: 1000;
+  background: var(--blue);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header--transparent {
+  background: transparent;
+  backdrop-filter: blur(2px);
+  box-shadow: none;
+}
+
+.header--scrolled {
+  background: rgba(0, 56, 168, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.container {
+  min-width: 1200px;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  padding: 0.3rem;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.logo-icon {
+  background-color: var(--white);
+  color: #0038A8;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: var(--white);
+  font-size: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: #FCD116;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 1rem;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.nav-icons button:hover {
+  filter: invert(72%) sepia(99%) saturate(725%) hue-rotate(356deg) brightness(103%) contrast(102%);
+  transform: scale(1.1);
+}
+
+.search-btn, .cart-btn, .acc-btn {
+  background: transparent;
+  border: none;
+  filter: invert(1);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.search-btn{
+  background-image: url('../assets/imgs/search.png');
+}
+
+.cart-btn{
+  background-image: url('../assets/imgs/cart.png'); 
+}
+
+.acc-btn{
+  background-image: url('../assets/imgs/user.png'); ;
+}
+
+.search-btn:hover, .cart-btn:hover, .acc-btn:hover{
+  transform: scale(1.1);
+}
