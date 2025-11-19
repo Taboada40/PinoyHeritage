@@ -13,11 +13,11 @@ const Profile = () => {
     phoneNumber: "",
   });
 
-  // Get the logged-in user ID from localStorage
   const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
     if (!userId) return;
+    // Mock fetch for demonstration (Replace with your real fetch logic)
     fetch(`http://localhost:8080/api/customer/${userId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -43,7 +43,7 @@ const Profile = () => {
   const handleUpdateClick = (e) => {
     e.preventDefault();
     setIsEditing(false);
-
+    
     fetch(`http://localhost:8080/api/customer/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -59,26 +59,22 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <Header showNav={true} />
+      <Header showNav={false} />
 
       <div className="profile-container">
         <div className="profile-card">
           <h2 className="profile-title">Profile Information</h2>
 
           <div className="profile-header">
-            <div className="profile-image"></div>
             <div className="profile-info">
-              <h3 className="profile-name">{formData.username}</h3>
-              <p className="profile-bio">
-                Passionate about technology, coding, and creating clean
-                designs.
-              </p>
+              <h3 className="profile-name">{formData.username || "User"}</h3>
             </div>
           </div>
 
           <form className="profile-form">
             <div className="form-row">
-              <div className="form-group">
+              {/* CHANGED CLASS NAME HERE */}
+              <div className="profile-form-group">
                 <label>First Name (optional)</label>
                 <input
                   type="text"
@@ -88,7 +84,8 @@ const Profile = () => {
                   disabled={!isEditing}
                 />
               </div>
-              <div className="form-group">
+              {/* CHANGED CLASS NAME HERE */}
+              <div className="profile-form-group">
                 <label>Last Name (optional)</label>
                 <input
                   type="text"
@@ -100,17 +97,20 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            {/* CHANGED CLASS NAME HERE */}
+            <div className="profile-form-group">
               <label>Username</label>
               <input type="text" name="username" value={formData.username} disabled />
             </div>
 
-            <div className="form-group">
+            {/* CHANGED CLASS NAME HERE */}
+            <div className="profile-form-group">
               <label>Email</label>
               <input type="email" name="email" value={formData.email} disabled />
             </div>
 
-            <div className="form-group">
+            {/* CHANGED CLASS NAME HERE */}
+            <div className="profile-form-group">
               <label>Phone Number</label>
               <input
                 type="tel"
@@ -124,7 +124,7 @@ const Profile = () => {
             {!isEditing && (
               <button
                 type="button"
-                className="btn btn-edit"
+                className="profile-btn btn-edit" // Changed class
                 onClick={handleEditClick}
               >
                 Edit Profile
@@ -133,7 +133,7 @@ const Profile = () => {
             {isEditing && (
               <button
                 type="submit"
-                className="btn btn-update"
+                className="profile-btn btn-update" // Changed class
                 onClick={handleUpdateClick}
               >
                 Update Profile

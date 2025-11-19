@@ -40,15 +40,15 @@ function Signup() {
           <h2>Sign Up</h2>
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="auth-form-group">
             <label>Username</label>
             <input type="text" name="username" onChange={handleChange} required />
           </div>
-          <div className="form-group">
+          <div className="auth-form-group">
             <label>Email</label>
             <input type="email" name="email" onChange={handleChange} required />
           </div>
-          <div className="form-group">
+          <div className="auth-form-group">
             <label>Password</label>
             <input type="password" name="password" onChange={handleChange} required />
           </div>

@@ -69,7 +69,7 @@ function Login() {
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           
-          <div className="form-group">
+          <div className="auth-form-group">
             <label>Email / Username </label>
             <input 
               type="text" // Changed to 'text' to accept 'admin' username
@@ -80,7 +80,7 @@ function Login() {
             />
           </div>
           
-          <div className="form-group">
+          <div className="auth-form-group">
             <label>Password </label>
             <input 
               type="password" 
