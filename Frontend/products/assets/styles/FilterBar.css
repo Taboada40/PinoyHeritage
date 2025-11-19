@@ -5,29 +5,40 @@
   margin-right: 40px; 
 }
 
+.filter-dropdown {
+  display: inline-block;
+  background: rgba(252, 209, 22, 0.2);
+  border: 1px solid rgba(252, 209, 22, 0.3);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  overflow: hidden; 
+  cursor: pointer;
+}
+
 .filter-dropdown select {
   background-color: transparent;
-  border: 1px solid #444;
-  border-radius: 8px;
-  color: #2a2a2a;
-  padding: 10px 40px 10px 16px;
+  border: none; 
+  width: 100%;  
+  color: #0038A8;
+  padding: 14px 10px 14px 20px;  
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23999' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  appearance: none; 
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%230038A8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 16px center;
-  max-width: 120px;
-  transition: border-color 0.2s;
+  background-position: right 16px center;  
+  transition: all 0.2s;
 }
 
 .filter-dropdown select:hover {
-  border-color: #666;
+  background-color: rgba(252, 209, 22, 0.3); 
 }
 
 .filter-dropdown select:focus {
-  outline: none;
-  border-color: #1e40af;
+  outline: none; 
 }
 
 .filter-dropdown option {
