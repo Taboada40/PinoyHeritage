@@ -9,6 +9,10 @@ import clothingImg from "../../landing_page/assets/imgs/clothing.jpg";
 import barotSayaImg from "../assets/imgs/barotsaya.png";
 import filipinianaImg from "../assets/imgs/filipiniana.jpg";
 import malongImg from "../assets/imgs/malong.jpg";
+import salakotImg from "../assets/imgs/salakot.jpg"; 
+import camisaImg from "../assets/imgs/camisa.jpg";
+import bakyaImg from "../assets/imgs/bakya.jpg";
+import tnalakImg from "../assets/imgs/tnalak.jpg";
 
 export default function ProductCatalog() {
   const navigate = useNavigate(); // 
@@ -45,6 +49,38 @@ export default function ProductCatalog() {
       rating: 3,
       description: 'A traditional tubular garment from the Philippines, often made of colorful woven or printed fabric. It’s versatile and can be worn as a skirt, dress, shawl, or blanket, symbolizing Filipino creativity and cultural identity.',
       image: malongImg
+    },
+    {
+      id: 5,
+      name: "Salakot",
+      price: 350.00,
+      rating: 4,
+      description: 'A traditional wide-brimmed hat usually made of rattan or reeds, used by farmers and iconic in Filipino culture.',
+      image: salakotImg
+    },
+    {
+      id: 6,
+      name: "Camisa de Chino",
+      price: 450.00,
+      rating: 3,
+      description: 'A simple, collarless cotton shirt usually worn underneath the Barong Tagalog or as casual wear.',
+      image: camisaImg
+    },
+    {
+      id: 7,
+      name: "Bakya",
+      price: 250.00,
+      rating: 4,
+      description: 'Traditional Filipino wooden clogs with a strap, often made from native lightweight wood like santol or laniti.',
+      image: bakyaImg
+    },
+    {
+      id: 8,
+      name: "T'nalak Vest",
+      price: 1500.00,
+      rating: 5,
+      description: 'A vest woven from T\'nalak fabric, a sacred cloth of the T\'boli people made from abaca fibers.',
+      image: tnalakImg
     }
   ]);
 

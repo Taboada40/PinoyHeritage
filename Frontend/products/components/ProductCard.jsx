@@ -31,7 +31,6 @@ function ProductCard({ product, onClick }) {
           {renderStars(product.rating)}
         </div>
         <p className="product-description">{product.description}</p>
-        <button className="add-to-cart-btn">Add to cart</button>
       </div>
     </div>
   );

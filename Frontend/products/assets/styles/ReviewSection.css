@@ -94,9 +94,10 @@
 
 .review-tag {
   background-color: #d1fae5;
+  border: 1px solid #abf9d1;
   color: #065f46;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
 }
