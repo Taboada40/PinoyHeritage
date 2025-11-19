@@ -9,13 +9,30 @@
    - Media preview grid (images/videos)
    ======================================================================= */
 
-/* Base reset & font */
-.review-page,
-.review-page * {
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+/* Root Variables */
+:root {
+  --blue: #0038A8;
+  --sapphire: #213a56;
+  --yellow: #FCD116;
+  --red: #6B0C04;
+  --black: #000000;
+  --white: #FFFFFF;
+  --gray-light: #F5F5F5;
+  --gray-medium: #E0E0E0;
+  --gray-dark: #666666;
+}
+
+/* Reset & Base Styles */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  background-color: #E7E6E3;
 }
 
 /* Page layout */
@@ -142,7 +159,7 @@
 }
 
 .tag.selected {
-  background: linear-gradient(135deg, #6a5af9, #8364ff);
+  background: linear-gradient(135deg, #0038A8);
   color: #fff;
   border-color: transparent;
   box-shadow: 0 6px 16px rgba(106, 90, 249, 0.28);
@@ -263,7 +280,7 @@
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: linear-gradient(135deg, #6a5af9, #8364ff);
+  background: #0038A8;
   color: white;
   font-weight: 600;
   transition: transform 0.18s ease, box-shadow 0.18s ease;

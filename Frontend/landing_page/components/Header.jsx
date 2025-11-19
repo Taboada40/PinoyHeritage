@@ -1,4 +1,4 @@
-import "../assets/styles/landingpage.css";
+import "../assets/styles/header.css";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -38,7 +38,7 @@ function Header({ showNav = true }) {
         <div className="nav-content">
           <div className="logo">
             <div className="logo-icon">PH</div>
-            <span>Pinoy Heritage</span>
+            <Link to="/" className="nav-link">PinoyHeritage</Link>
           </div>
 
           {showNav && (
