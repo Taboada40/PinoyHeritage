@@ -66,7 +66,7 @@
 }
 
 /* --- Form Groups --- */
-.auth-form .form-group {
+.auth-form .auth-form-group {
   margin-bottom: 20px;
   text-align: left;
 }
@@ -91,7 +91,7 @@
 }
 
 /* --- Inputs --- */
-.auth-form input {
+.auth-form-group input {
   width: 100%;
   padding: 10px 12px;
   border: 0.9px solid #0038A8;       /* blue border */
