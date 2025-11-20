@@ -3,11 +3,12 @@
   position: fixed;        
   top: 0;
   left: 0;
-  width: 100%;           
+  min-width: 100%;           
   z-index: 1000;
   background: var(--blue);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .header--transparent {
@@ -23,10 +24,12 @@
 }
 
 .container {
-  min-width: 1200px;
+  min-width: 100%;
+  max-width: 1200px;
   margin-right: 1rem;
   margin-left: 1rem;
-  padding: 0.3rem;
+  padding: 0.3rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .nav-content {
