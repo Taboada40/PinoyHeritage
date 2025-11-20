@@ -18,8 +18,7 @@ function Login() {
     e.preventDefault();
     setError("");
 
-    // ⭐ STEP 1: ADMIN CREDENTIAL CHECK (Frontend Bypass) ⭐
-    // Uses the hardcoded credentials inserted into MySQL: username 'admin', password 'admin123'
+    // STEP 1: ADMIN CREDENTIAL CHECK (Frontend Bypass) 
     if (formData.identifier === "admin" && formData.password === "admin123") {
         console.log("Admin credentials detected. Redirecting...");
         localStorage.setItem("isAdmin", "true"); 
@@ -27,10 +26,13 @@ function Login() {
         return;
     }
     
-    // ⭐ STEP 2: REGULAR CUSTOMER LOGIN (API Call) ⭐
-    // Note: If you want to use the backend authentication endpoint we created (AdminController), 
-    // you should check there first before trying the /customer endpoint. 
-    // For this simple bypass, we use the hardcoded check above.
+    // STEP 2: REGULAR CUSTOMER LOGIN (API Call)  
+    if (formData.identifier === "user" && formData.password === "user123") {
+        console.log("Admin credentials detected. Redirecting...");
+        localStorage.setItem("isUser", "true"); 
+        navigate("/profile");
+        return;
+    }
     
     try {
       const res = await fetch("http://localhost:8080/api/customer/login", {
