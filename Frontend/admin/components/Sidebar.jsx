@@ -38,9 +38,8 @@ const Sidebar = () => (
         <span>Monitor</span>
       </a>
     </nav>
-    <a href="#" className="menu-item logout-item">
-      {/* You didn't provide an image for logout, so I'll keep the door emoji or you can add one */}
-      <span className="menu-icon">🚪</span> 
+    <a href="/" className="menu-item logout-item">
+      <span className="menu-icon"></span> 
       <span>Logout</span>
     </a>
   </aside>
