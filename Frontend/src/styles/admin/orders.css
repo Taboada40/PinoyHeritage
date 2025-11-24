@@ -1,0 +1,211 @@
+/* ============================
+   ORDERS SECTION STYLES
+   ============================ */
+
+.manage-orders-container {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%; /* Adapts to container */
+  max-width: 1200px;
+  margin-top: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  font-family: sans-serif;
+}
+
+/* -----------------------------
+   SEARCH + FILTER CONTROLS
+   ----------------------------- */
+.order-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.order-search {
+  flex: 2; /* Search takes up more space */
+  padding: 0.8rem 1rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  background: #F9F9F9;
+  font-size: 0.95rem;
+}
+
+.order-search:focus{
+  background: #fff;
+  border-color: #0038A8;
+  box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1);
+}
+
+.order-filter-date {
+  flex: 0.5;
+  padding: 0.8rem 1rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.order-filter-status {
+  flex: 0.5;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-size: 14px;
+  background-position: right 1rem center;
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.order-summary-text {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* GRID SETUP - Matches Figma Columns exactly */
+/* Order | Date | Customer | Total | Status | Items */
+.order-header-row,
+.order-row {
+  display: grid;
+  grid-template-columns: 0.8fr 1.4fr 1.2fr 0.8fr 1.2fr 0.5fr;
+  align-items: center;
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.order-header-row {
+  font-weight: 600;
+  color: #666; 
+}
+
+.fw-bold {
+  font-weight: 600;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Divider */
+.order-divider {
+  width: 100%;
+  height: 1px;
+  background: #E0E0E0;
+  margin-bottom: 0.5rem;
+}
+
+.order-divider.light {
+  background: #F0F0F0;
+  margin: 0;
+}
+
+/* -----------------------------
+   STATUS DROPDOWNS (The Colored Chips)
+   ----------------------------- */
+.order-status-dropdown {
+  appearance: none; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-size: 14px;
+  background-position: right 1rem center;
+  padding: 0.5rem 2.5rem 0.5rem 1.2rem;
+  border-radius: 50px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  width: fit-content;
+  text-align: left;
+  text-align-last: left; 
+}
+
+.order-status-dropdown:hover {
+  opacity: 0.9;
+}
+
+/* Status: Processing (Yellow) */
+.order-status-dropdown.processing {
+  background-color: #FFF8DC; 
+  color: #B7950B; 
+}
+
+/* Status: Shipped (Blue) */
+.order-status-dropdown.shipped {
+  background-color: #E3F2FD; 
+  color: #1976D2; 
+}
+
+/* Status: Delivered (Green) */
+.order-status-dropdown.delivered {
+  background-color: #E8F5E9; 
+  color: #2E7D32; 
+}
+
+/* Status: Pending (Grey) */
+.order-status-dropdown.pending {
+  background-color: #F5F5F5;
+  color: #666;
+}
+
+/* Status: Cancelled (Red) */
+.order-status-dropdown.cancelled {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+/* -----------------------------
+   PAGINATION
+   ----------------------------- */
+.order-pagination {
+  display: flex;
+  justify-content: center; /* Centered at bottom */
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 16px;
+  color: #666a70;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+}
+
+.page-text {
+  font-size: 0.95rem;
+}
+
+/* -----------------------------
+   RESPONSIVE
+   ----------------------------- */
+@media (max-width: 900px) {
+  .manage-orders-container {
+    overflow-x: auto; /* Allow scrolling on small screens */
+  }
+  .order-header-row,
+  .order-row {
+    min-width: 800px; /* Force minimum width to keep grid intact */
+  }
+}
