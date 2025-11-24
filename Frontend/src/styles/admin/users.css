@@ -1,0 +1,151 @@
+/* ================= Container ================= */
+.users-container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 4px 4px 0 rgba(0,0,0,0.1);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 1517px;
+    margin: 2rem auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ================= Header & Search ================= */
+.users-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.users-title {
+    color: #0038a8;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Search Box Wrapper */
+.users-search-wrapper {
+    position: relative;
+    width: 320px;
+}
+
+/* Search Input Styling */
+.users-search-input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+    background: #F9F9F9; 
+    font-size: 0.95rem;
+    color: #333;
+    outline: none;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.users-search-input:focus {
+    background: #fff;
+    border-color: #0038A8;
+    box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1);
+}
+
+.users-search-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #6c6c6d;
+    pointer-events: none;
+}
+
+/* ================= Table Grid System ================= */
+.users-table-header,
+.users-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 1fr 1fr 0.8fr;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+/* Table Header Specifics */
+.users-table-header {
+    font-weight: 600;
+    color: #666;
+}
+
+/* Row Specifics */
+.users-row {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.col-email {
+    word-break: break-all;
+}
+
+/* Action Column Styling */
+.view-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-style: italic;
+    color: #333;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.view-action:hover {
+    opacity: 0.7;
+}
+
+/* Dividers */
+.users-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #EEEEEE;
+}
+
+.users-divider.light {
+    height: 1px;
+    background-color: #EEEEEE;
+}
+
+/* ================= Pagination ================= */
+.users-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.page-info {
+    font-size: 16px;
+    color: #666a70;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .users-container { overflow-x: auto; }
+    .users-table-header, .users-row { min-width: 800px; }
+}
