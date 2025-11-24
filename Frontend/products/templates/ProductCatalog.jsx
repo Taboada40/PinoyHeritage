@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../landing_page/components/Header';
 import FilterBar from '../components/FilterBar';
@@ -16,73 +16,40 @@ import tnalakImg from "../assets/imgs/tnalak.jpg";
 
 export default function ProductCatalog() {
   const navigate = useNavigate(); // 
-  const [currentPage, setCurrentPage] = useState(2);
-  const [products] = useState([
-    {
-      id: 1,
-      name: 'Barong Tagalog',
-      price: 1000.00,
-      rating: 4,
-      description: 'A traditional Filipino formal wear made from lightweight, sheer fabric such as piña or jusi, featuring intricate embroidery.',
-      image: clothingImg
-    },
-    {
-      id: 2,
-      name: "Baro't Saya",
-      price: 1800.00,
-      rating: 4,
-      description: 'A traditional Filipino dress for women, featuring a blouse and skirt often made with light, embroidered fabrics.',
-      image: barotSayaImg
-    },
-    {
-      id: 3,
-      name: "Modern Filipiniana",
-      price: 2500.00,
-      rating: 5,
-      description: 'A modern Filipiniana featuring a crop top paired with a long fitted skirt, combining contemporary style with traditional Filipino elements.',
-      image: filipinianaImg
-    },
-    {
-      id: 4,
-      name: "Malong",
-      price: 200.00,
-      rating: 3,
-      description: 'A traditional tubular garment from the Philippines, often made of colorful woven or printed fabric. It’s versatile and can be worn as a skirt, dress, shawl, or blanket, symbolizing Filipino creativity and cultural identity.',
-      image: malongImg
-    },
-    {
-      id: 5,
-      name: "Salakot",
-      price: 350.00,
-      rating: 4,
-      description: 'A traditional wide-brimmed hat usually made of rattan or reeds, used by farmers and iconic in Filipino culture.',
-      image: salakotImg
-    },
-    {
-      id: 6,
-      name: "Camisa de Chino",
-      price: 450.00,
-      rating: 3,
-      description: 'A simple, collarless cotton shirt usually worn underneath the Barong Tagalog or as casual wear.',
-      image: camisaImg
-    },
-    {
-      id: 7,
-      name: "Bakya",
-      price: 250.00,
-      rating: 4,
-      description: 'Traditional Filipino wooden clogs with a strap, often made from native lightweight wood like santol or laniti.',
-      image: bakyaImg
-    },
-    {
-      id: 8,
-      name: "T'nalak Vest",
-      price: 1500.00,
-      rating: 5,
-      description: 'A vest woven from T\'nalak fabric, a sacred cloth of the T\'boli people made from abaca fibers.',
-      image: tnalakImg
-    }
-  ]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/admin/products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const data = await res.json();
+
+        // Map backend fields to what the UI expects. Backend uses `imageUrl`.
+        const mapped = data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          rating: item.rating || 4,
+          description: item.description || '',
+          // prefer absolute/remote imageUrl from backend; otherwise fallback to local images
+          image: item.imageUrl || clothingImg,
+        }));
+
+        setProducts(mapped);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        // If fetch fails, keep products empty so UI gracefully degrades.
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleCategoryChange = (category) => console.log('Category changed:', category);
   const handlePriceChange = (priceSort) => console.log('Price sort changed:', priceSort);

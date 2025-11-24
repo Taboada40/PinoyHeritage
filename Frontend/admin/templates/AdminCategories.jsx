@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar"; 
+import ErrorBoundary from "../components/ErrorBoundary";
 import "../assets/styles/AdminCategories.css";
 
 // API instances
 const categoriesApi = axios.create({
-  baseURL: "http://localhost:8080/api/admin/categories",
+  baseURL: "/api/admin/categories",
 });
 
 const productsApi = axios.create({
-  baseURL: "http://localhost:8080/api/admin/products",
+  baseURL: "/api/admin/products",
 });
 
 // Tabs Component
@@ -299,6 +300,13 @@ const ProductsSection = () => {
     description: "",
     images: []
   });
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [editingProductId, setEditingProductId] = useState(null);
+
+  const showToast = (message, type = 'success', duration = 3000) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type }), duration);
+  };
 
   const fetchProducts = async () => {
     try {
@@ -352,26 +360,53 @@ const ProductsSection = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("category", formData.category);
-    formDataToSend.append("price", formData.price);
-    formDataToSend.append("stock", formData.stock); 
-    formDataToSend.append("description", formData.description);
-    
-    formData.images.forEach(image => {
-      formDataToSend.append("images", image);
-    });
+    // To keep the flow simple and reliable, send a JSON payload (no file upload).
+    // The backend accepts JSON and will create the product in MySQL. The catalog
+    // UI will use a fallback image if `imageUrl` is not provided.
+    const payload = {
+      name: formData.name,
+      category: formData.category,
+      price: parseFloat(formData.price) || 0,
+      stock: parseInt(formData.stock) || 0,
+      description: formData.description,
+    };
 
     try {
-      await productsApi.post("", formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      fetchProducts();
+      let created = null;
+      if (editingProductId) {
+        // Update existing product
+        const res = await productsApi.put(`/${editingProductId}`, payload);
+        created = res.data;
+      } else {
+        const res = await productsApi.post("", payload);
+        created = res.data;
+      }
+
+      // If admin selected images in the modal, upload them to the new endpoint
+      if (formData.images && formData.images.length > 0 && created && created.id) {
+        const fd = new FormData();
+        formData.images.forEach(img => fd.append('images', img));
+
+        // Use fetch so the browser sets Content-Type including boundary
+        const uploadRes = await fetch(`/api/admin/products/${created.id}/images`, {
+          method: 'POST',
+          body: fd,
+        });
+
+        if (!uploadRes.ok) {
+          const txt = await uploadRes.text();
+          console.error('Image upload failed:', txt);
+          showToast('Product saved but image upload failed', 'error');
+        }
+      }
+
+      await fetchProducts();
       closeModal();
-      alert("Product added successfully!");
+      const verb = editingProductId ? 'updated' : 'added';
+      showToast(`Product ${verb} successfully`, 'success');
     } catch (error) {
-      alert("Failed to add product: " + (error.response?.data?.message || error.message));
+      console.error('Save product error:', error);
+      showToast("Failed to save product: " + (error.response?.data || error.message), 'error');
     }
   };
 
@@ -380,9 +415,9 @@ const ProductsSection = () => {
       try {
         await productsApi.delete(`/${id}`);
         fetchProducts();
-        alert("Product deleted successfully!");
+        showToast('Product deleted successfully', 'success');
       } catch (error) {
-        alert("Failed to delete product: " + (error.response?.data?.message || error.message));
+        showToast("Failed to delete product: " + (error.response?.data?.message || error.message), 'error');
       }
     }
   };
@@ -397,6 +432,33 @@ const ProductsSection = () => {
       description: "",
       images: []
     });
+    setEditingProductId(null);
+  };
+
+  const openProductModal = (product = null) => {
+    // If product provided, open modal in edit mode and prefill
+    if (product) {
+      setEditingProductId(product.id);
+      setFormData({
+        name: product.name || '',
+        category: (product.category && (product.category.name || product.category)) || '',
+        price: product.price ?? '',
+        stock: product.stock ?? '',
+        description: product.description || '',
+        images: []
+      });
+    } else {
+      setEditingProductId(null);
+      setFormData({
+        name: "",
+        category: "",
+        price: "",
+        stock: "",
+        description: "",
+        images: []
+      });
+    }
+    setShowModal(true);
   };
 
   const closeModal = () => {
@@ -413,8 +475,21 @@ const ProductsSection = () => {
 
   return (
     <div className="products-section">
+      {toast.show && (
+        <div style={{
+          position: 'fixed',
+          right: 20,
+          bottom: 20,
+          backgroundColor: toast.type === 'success' ? '#38a169' : '#e53e3e',
+          color: '#fff',
+          padding: '10px 14px',
+          borderRadius: 8,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 9999,
+        }}>{toast.message}</div>
+      )}
       <div className="products-header">
-        <button className="add-product-btn" onClick={() => openModal("add")}>
+        <button className="add-product-btn" onClick={() => openProductModal(null)}>
           <span>+</span>
           <span>Add New Product</span>
         </button>
@@ -430,14 +505,50 @@ const ProductsSection = () => {
             />
             <div className="product-info">
               <div className="product-name">{product.name}</div>
-              <div className="product-category">Category: {product.category}</div>
+              <div className="product-category">Category: {product.category?.name || product.category || '-'}</div>
             </div>
             <div className="product-actions">
               <button 
                 className="action-btn edit-btn" 
                 title="Edit"
+                onClick={() => openProductModal(product)}
               >
                 ✏️
+              </button>
+              <input
+                type="file"
+                id={`upload-${product.id}`}
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length === 0) return;
+                  const fd = new FormData();
+                  files.forEach(f => fd.append('images', f));
+                  try {
+                    const r = await fetch(`/api/admin/products/${product.id}/images`, {
+                      method: 'POST',
+                      body: fd,
+                    });
+                    if (!r.ok) {
+                      const txt = await r.text();
+                      showToast('Image upload failed', 'error');
+                    } else {
+                      fetchProducts();
+                      showToast('Image uploaded successfully', 'success');
+                    }
+                  } catch (err) {
+                    console.error('Upload error', err);
+                    showToast('Upload failed: ' + err.message, 'error');
+                  }
+                }}
+              />
+              <button
+                className="action-btn upload-btn"
+                onClick={() => document.getElementById(`upload-${product.id}`).click()}
+                title="Upload Image"
+              >
+                📤
               </button>
               <button 
                 className="action-btn delete-btn" 
@@ -637,7 +748,7 @@ const AdminCategories = () => {
   const [activeTab, setActiveTab] = useState("categories");
 
   return (
-    <>
+    <ErrorBoundary>
       <Sidebar />
       <main className="main-content">
         <div className="page-header">
@@ -646,7 +757,7 @@ const AdminCategories = () => {
         {activeTab === "categories" && <CategoriesSection />}
         {activeTab === "products" && <ProductsSection />}
       </main>
-    </>
+    </ErrorBoundary>
   );
 };
 

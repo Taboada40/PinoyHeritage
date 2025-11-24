@@ -26,6 +26,32 @@ The PinoyHeritage platform aims to achieve the following:
 Follow these steps to set up and run the HabiNation frontend project on your local machine.
 
 ### Prerequisites
+## 🛠 Development — Start servers
+
+There are two parts to run locally: the Spring Boot backend (MySQL) and the React frontend (Vite).
+
+- Start Backend (Windows PowerShell):
+```
+cd Backend
+.\mvnw.cmd spring-boot:run
+```
+
+- Start Frontend (Windows PowerShell):
+```
+cd Frontend
+npm install     # first time only
+npm run dev
+```
+
+To make this easier you can run the provided PowerShell helper from the project root which opens two windows and runs both servers:
+```
+.\start-dev.ps1
+```
+
+Notes:
+- The frontend dev server proxies `/api` → `http://localhost:8080` so API calls work without CORS when running with `npm run dev`.
+- Ensure MySQL is running and the connection in `Backend/src/main/resources/application.properties` matches your environment.
+
 
 You need the following software installed on your system:
 

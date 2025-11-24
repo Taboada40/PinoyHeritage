@@ -40,4 +40,10 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         repository.deleteById(id);
     }
+
+    // New helper: find by name
+    public java.util.Optional<Category> findByName(String name) {
+        return repository.findByName(name);
+    }
+
 }
