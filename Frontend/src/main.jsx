@@ -14,6 +14,7 @@ import Profile from "./pages/customer/Profile.jsx";
 import Review from "./pages/customer/Review.jsx";
 import Payment from "./pages/customer/Payment.jsx";
 
+import AdminDashboard from "./pages/admin/Dashboard.jsx";
 import AdminUsers from "./pages/admin/Users.jsx";
 import AdminManage from "./pages/admin/Manage.jsx";
 
@@ -38,6 +39,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         {/* Admin Pages */}
         <Route path="/admin" element={<AdminManage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/products" element={<AdminManage />} />
         <Route path="/admin/categories" element={<AdminManage />} />
