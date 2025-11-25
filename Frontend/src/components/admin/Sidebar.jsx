@@ -34,7 +34,7 @@ const Sidebar = () => (
         <span className="menu-icon">
           <img src={userImg} alt="Users" className="icon-img" /> 
         </span>
-        <span>Users</span>
+        <span>Customers</span>
       </NavLink>
 
       {/* Manage Link -> Redirects to Manage Products */}
