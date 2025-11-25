@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import customersApi from "../../api/customersApi"; 
 import "../../styles/admin/users.css"; 
 
-// --- Icons (Kept exactly as they were) ---
+// --- Icons ---
 const SearchIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
     <circle cx="11" cy="11" r="8"></circle>
@@ -29,36 +30,69 @@ const ArrowRight = () => (
 );
 
 const UsersOverview = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const users = [
-    { name: "Marc Benn Secong", email: "mb.secong@gmail.com", address: "Cebu City", phone: "0923-098-0987" },
-    { name: "Munchkin Taboada", email: "munchtb@gmail.com", address: "Las Piñas City", phone: "0932-432-1029" },
-    { name: "Niña Villadarez", email: "nvlldrx@gmail.com", address: "Quezon City", phone: "0926-457-6229" },
-    { name: "Sharbelle Farenheit", email: "sharbzff@gmail.com", address: "Davao City", phone: "0911-080-9232" },
-    { name: "Princess Celcius", email: "celciusPP@gmail.com", address: "Bacolod City", phone: "0945-655-9207" },
-    { name: "Minji Kim", email: "kminjik@gmail.com", address: "Seoul City", phone: "0965-918-1137" },
-    { name: "Kyle Yu", email: "kk_yuk@gmail.com", address: "Marikina City", phone: "0908-509-6901" },
-    { name: "Heineka Go", email: "hein.g0@gmail.com", address: "Alabang", phone: "0921-350-8768" },
+  // --- Sample Data ---
+  const sampleUsers = [
+    { id: 101, name: "Marc Benn Secong", email: "mb.secong@gmail.com", address: "Cebu City", phone: "0923-098-0987" },
+    { id: 102, name: "Munchkin Taboada", email: "munchtb@gmail.com", address: "Las Piñas City", phone: "0932-432-1029" },
+    { id: 103, name: "Niña Villadarez", email: "nvlldrx@gmail.com", address: "Quezon City", phone: "0926-457-6229" },
+    { id: 104, name: "Sharbelle Farenheit", email: "sharbzff@gmail.com", address: "Davao City", phone: "0911-080-9232" },
+    { id: 105, name: "Princess Celcius", email: "celciusPP@gmail.com", address: "Bacolod City", phone: "0945-655-9207" },
+    { id: 106, name: "Minji Kim", email: "kminjik@gmail.com", address: "Seoul City", phone: "0965-918-1137" },
+    { id: 107, name: "Kyle Yu", email: "kk_yuk@gmail.com", address: "Marikina City", phone: "0908-509-6901" },
+    { id: 108, name: "Heineka Go", email: "hein.g0@gmail.com", address: "Alabang", phone: "0921-350-8768" },
   ];
 
-  // 1. Logic to filter users based on the search term
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Initialize with sampleUsers so data is visible immediately
+  const [users, setUsers] = useState(sampleUsers);
+  const [loading, setLoading] = useState(false); // Set false initially to show sample data right away
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        // We don't set loading(true) here to avoid flickering the sample data away.
+        // We just try to update it silently.
+        const response = await customersApi.get(""); 
+        
+        // If we get data, replace the sample data
+        if (response.data && response.data.length > 0) {
+            setUsers(response.data);
+        }
+      } catch (err) {
+        console.warn("Database unavailable. Using sample data fallback.");
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const filteredUsers = users.filter((user) => {
     const term = searchTerm.toLowerCase();
+    
+    // Combine name logic (Backend usually sends firstName/lastName, Sample uses name)
+    const fullName = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    const finalName = (fullName || user.username || "").toLowerCase();
+    
+    const email = (user.email || "").toLowerCase();
+    const address = (user.address || "").toLowerCase();
+    const phone = (user.phone || user.phoneNumber || "").toLowerCase();
+
     return (
-      user.name.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term) ||
-      user.address.toLowerCase().includes(term) ||
-      user.phone.includes(term)
+      finalName.includes(term) ||
+      email.includes(term) ||
+      address.includes(term) ||
+      phone.includes(term)
     );
   });
+
+  if (loading) return <div style={{padding: '40px', textAlign: 'center'}}>Loading users...</div>;
 
   return (
     <div className="users-container">
       {/* Header */}
       <div className="users-header-top">
-        {/* Updated to show the filtered count */}
-        <h2 className="users-title">Users ({filteredUsers.length})</h2>
+        <h2 className="users-title">Customers ({filteredUsers.length})</h2>
         <div className="users-search-wrapper">
           <SearchIcon />
           <input 
@@ -84,26 +118,31 @@ const UsersOverview = () => {
 
       {/* Table List */}
       <div className="users-list">
-        {/* 2. Check if we have results */}
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user, index) => (
-            <div key={index}>
+            <div key={user.id || index}>
               <div className="users-row">
-                <div className="col-name">{user.name}</div>
-                <div className="col-email">{user.email}</div>
-                <div className="col-address">{user.address}</div>
-                <div className="col-phone">{user.phone}</div>
+                <div className="col-name">
+                  {/* Handles both Sample Data (user.name) and Backend Data (firstName + lastName) */}
+                  {user.name 
+                    ? user.name 
+                    : (user.firstName || user.lastName) 
+                        ? `${user.firstName || ""} ${user.lastName || ""}`.trim() 
+                        : (user.username || "N/A")
+                  }
+                </div>
+                <div className="col-email">{user.email || "N/A"}</div>
+                <div className="col-address">{user.address || "None"}</div>
+                <div className="col-phone">{user.phone || user.phoneNumber || "N/A"}</div>
                 <div className="col-actions view-action">
                   <EyeIcon />
                   <span>View only</span>
                 </div>
               </div>
-              {/* 3. Updated divider logic to use filteredUsers length */}
               {index !== filteredUsers.length - 1 && <div className="users-divider light"></div>}
             </div>
           ))
         ) : (
-          /* Optional: Display when no results found */
           <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
             No users found matching "{searchTerm}"
           </div>
@@ -113,7 +152,7 @@ const UsersOverview = () => {
       {/* Pagination */}
       <div className="users-pagination">
         <button className="nav-btn"><ArrowLeft /></button>
-        <span className="page-info">Page 1 of 15</span>
+        <span className="page-info">Page 1 of 1</span>
         <button className="nav-btn"><ArrowRight /></button>
       </div>
     </div>
