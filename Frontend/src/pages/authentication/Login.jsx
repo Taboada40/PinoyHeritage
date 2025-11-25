@@ -22,7 +22,7 @@ function Login() {
     if (formData.identifier === "admin" && formData.password === "admin123") {
         console.log("Admin credentials detected. Redirecting...");
         localStorage.setItem("isAdmin", "true"); 
-        navigate("/admin/categories");
+        navigate("/admin/dashboard");
         return;
     }
     
@@ -72,7 +72,7 @@ function Login() {
         <form className="auth-form" onSubmit={handleSubmit}>
           
           <div className="auth-form-group">
-            <label>Email / Username </label>
+            <label>Email</label>
             <input 
               type="text" // Changed to 'text' to accept 'admin' username
               name="identifier" 
