@@ -212,12 +212,13 @@ a .landing:hover{
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-    width: 1100px;
+    width: 100%;
+    max-width: 1517px;
 }
 
 .admin-section-header, .products-header {
     display: flex;
-    width: 1000px;
+    width: 100%;;
     justify-content: flex-end;
     align-items: center;
     gap: 20px;
