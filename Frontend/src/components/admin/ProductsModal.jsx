@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
-import productsApi from "../../api/productsApi";
-import categoriesApi from "../../api/categoriesApi";
+
+// Use same API base as other admin code
+const API_BASE = 'http://localhost:8080';
+
+const apiFetch = async (url, options = {}) => {
+  const full = url.startsWith('http') ? url : `${API_BASE}${url}`;
+  const res = await fetch(full, options);
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`${res.status} ${txt}`);
+  }
+  if (res.status === 204) return null;
+  const ct = res.headers.get('content-type') || '';
+  if (ct.includes('application/json')) return res.json();
+  return res.text();
+};
 
 const ProductsModal = ({ show, onClose, refreshProducts, productToEdit, showToast }) => {
   const initialFormState = {
@@ -19,10 +33,13 @@ const ProductsModal = ({ show, onClose, refreshProducts, productToEdit, showToas
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await categoriesApi.get();
-        setCategories(res.data);
+        console.log("[ID: ProductsModal] Fetching categories...");
+        const data = await apiFetch('/api/admin/categories');
+        console.log("[ID: ProductsModal] Categories fetched:", Array.isArray(data) ? data.length : 0, "categories");
+        (Array.isArray(data) ? data : []).forEach(cat => console.log(`[CAT-ID: ${cat.id}] ${cat.name}`));
+        setCategories(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Failed to fetch categories:", err);
+        console.error("[ID: ProductsModal] Failed to fetch categories:", err);
       }
     };
     fetchCategories();
@@ -31,17 +48,22 @@ const ProductsModal = ({ show, onClose, refreshProducts, productToEdit, showToas
   // --- Logic: Populate Form for Edit Mode ---
   useEffect(() => {
     if (productToEdit) {
+      console.log(`[ID: ${productToEdit.id}] Edit mode - loading product data`);
+      const categoryName = typeof productToEdit.category === 'object' 
+        ? productToEdit.category.name 
+        : productToEdit.category;
+      console.log(`[ID: ${productToEdit.id}] Category: ${categoryName}, Stock: ${productToEdit.stock}`);
       setFormData({
         name: productToEdit.name || "",
-        // Handle case where category is object {id, name} or just string
-        category: typeof productToEdit.category === 'object' ? productToEdit.category.name : productToEdit.category,
+        category: categoryName,
         price: productToEdit.price || "",
         stock: productToEdit.stock || "",
         description: productToEdit.description || "",
-        images: [], // Reset images for edit mode (user uploads NEW ones if they want)
+        images: [],
       });
     } else {
-      setFormData(initialFormState); // Reset for Add mode
+      console.log("[ID: ProductsModal] Add mode - reset form");
+      setFormData(initialFormState);
     }
   }, [productToEdit, show]);
 
@@ -66,37 +88,68 @@ const ProductsModal = ({ show, onClose, refreshProducts, productToEdit, showToas
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const productId = productToEdit?.id || 'NEW';
+    console.log(`[ID: ${productId}] Submitting form - Mode: ${productToEdit ? 'EDIT' : 'ADD'}`);
+    console.log(`[ID: ${productId}] Form data:`, {
+      name: formData.name,
+      category: formData.category,
+      price: formData.price,
+      stock: formData.stock,
+      images: formData.images.length
+    });
 
     try {
-      const data = new FormData();
-      // Append fields
-      data.append("name", formData.name);
-      data.append("category", formData.category);
-      data.append("price", formData.price);
-      data.append("stock", formData.stock);
-      data.append("description", formData.description);
-      
-      // Append images
-      formData.images.forEach((img) => data.append("images", img));
+      // Build JSON payload for create/update (server expects JSON)
+      const payload = {
+        name: formData.name,
+        category: formData.category ? { name: formData.category } : null,
+        price: parseFloat(formData.price) || 0,
+        stock: parseInt(formData.stock) || 0,
+        description: formData.description || ''
+      };
 
+      let created = null;
       if (productToEdit) {
-        // Update (PUT)
-        await productsApi.put(`/${productToEdit.id}`, data, {
-            headers: { "Content-Type": "multipart/form-data" },
+        console.log(`[ID: ${productId}] Sending PUT (JSON) to /api/admin/products/${productToEdit.id}`);
+        created = await apiFetch(`/api/admin/products/${productToEdit.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
+        console.log(`[ID: ${productId}] Product updated (JSON):`, created);
         showToast("Product updated successfully", "success");
       } else {
-        // Create (POST)
-        await productsApi.post("", data, {
-            headers: { "Content-Type": "multipart/form-data" },
+        console.log(`[ID: ${productId}] Sending POST (JSON) to /api/admin/products`);
+        created = await apiFetch('/api/admin/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
+        console.log(`[ID: ${created?.id || 'NEW'}] New product created (JSON)`);
         showToast("Product added successfully", "success");
+      }
+
+      // Upload images separately (if any)
+      if (formData.images && formData.images.length > 0 && created && created.id) {
+        const fd = new FormData();
+        formData.images.forEach((img) => fd.append('images', img));
+        const uploadResp = await fetch(`${API_BASE}/api/admin/products/${created.id}/images`, {
+          method: 'POST',
+          body: fd,
+        });
+        if (!uploadResp.ok) {
+          const txt = await uploadResp.text().catch(() => '');
+          console.error(`[ID: ${created.id}] Image upload failed:`, txt);
+          showToast('Product saved but image upload failed', 'error');
+        } else {
+          console.log('[IMAGE] Uploaded successfully');
+        }
       }
 
       refreshProducts();
       onClose();
     } catch (err) {
-      console.error(err);
+      console.error(`[ID: ${productId}] Error saving product:`, err);
       showToast("Failed to save product: " + (err.response?.data?.message || err.message), "error");
     } finally {
       setIsSubmitting(false);
@@ -114,8 +167,10 @@ const ProductsModal = ({ show, onClose, refreshProducts, productToEdit, showToas
     >
       <div className="add-modal-ui">
         <div className="modal-header">
-          {/* Dynamic Title */}
-          <h2>{productToEdit ? "Edit Product" : "Add Product"}</h2>
+          {/* Dynamic Title with Product ID */}
+          <h2>
+            {productToEdit ? `Edit Product (ID: ${productToEdit.id})` : "Add New Product"}
+          </h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 

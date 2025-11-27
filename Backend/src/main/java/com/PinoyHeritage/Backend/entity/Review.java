@@ -3,38 +3,26 @@ package com.PinoyHeritage.Backend.entity;
 import jakarta.persistence.*;
  
 @Entity
-
 @Table(name = "review")
-
 public class Review {
 
     @Id
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
- 
-    @Column(nullable = false)
 
-    private Integer rating;  // e.g., 1-5
- 
-    @Column(nullable = false)
+    private Integer rating;
 
+    @Column(nullable = false)
     private String comment;
- 
-    // Relationships
 
     @ManyToOne
+    @JoinColumn(name = "item_id", nullable = false) // keep old column name
+    private Product product;
 
-    @JoinColumn(name = "item_id", nullable = false)
-
-    private Item item;
- 
     @ManyToOne
-
     @JoinColumn(name = "customer_id", nullable = false)
-
     private Customer customer;
+
  
     // Getters and Setters
 
@@ -50,13 +38,14 @@ public class Review {
 
     public void setComment(String comment) { this.comment = comment; }
 
-    public Item getItem() { return item; }
+    public Product getProduct() { return product; }
 
-    public void setItem(Item item) { this.item = item; }
+    public void setProduct(Product product) { this.product = product; }
 
     public Customer getCustomer() { return customer; }
 
     public void setCustomer(Customer customer) { this.customer = customer; }
 
 }
+ 
  

@@ -34,41 +34,41 @@ export default function ProductCatalog() {
   ];
 
   // --- 2. STATE ---
-  // Initialize with sampleProducts so the user sees data immediately
-  const [products, setProducts] = useState(sampleProducts);
-  const [loading, setLoading] = useState(false); // Set to false initially since we have sample data
+  // Initialize with empty array - fetch from backend
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // --- 3. BACKEND FETCH ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Optional: Uncomment this if you want to show a loading spinner over the sample data
-        // setLoading(true); 
-
-        const res = await fetch('/api/admin/products');
+        setLoading(true);
+        const API_BASE = 'http://localhost:8080';
+        const res = await fetch(`${API_BASE}/api/admin/products`);
         
         if (!res.ok) throw new Error('Failed to fetch products');
         
         const data = await res.json();
 
+        // Handle both array and object with 'value' property
+        const productsArray = Array.isArray(data) ? data : (data?.value || data);
+
         // Map backend fields
-        const mapped = data.map((item) => ({
+        const mapped = productsArray.map((item) => ({
           id: item.id,
           name: item.name,
           price: item.price,
           rating: item.rating || 4,
           description: item.description || '',
-          category: item.category ? item.category.toLowerCase() : 'clothing', 
+          category: item.category ? (typeof item.category === 'string' ? item.category.toLowerCase() : item.category.name?.toLowerCase()) : 'clothing', 
           image: item.imageUrl || clothingImg, 
         }));
 
-        // Only update state if we successfully got data
-        if (mapped.length > 0) {
-          setProducts(mapped);
-        }
+        setProducts(mapped);
       } catch (err) {
-        console.warn('Backend offline or error. Using sample data:', err);
-        // We do NOTHING here, so the 'products' state remains as 'sampleProducts'
+        console.warn('Error fetching products:', err);
+        // Use sample data as fallback only if fetch fails
+        setProducts(sampleProducts);
       } finally {
         setLoading(false);
       }
