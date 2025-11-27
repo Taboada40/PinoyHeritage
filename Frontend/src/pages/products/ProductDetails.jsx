@@ -146,7 +146,9 @@ export default function ProductDetails() {
   useEffect(() => {
     if (!product) setLoading(true);
 
-    fetch(`/api/admin/products/${id}`)
+    const API_BASE = 'http://localhost:8080';
+
+    fetch(`${API_BASE}/api/admin/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error('Product not found');
         return res.json();

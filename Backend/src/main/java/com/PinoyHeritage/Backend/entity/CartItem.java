@@ -5,21 +5,20 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "cart_item")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
- 
-    @Column(nullable = false)
+
     private Integer quantity;
- 
-    // Relationships
+
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
- 
+
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+    private Product product;
  
     // Getters and Setters
     public Long getId() { return id; }
@@ -28,6 +27,6 @@ public class CartItem {
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
     public Cart getCart() { return cart; }
     public void setCart(Cart cart) { this.cart = cart; }
-    public Item getItem() { return item; }
-    public void setItem(Item item) { this.item = item; }
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
 }

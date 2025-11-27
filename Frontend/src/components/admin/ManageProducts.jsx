@@ -20,13 +20,22 @@ const ProductsSection = () => {
   const fetchProducts = async () => {
     try {
       const res = await productsApi.get();
-      setProducts(res.data);
+      console.log("[ID: ManageProducts.fetchProducts] API Response:", res.data);
+      // Handle both array response and object with 'value' property
+      let data = Array.isArray(res.data) ? res.data : (res.data?.value || []);
+      console.log("[ID: ManageProducts.fetchProducts] Processed data count:", data.length);
+      data.forEach(p => console.log(`[ID: ${p.id}] Product: ${p.name}, Stock: ${p.stock}, Image: ${p.imageUrl ? 'Yes' : 'No'}`));
+      setProducts(data);
     } catch (error) {
-      console.error("Error fetching products", error);
+      console.error("[ID: ManageProducts.fetchProducts] Error fetching products:", error);
+      setProducts([]);
     }
   };
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { 
+    console.log("[ID: ManageProducts] Component mounted, fetching products...");
+    fetchProducts(); 
+  }, []);
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const paginatedProducts = products.slice(
@@ -36,13 +45,20 @@ const ProductsSection = () => {
 
   // --- Logic: Handle Delete (Restored) ---
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    console.log(`[ID: ${id}] Delete confirmation requested`);
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      console.log(`[ID: ${id}] Delete cancelled by user`);
+      return;
+    }
     
     try {
+      console.log(`[ID: ${id}] Sending DELETE request to /api/admin/products/${id}`);
       await productsApi.delete(`/${id}`);
+      console.log(`[ID: ${id}] Product deleted successfully`);
       showToast("Product deleted successfully", "success");
       fetchProducts();
     } catch (error) {
+      console.error(`[ID: ${id}] Error deleting product:`, error);
       showToast("Failed to delete product", "error");
     }
   };
@@ -79,30 +95,69 @@ const ProductsSection = () => {
       <div className="products-list">
         {paginatedProducts.length > 0 ? (
             paginatedProducts.map(product => (
-            <div key={product.id} className="product-item">
-                <img 
-                  src={product.imageUrl || product.image} 
-                  alt={product.name} 
-                  className="product-image"
-                />
+            <div key={product.id} className="product-item" data-product-id={product.id}>
+                <div className="product-image-container">
+                  {product.imageUrl ? (
+                    <img 
+                      src={product.imageUrl} 
+                      alt={product.name} 
+                      className="product-image"
+                      onError={(e) => { 
+                        console.log(`[ID: ${product.id}] Image failed to load, using placeholder`);
+                        e.target.src = 'https://via.placeholder.com/200?text=No+Image'; 
+                      }}
+                      onLoad={() => console.log(`[ID: ${product.id}] Image loaded successfully`)}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#f0f0f0',
+                      fontSize: '3rem'
+                    }}>
+                      📷
+                    </div>
+                  )}
+                </div>
                 <div className="product-info">
                   <div className="product-name">{product.name}</div>
-                  {/* Robust category check (string vs object) */}
+                  <div className="product-price">₱{parseFloat(product.price).toFixed(2)}</div>
                   <div className="product-category">
-                    Category: {typeof product.category === 'object' ? product.category.name : product.category}
+                    {typeof product.category === 'object' ? product.category.name : product.category}
+                  </div>
+                  <div className="product-stock" style={{
+                    backgroundColor: product.stock > 0 ? '#c6f6d5' : '#fed7d7',
+                    color: product.stock > 0 ? '#276749' : '#9b2c2c',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.85rem',
+                    marginTop: '0.5rem'
+                  }}>
+                    Stock: {product.stock || 0}
                   </div>
                 </div>
                 <div className="product-actions">
                   <button 
                       className="action-btn edit-btn" 
                       title="Edit"
-                      onClick={() => openEditModal(product)} // Attached Handler
+                      data-product-id={product.id}
+                      onClick={() => {
+                        console.log(`[ID: ${product.id}] Edit clicked for product: ${product.name}`);
+                        openEditModal(product);
+                      }}
                   >
                       ✏️
                   </button>
                   <button 
                       className="action-btn delete-btn" 
-                      onClick={() => handleDeleteProduct(product.id)}
+                      data-product-id={product.id}
+                      onClick={() => {
+                        console.log(`[ID: ${product.id}] Delete clicked for product: ${product.name}`);
+                        handleDeleteProduct(product.id);
+                      }}
                       title="Delete"
                   >
                       🗑️
