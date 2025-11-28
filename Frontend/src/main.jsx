@@ -13,6 +13,7 @@ import ProductDetails from "./pages/products/ProductDetails.jsx";
 import Profile from "./pages/customer/Profile.jsx";
 import Review from "./pages/customer/Review.jsx";
 import Payment from "./pages/customer/Payment.jsx";
+import CartPage from "./pages/customer/CartPage.jsx";   // ✅ Import CartPage
 
 import AdminDashboard from "./pages/admin/Dashboard.jsx";
 import AdminUsers from "./pages/admin/Users.jsx";
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/profile" element={<Profile />} />
         <Route path="/review" element={<Review />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/cart" element={<CartPage />} />   {/* ✅ New Cart route */}
 
         {/* Authentication */}
         <Route path="/login" element={<Login />} />

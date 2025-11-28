@@ -1,9 +1,10 @@
 import "../styles/header.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function Header({ showNav = true }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Detect if we’re on the landing page
@@ -12,7 +13,7 @@ function Header({ showNav = true }) {
   // Add scroll listener
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 80) { // adjust threshold as needed
+      if (window.scrollY > 80) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
@@ -51,7 +52,14 @@ function Header({ showNav = true }) {
 
           <div className="nav-icons">
             <button className="search-btn" aria-label="Search"></button>
-            <button className="cart-btn" aria-label="Cart"></button>
+            
+            {/* Cart button navigates to /cart */}
+            <button 
+              className="cart-btn" 
+              aria-label="Cart" 
+              onClick={() => navigate("/cart")}
+            ></button>
+            
             <Link to="/login" aria-label="Account">
               <button className="acc-btn"></button>
             </Link>
