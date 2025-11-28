@@ -17,7 +17,7 @@ public class CartItem {
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name =  "product_id", nullable = false)
     private Product product;
  
     // Getters and Setters

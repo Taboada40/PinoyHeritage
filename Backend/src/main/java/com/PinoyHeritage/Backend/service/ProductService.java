@@ -5,7 +5,6 @@ import com.PinoyHeritage.Backend.entity.Category;
 import com.PinoyHeritage.Backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,11 +12,12 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryService categoryService; // Used to find the Category by name
+    private final CategoryService categoryService; 
 
     public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
@@ -59,6 +59,7 @@ public class ProductService {
                     product.setDescription(updatedProduct.getDescription());
                     product.setPrice(updatedProduct.getPrice());
                     product.setStock(updatedProduct.getStock());
+                    product.setSizes(updatedProduct.getSizes()); 
 
                     // Handle category updates
                     if (updatedProduct.getCategory() != null) {
