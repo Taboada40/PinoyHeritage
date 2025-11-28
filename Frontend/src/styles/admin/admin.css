@@ -218,6 +218,7 @@ a .landing:hover{
     padding: 2rem;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     width: 100%;
+    max-width: 1517px;
 }
 
 .products-section {
@@ -226,7 +227,6 @@ a .landing:hover{
     padding: 2rem;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     width: 100%;
-    max-width: 1517px;
 }
 
 .admin-section-header {
