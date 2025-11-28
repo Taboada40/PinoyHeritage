@@ -7,6 +7,7 @@ import com.PinoyHeritage.Backend.repository.CategoryRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("unused")
 @Component
 public class DataLoader implements CommandLineRunner {
 

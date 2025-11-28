@@ -16,7 +16,6 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    // ⭐ New Endpoint for Admin Login Check
     @PostMapping("/admin-login")
     public ResponseEntity<?> adminLogin(@RequestBody AdminLoginRequest request) {
         

@@ -1,6 +1,7 @@
 package com.PinoyHeritage.Backend.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -18,6 +19,10 @@ public class Product {
     private Double price;
 
     private Integer stock;
+
+    // Store sizes as JSON array in database
+    @Column(columnDefinition = "JSON")
+    private String sizes; 
 
     // Store ONE image as Base64
     @Column(columnDefinition = "LONGTEXT")
@@ -43,6 +48,28 @@ public class Product {
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+
+    public String getSizes() { return sizes; }
+    public void setSizes(String sizes) { this.sizes = sizes; }
+
+    // Helper methods to work with sizes as List
+    public List<String> getSizesList() {
+        if (sizes == null || sizes.trim().isEmpty()) return List.of();
+        try {
+            String clean = sizes.replace("[", "").replace("]", "").replace("\"", "");
+            return List.of(clean.split(","));
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    public void setSizesList(List<String> sizeList) {
+        if (sizeList == null || sizeList.isEmpty()) {
+            this.sizes = null;
+        } else {
+            this.sizes = "[\"" + String.join("\",\"", sizeList) + "\"]";
+        }
+    }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
