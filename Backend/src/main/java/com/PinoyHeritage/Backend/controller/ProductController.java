@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/api/admin/products") // Matches the endpoint in AdminCategories.jsx
+@RequestMapping("/api/admin/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -30,7 +29,6 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getProducts() {
-        // Returns all products, including their category information
         return productService.getAllProducts();
     }
 
@@ -87,17 +85,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
-                .map(product -> ResponseEntity.ok(product))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Helper method to determine image type from filename
-    private String getImageType(String filename) {
-        if (filename == null) return "jpeg";
-        String lower = filename.toLowerCase();
-        if (lower.endsWith(".png")) return "png";
-        if (lower.endsWith(".gif")) return "gif";
-        if (lower.endsWith(".webp")) return "webp";
-        return "jpeg";
     }
 }
