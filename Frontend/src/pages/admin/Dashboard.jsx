@@ -1,48 +1,130 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../styles/admin/dashboard.css';
 import Sidebar from "../../components/admin/Sidebar";
-
-import barotSayaImg from "../../assets/imgs/products/barotsaya.png";
-import filipinianaImg from "../../assets/imgs/products/filipiniana.jpg";
-import malongImg from "../../assets/imgs/products/malong.jpg";
-import salakotImg from "../../assets/imgs/products/salakot.jpg"; 
-import camisaImg from "../../assets/imgs/products/camisa.jpg";
-import bakyaImg from "../../assets/imgs/products/bakya.jpg";
-import tnalakImg from "../../assets/imgs/products/tnalak.jpg";
+import customersApi from "../../api/customersApi";
 
 const Dashboard = () => {
-  const stats = {
-    customers: 321,
-    products: 513,
+  const [stats, setStats] = useState({
+    customers: 0,
+    products: 0,
     orders: 119
+  });
+  
+  const [recentProducts, setRecentProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const API_BASE = 'http://localhost:8080';
+
+  // Fetch products and customers data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch products from your existing API
+        const productsResponse = await fetch(`${API_BASE}/api/admin/products`);
+        
+        if (!productsResponse.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        const productsData = await productsResponse.json();
+        
+        // Handle both array response and object with 'value' property
+        const productsArray = Array.isArray(productsData) ? productsData : (productsData?.value || []);
+        
+        // Fetch customers from customersApi
+        let customersArray = [];
+        try {
+          const customersResponse = await customersApi.get("");
+          customersArray = customersResponse.data && customersResponse.data.length > 0 
+            ? customersResponse.data 
+            : [];
+        } catch (customerError) {
+          console.warn('Failed to fetch customers, using fallback data:', customerError);
+          // Use fallback sample data if API fails
+          customersArray = [
+            { id: 101, name: "Marc Benn Secong", email: "mb.secong@gmail.com", address: "Cebu City", phone: "0923-098-0987" },
+            { id: 102, name: "Munchkin Taboada", email: "munchtb@gmail.com", address: "Las Piñas City", phone: "0932-432-1029" },
+            { id: 103, name: "Niña Villadarez", email: "nvlldrx@gmail.com", address: "Quezon City", phone: "0926-457-6229" },
+            { id: 104, name: "Sharbelle Farenheit", email: "sharbzff@gmail.com", address: "Davao City", phone: "0911-080-9232" },
+            { id: 105, name: "Princess Celcius", email: "celciusPP@gmail.com", address: "Bacolod City", phone: "0945-655-9207" },
+            { id: 106, name: "Minji Kim", email: "kminjik@gmail.com", address: "Seoul City", phone: "0965-918-1137" },
+            { id: 107, name: "Kyle Yu", email: "kk_yuk@gmail.com", address: "Marikina City", phone: "0908-509-6901" },
+            { id: 108, name: "Heineka Go", email: "hein.g0@gmail.com", address: "Alabang", phone: "0921-350-8768" },
+          ];
+        }
+
+        // Update stats with real data
+        setStats({
+          customers: customersArray.length,
+          products: productsArray.length,
+          orders: 119 // Keep orders as mock data 
+        });
+        
+        // Get the 4 most recent products 
+        const recentProductsData = productsArray
+          .sort((a, b) => b.id - a.id) // Sort by ID
+          .slice(0, 4) // Get first 4
+          .map(product => ({
+            id: product.id,
+            name: product.name,
+            category: typeof product.category === 'object' ? product.category.name : product.category,
+            image: product.imageUrl || 'https://via.placeholder.com/100?text=No+Image'
+          }));
+
+        setRecentProducts(recentProductsData);
+        
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data');
+        
+        // Fallback to mock data if API fails completely
+        setStats({
+          customers: 321,
+          products: 0,
+          orders: 119
+        });
+        setRecentProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Helper function to handle image errors
+  const handleImageError = (e) => {
+    e.target.src = 'https://via.placeholder.com/100?text=No+Image';
   };
 
-  const recentProducts = [
-    {
-      id: 1,
-      name: "Baro't Saya",
-      category: "Clothing & Apparel",
-      image: barotSayaImg, 
-    },
-    {
-      id: 2,
-      name: "Filipiniana",
-      category: "Clothing & Apparel",
-      image: filipinianaImg,
-    },
-    {
-      id: 3,
-      name: "Malong",
-      category: "Textile & Fabric",
-      image: malongImg,
-    },
-    {
-      id: 4,
-      name: "Bakya",
-      category: "Accessories",
-      image: bakyaImg,
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="dashboard-wrapper">
+        <Sidebar />
+        <main className="dashboard-container">
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            Loading dashboard...
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-wrapper">
+        <Sidebar />
+        <main className="dashboard-container">
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#e53e3e' }}>
+            {error}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-wrapper">
@@ -72,21 +154,28 @@ const Dashboard = () => {
             <a href="/admin/products" className="view-all-btn">View all</a>
           </div>
 
-          <div className="product-list">
-            {recentProducts.map((product) => (
-              <div key={product.id} className="product-list-item">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="product-thumb" 
-                />
-                <div className="product-details">
-                  <h4 className="product-name">{product.name}</h4>
-                  <p className="product-category">Category: {product.category}</p>
+          {recentProducts.length > 0 ? (
+            <div className="product-list">
+              {recentProducts.map((product) => (
+                <div key={product.id} className="product-list-item">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="product-thumb" 
+                    onError={handleImageError}
+                  />
+                  <div className="product-details">
+                    <h4 className="product-name">{product.name}</h4>
+                    <p className="product-category">Category: {product.category || 'Uncategorized'}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem', fontStyle: 'italic' }}>
+              No products found
+            </div>
+          )}
         </div>
 
       </main>
