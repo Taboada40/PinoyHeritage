@@ -5,6 +5,7 @@ function ProductInfo({ product }) {
   const [selectedSize, setSelectedSize] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [addToCartMessage, setAddToCartMessage] = useState('');
 
   // Helper function to display sizes properly
   const getAvailableSizes = () => {
@@ -29,22 +30,84 @@ function ProductInfo({ product }) {
   const availableSizes = getAvailableSizes();
   const hasSizes = availableSizes.length > 0;
 
-  const handleAddToCart = () => {
+  // Get current user from localStorage
+  const getCurrentUser = () => {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  };
+
+  // Add to cart functionality
+  const handleAddToCart = async () => {
     if (hasSizes && !selectedSize) {
       alert('Please select a size');
       return;
     }
-    
-    console.log('Added to cart:', { 
-      product: product.name, 
-      size: selectedSize,
+
+    if (product.stock === 0) {
+      alert('Product is out of stock');
+      return;
+    }
+
+    const user = getCurrentUser();
+    const cartItem = {
+      productName: product.name,
+      category: product.category || { id: 1, name: 'Uncategorized' },
       quantity: quantity,
-      productId: product.id
-    });
-    
-    // Reset form after adding to cart
-    setSelectedSize('');
-    setQuantity(1);
+      unitPrice: parseFloat(product.price || 0),
+      amount: parseFloat(product.price || 0) * quantity,
+      size: selectedSize,
+      productImage: product.imageUrl || product.image // Add product image
+    };
+
+    try {
+      if (user) {
+        const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cartItem),
+        });
+
+        if (response.ok) {
+          setAddToCartMessage('✓ Added to cart!');
+          setTimeout(() => setAddToCartMessage(''), 3000);
+        } else {
+          throw new Error('Failed to add to cart');
+        }
+      } else {
+        // Add to local storage for guest users
+        const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        
+        const existingItemIndex = guestCart.findIndex(item => 
+          item.productName === cartItem.productName && 
+          (!hasSizes || item.size === selectedSize)
+        );
+
+        if (existingItemIndex > -1) {
+          guestCart[existingItemIndex].quantity += cartItem.quantity;
+          guestCart[existingItemIndex].amount = guestCart[existingItemIndex].unitPrice * guestCart[existingItemIndex].quantity;
+        } else {
+          const newItem = {
+            id: Date.now(),
+            ...cartItem
+          };
+          guestCart.push(newItem);
+        }
+
+        localStorage.setItem('guestCart', JSON.stringify(guestCart));
+        setAddToCartMessage('✓ Added to cart!');
+        setTimeout(() => setAddToCartMessage(''), 3000);
+      }
+
+      setSelectedSize('');
+      setQuantity(1);
+      
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setAddToCartMessage('❌ Failed to add to cart');
+      setTimeout(() => setAddToCartMessage(''), 3000);
+    }
   };
 
   const handleQuantityChange = (change) => {
@@ -67,6 +130,13 @@ function ProductInfo({ product }) {
       </div>
 
       <p className="product-description-full">{product.description}</p>
+
+      {/* Success Message */}
+      {addToCartMessage && (
+        <div className={`add-to-cart-message ${addToCartMessage.includes('✓') ? 'success' : 'error'}`}>
+          {addToCartMessage}
+        </div>
+      )}
 
       {/* Size Selector - Only show if product has sizes */}
       {hasSizes && (
