@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth") // General authentication path
-@CrossOrigin(origins = "http://localhost:5173") 
 public class AdminController {
 
     private final AdminService adminService;

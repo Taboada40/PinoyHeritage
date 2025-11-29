@@ -1,9 +1,12 @@
 package com.PinoyHeritage.Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "cart_item")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,13 +14,18 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private Cart cart;
+
+    @Column(name = "customer_id")
+    private Long customerId;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
     private Category category;
 
     @Column(name = "quantity", nullable = false)
@@ -29,7 +37,7 @@ public class CartItem {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "product_image")
+    @Column(name = "product_image", columnDefinition = "LONGTEXT")
     private String productImage;
 
     @Column(name = "size")
@@ -55,6 +63,9 @@ public class CartItem {
     public Cart getCart() { return cart; }
     public void setCart(Cart cart) { this.cart = cart; }
 
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
 
@@ -64,13 +75,11 @@ public class CartItem {
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { 
         this.quantity = quantity; 
-        calculateAmount();
     }
 
     public Double getUnitPrice() { return unitPrice; }
     public void setUnitPrice(Double unitPrice) { 
         this.unitPrice = unitPrice; 
-        calculateAmount();
     }
 
     public Double getAmount() { return amount; }
@@ -84,6 +93,10 @@ public class CartItem {
 
     // Helper method
     public void calculateAmount() {
-        this.amount = this.quantity * this.unitPrice;
+        if (this.quantity != null && this.unitPrice != null) {
+            this.amount = this.quantity * this.unitPrice;
+        } else {
+            this.amount = 0.0;
+        }
     }
 }

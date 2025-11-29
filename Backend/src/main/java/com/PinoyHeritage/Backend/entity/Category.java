@@ -1,9 +1,11 @@
 package com.PinoyHeritage.Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "category")
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"}, ignoreUnknown = true)
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

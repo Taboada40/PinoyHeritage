@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header.jsx";
 import ProfileSidebar from "../../components/customer/ProfileSidebar.jsx";
+import ConfirmationModal from "../../components/ConfirmationModal.jsx";
 import "../../styles/admin/admin.css";
 import "../../styles/customer/profile.css";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const [formData, setFormData] = useState({
     id: null,
     firstName: "",
@@ -35,6 +38,32 @@ const Profile = () => {
       .catch((err) => console.error("Error fetching profile:", err));
   }, [userId]);
 
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/notifications/customer/${userId}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setNotifications(data || []);
+        }
+
+        // Mark all as read once profile page is viewed
+        await fetch(
+          `http://localhost:8080/api/notifications/customer/${userId}/mark-all-read`,
+          { method: "POST" }
+        );
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, [userId]);
+
   const handleEditClick = () => setIsEditing(true);
 
   const handleInputChange = (e) => {
@@ -54,7 +83,7 @@ const Profile = () => {
       .then((res) => res.json())
       .then((updated) => {
         setFormData(updated);
-        alert("Profile updated successfully!");
+        setShowConfirmation(true);
       })
       .catch((err) => console.error("Error updating profile:", err));
   };
@@ -141,8 +170,42 @@ const Profile = () => {
               )}
             </form>
           </div>
+
+          {/* Notifications Section */}
+          <div className="profile-card">
+            <h2 className="profile-title">Notifications</h2>
+
+            {notifications.length === 0 ? (
+              <p>You have no notifications.</p>
+            ) : (
+              <ul className="notifications-list">
+                {notifications.map((n) => (
+                  <li
+                    key={n.id}
+                    className={`notification-item ${
+                      n.read ? "read" : "unread"
+                    }`}
+                  >
+                    <div className="notification-message">{n.message}</div>
+                    {n.orderId && (
+                      <div className="notification-meta">
+                        Order #{n.orderId}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </main>
+
+      <ConfirmationModal 
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        title="Profile Updated"
+        message="Your profile information has been saved successfully."
+      />
     </div>
   );
 };

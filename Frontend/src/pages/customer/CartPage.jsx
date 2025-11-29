@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import '../../styles/customer/CartPage.css';
 import backImg from '../../assets/icons/common/arrow-left.svg';
+import { getCachedCartItems, cacheCartItems, clearCartCache } from '../../utils/cookies';
 
 // Inline Trash Icon
 const TrashIcon = () => (
@@ -17,6 +18,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [usingCache, setUsingCache] = useState(false);
 
   // --- Logic Helpers ---
   const getCurrentUser = () => {
@@ -29,6 +31,13 @@ export default function CartPage() {
     return guestCart ? JSON.parse(guestCart) : [];
   };
 
+  const getUserFallbackCart = (userId) => {
+    if (!userId) return [];
+    const key = `userCart_${userId}`;
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : [];
+  };
+
   const saveGuestCart = (items) => {
     localStorage.setItem('guestCart', JSON.stringify(items));
   };
@@ -36,13 +45,38 @@ export default function CartPage() {
   const fetchCartItems = async () => {
     const user = getCurrentUser();
     if (user) {
+      // Check cookie cache first for instant loading
+      const cached = getCachedCartItems(user.id);
+      if (cached && cached.items && cached.items.length > 0) {
+        setCartItems(cached.items);
+        setUsingCache(true);
+        setLoading(false);
+      }
+
+      // Then fetch fresh data from server
       try {
         const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items`);
         if (response.ok) {
           const items = await response.json();
           setCartItems(items);
+          // Cache the fresh data
+          cacheCartItems(user.id, items);
+          setUsingCache(false);
+          setError('');
+        } else {
+          if (!cached) {
+            setError('Error loading cart from server. Showing last saved cart.');
+            const fallback = getUserFallbackCart(user.id);
+            setCartItems(fallback);
+          }
         }
-      } catch (err) { setError('Error connecting to server'); } 
+      } catch (err) { 
+        if (!cached) {
+          setError('Error connecting to server. Showing last saved cart.');
+          const fallback = getUserFallbackCart(user.id);
+          setCartItems(fallback);
+        }
+      } 
       finally { setLoading(false); }
     } else {
       const guestCart = getGuestCart();
@@ -55,7 +89,10 @@ export default function CartPage() {
     const user = getCurrentUser();
     if (user) {
       await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items/${itemId}`, { method: 'DELETE' });
-      setCartItems(cartItems.filter(item => item.id !== itemId));
+      const updated = cartItems.filter(item => item.id !== itemId);
+      setCartItems(updated);
+      // Update cache with new items
+      cacheCartItems(user.id, updated);
     } else {
       const updated = cartItems.filter(item => item.id !== itemId);
       setCartItems(updated);
@@ -70,7 +107,10 @@ export default function CartPage() {
     if (user) {
       const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items/${itemId}?quantity=${newQuantity}`, { method: 'PUT' });
       if (response.ok) {
-        setCartItems(cartItems.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item));
+        const updated = cartItems.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item);
+        setCartItems(updated);
+        // Update cache with new items
+        cacheCartItems(user.id, updated);
       }
     } else {
       const updated = cartItems.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item);
@@ -81,7 +121,7 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    navigate('/payment');
+    navigate('/checkout');
   };
 
   const grandTotal = cartItems.reduce((total, item) => total + ((item.unitPrice || item.price) * item.quantity), 0);

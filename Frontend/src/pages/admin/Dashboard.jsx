@@ -7,7 +7,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     customers: 0,
     products: 0,
-    orders: 119
+    orders: 0
   });
   
   const [recentProducts, setRecentProducts] = useState([]);
@@ -38,29 +38,31 @@ const Dashboard = () => {
         let customersArray = [];
         try {
           const customersResponse = await customersApi.get("");
-          customersArray = customersResponse.data && customersResponse.data.length > 0 
+          customersArray = customersResponse.data && Array.isArray(customersResponse.data) 
             ? customersResponse.data 
             : [];
         } catch (customerError) {
-          console.warn('Failed to fetch customers, using fallback data:', customerError);
-          // Use fallback sample data if API fails
-          customersArray = [
-            { id: 101, name: "Marc Benn Secong", email: "mb.secong@gmail.com", address: "Cebu City", phone: "0923-098-0987" },
-            { id: 102, name: "Munchkin Taboada", email: "munchtb@gmail.com", address: "Las Piñas City", phone: "0932-432-1029" },
-            { id: 103, name: "Niña Villadarez", email: "nvlldrx@gmail.com", address: "Quezon City", phone: "0926-457-6229" },
-            { id: 104, name: "Sharbelle Farenheit", email: "sharbzff@gmail.com", address: "Davao City", phone: "0911-080-9232" },
-            { id: 105, name: "Princess Celcius", email: "celciusPP@gmail.com", address: "Bacolod City", phone: "0945-655-9207" },
-            { id: 106, name: "Minji Kim", email: "kminjik@gmail.com", address: "Seoul City", phone: "0965-918-1137" },
-            { id: 107, name: "Kyle Yu", email: "kk_yuk@gmail.com", address: "Marikina City", phone: "0908-509-6901" },
-            { id: 108, name: "Heineka Go", email: "hein.g0@gmail.com", address: "Alabang", phone: "0921-350-8768" },
-          ];
+          console.warn('Failed to fetch customers:', customerError);
+          customersArray = [];
+        }
+
+        // Fetch orders count
+        let ordersCount = 0;
+        try {
+          const ordersResponse = await fetch(`${API_BASE}/api/orders`);
+          if (ordersResponse.ok) {
+            const ordersData = await ordersResponse.json();
+            ordersCount = Array.isArray(ordersData) ? ordersData.length : 0;
+          }
+        } catch (orderError) {
+          console.warn('Failed to fetch orders:', orderError);
         }
 
         // Update stats with real data
         setStats({
           customers: customersArray.length,
           products: productsArray.length,
-          orders: 119 // Keep orders as mock data 
+          orders: ordersCount
         });
         
         // Get the 4 most recent products 
@@ -80,11 +82,11 @@ const Dashboard = () => {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data');
         
-        // Fallback to mock data if API fails completely
+        // Fallback to 0 if API fails completely
         setStats({
-          customers: 321,
+          customers: 0,
           products: 0,
-          orders: 119
+          orders: 0
         });
         setRecentProducts([]);
       } finally {

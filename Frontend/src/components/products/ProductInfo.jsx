@@ -36,6 +36,52 @@ function ProductInfo({ product }) {
     return userData ? JSON.parse(userData) : null;
   };
 
+  const addToGuestCart = (cartItem) => {
+    const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+
+    const existingItemIndex = guestCart.findIndex(item => 
+      item.productName === cartItem.productName && 
+      (!hasSizes || item.size === selectedSize)
+    );
+
+    if (existingItemIndex > -1) {
+      guestCart[existingItemIndex].quantity += cartItem.quantity;
+      guestCart[existingItemIndex].amount = guestCart[existingItemIndex].unitPrice * guestCart[existingItemIndex].quantity;
+    } else {
+      const newItem = {
+        id: Date.now(),
+        ...cartItem
+      };
+      guestCart.push(newItem);
+    }
+
+    localStorage.setItem('guestCart', JSON.stringify(guestCart));
+  };
+
+  const addToUserFallbackCart = (user, cartItem) => {
+    if (!user || !user.id) return;
+    const key = `userCart_${user.id}`;
+    const userCart = JSON.parse(localStorage.getItem(key) || '[]');
+
+    const existingItemIndex = userCart.findIndex(item => 
+      item.productName === cartItem.productName && 
+      (!hasSizes || item.size === selectedSize)
+    );
+
+    if (existingItemIndex > -1) {
+      userCart[existingItemIndex].quantity += cartItem.quantity;
+      userCart[existingItemIndex].amount = userCart[existingItemIndex].unitPrice * userCart[existingItemIndex].quantity;
+    } else {
+      const newItem = {
+        id: Date.now(),
+        ...cartItem
+      };
+      userCart.push(newItem);
+    }
+
+    localStorage.setItem(key, JSON.stringify(userCart));
+  };
+
   // Add to cart functionality
   const handleAddToCart = async () => {
     if (hasSizes && !selectedSize) {
@@ -49,9 +95,15 @@ function ProductInfo({ product }) {
     }
 
     const user = getCurrentUser();
+
+    // Ensure we always send a proper Category reference with an id
+    const categoryPayload = product.category && typeof product.category === 'object'
+      ? { id: product.category.id }
+      : null;
+
     const cartItem = {
       productName: product.name,
-      category: product.category || { id: 1, name: 'Uncategorized' },
+      category: categoryPayload,
       quantity: quantity,
       unitPrice: parseFloat(product.price || 0),
       amount: parseFloat(product.price || 0) * quantity,
@@ -61,6 +113,7 @@ function ProductInfo({ product }) {
 
     try {
       if (user) {
+        console.log('Adding to cart for user:', user.id, cartItem);
         const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items`, {
           method: 'POST',
           headers: {
@@ -69,43 +122,38 @@ function ProductInfo({ product }) {
           body: JSON.stringify(cartItem),
         });
 
-        if (response.ok) {
+        const data = await response.json();
+        console.log('Cart response:', data);
+
+        if (response.ok && data.success) {
           setAddToCartMessage('✓ Added to cart!');
-          setTimeout(() => setAddToCartMessage(''), 3000);
         } else {
-          throw new Error('Failed to add to cart');
+          console.error('Backend error:', data.error);
+          // Backend failed: fall back to per-user local cart
+          addToUserFallbackCart(user, cartItem);
+          setAddToCartMessage('✓ Added to cart (saved locally)');
         }
       } else {
-        // Add to local storage for guest users
-        const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
-        
-        const existingItemIndex = guestCart.findIndex(item => 
-          item.productName === cartItem.productName && 
-          (!hasSizes || item.size === selectedSize)
-        );
-
-        if (existingItemIndex > -1) {
-          guestCart[existingItemIndex].quantity += cartItem.quantity;
-          guestCart[existingItemIndex].amount = guestCart[existingItemIndex].unitPrice * guestCart[existingItemIndex].quantity;
-        } else {
-          const newItem = {
-            id: Date.now(),
-            ...cartItem
-          };
-          guestCart.push(newItem);
-        }
-
-        localStorage.setItem('guestCart', JSON.stringify(guestCart));
+        // Guest users: always use local storage
+        addToGuestCart(cartItem);
         setAddToCartMessage('✓ Added to cart!');
-        setTimeout(() => setAddToCartMessage(''), 3000);
       }
 
+      setTimeout(() => setAddToCartMessage(''), 3000);
       setSelectedSize('');
       setQuantity(1);
       
     } catch (error) {
       console.error('Error adding to cart:', error);
-      setAddToCartMessage('❌ Failed to add to cart');
+
+      // On any unexpected error, still save locally so the user keeps their cart
+      if (user) {
+        addToUserFallbackCart(user, cartItem);
+      } else {
+        addToGuestCart(cartItem);
+      }
+
+      setAddToCartMessage('✓ Added to cart (offline)');
       setTimeout(() => setAddToCartMessage(''), 3000);
     }
   };
