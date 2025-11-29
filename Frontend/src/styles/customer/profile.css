@@ -27,14 +27,11 @@ body {
 
 /* === Scoped Profile Styles === */
 
-/* Container - Uses flexbox to center the card */
+/* Container - works with left sidebar + main-content layout */
 .profile-page {
   position: relative;
-  width: 100vw;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center; /* Centers vertically */
   background-color: #f4f6f9; /* Fallback color if image fails */
   padding-top: 80px; /* Space for the fixed header */
 }
