@@ -32,7 +32,7 @@ public class Customer {
 
     // Relationships
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Cart> carts;
+    private List<Cart> cart;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders;
@@ -62,8 +62,8 @@ public class Customer {
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public List<Cart> getCarts() { return carts; }
-    public void setCarts(List<Cart> carts) { this.carts = carts; }
+    public List<Cart> getCart() { return cart; }
+    public void setCart(List<Cart> cart) { this.cart = cart; }
 
     public List<Order> getOrders() { return orders; }
     public void setOrders(List<Order> orders) { this.orders = orders; }
