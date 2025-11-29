@@ -18,22 +18,6 @@ function Login() {
     e.preventDefault();
     setError("");
 
-    // STEP 1: ADMIN CREDENTIAL CHECK (Frontend Bypass) 
-    if (formData.identifier === "admin" && formData.password === "admin123") {
-        console.log("Admin credentials detected. Redirecting...");
-        localStorage.setItem("isAdmin", "true"); 
-        navigate("/admin/dashboard");
-        return;
-    }
-    
-    // STEP 2: REGULAR CUSTOMER LOGIN (API Call)  
-    if (formData.identifier === "user" && formData.password === "user123") {
-        console.log("Admin credentials detected. Redirecting...");
-        localStorage.setItem("isUser", "true"); 
-        navigate("/profile");
-        return;
-    }
-    
     try {
       const res = await fetch("http://localhost:8080/api/customer/login", {
         method: "POST",
@@ -46,12 +30,28 @@ function Login() {
         const data = await res.json();
         alert(`Welcome ${data.username}`);
 
-        // store logged-in user ID in localStorage
+        // store logged-in user info in localStorage
         localStorage.setItem("userId", data.id); 
         localStorage.setItem("username", data.username);
         localStorage.setItem("email", data.email);
 
-        navigate("/profile"); // redirect regular user to profile page
+        let role = data.role;
+
+        // Fallback: treat this specific account as ADMIN even if role is missing
+        if (!role && formData.identifier === "admin@pinoyheritage.com" && formData.password === "admin12345") {
+          role = "ADMIN";
+        }
+
+        if (role) {
+          localStorage.setItem("role", role);
+        }
+
+        // Redirect based on role
+        if (role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/profile");
+        }
       } else {
         setError("Invalid credentials or login failed.");
       }
