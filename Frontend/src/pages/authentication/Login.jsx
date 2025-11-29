@@ -50,7 +50,7 @@ function Login() {
         if (role === "ADMIN") {
           navigate("/admin/dashboard");
         } else {
-          navigate("/profile");
+          navigate("/home");
         }
       } else {
         setError("Invalid credentials or login failed.");

@@ -29,9 +29,66 @@ const RequireAdmin = ({ children }) => {
 
 const RequireCustomer = ({ children }) => {
   const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+
+  // Block admins from customer pages
   if (role === "ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
   }
+
+  // Require a logged-in customer
+  if (!userId) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+// Customer session + idle timeout guard (3 minutes)
+const CUSTOMER_IDLE_TIMEOUT = 3 * 60 * 1000; // 3 minutes in ms
+
+const CustomerSessionGuard = ({ children }) => {
+  const navigate = useLocation().pathname; // placeholder to force re-render on route change
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    const userId = localStorage.getItem("userId");
+
+    // Only track idle for logged-in customers (not admins, not guests)
+    if (role === "ADMIN" || !userId) {
+      return;
+    }
+
+    let timeoutId;
+
+    const resetTimer = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        // Auto-logout after inactivity
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        localStorage.removeItem("role");
+        window.location.href = "/login";
+      }, CUSTOMER_IDLE_TIMEOUT);
+    };
+
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+    events.forEach((evt) => window.addEventListener(evt, resetTimer));
+
+    // Start initial timer
+    resetTimer();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      events.forEach((evt) => window.removeEventListener(evt, resetTimer));
+    };
+  }, [navigate]);
+
   return children;
 };
 
@@ -61,7 +118,9 @@ const RouteGuard = () => {
         path="/profile"
         element={
           <RequireCustomer>
-            <Profile />
+            <CustomerSessionGuard>
+              <Profile />
+            </CustomerSessionGuard>
           </RequireCustomer>
         }
       />
@@ -69,7 +128,9 @@ const RouteGuard = () => {
         path="/review"
         element={
           <RequireCustomer>
-            <Review />
+            <CustomerSessionGuard>
+              <Review />
+            </CustomerSessionGuard>
           </RequireCustomer>
         }
       />
@@ -77,7 +138,9 @@ const RouteGuard = () => {
         path="/payment"
         element={
           <RequireCustomer>
-            <Payment />
+            <CustomerSessionGuard>
+              <Payment />
+            </CustomerSessionGuard>
           </RequireCustomer>
         }
       />
@@ -85,7 +148,9 @@ const RouteGuard = () => {
         path="/cart"
         element={
           <RequireCustomer>
-            <CartPage />
+            <CustomerSessionGuard>
+              <CartPage />
+            </CustomerSessionGuard>
           </RequireCustomer>
         }
       />   

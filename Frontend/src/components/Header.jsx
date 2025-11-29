@@ -33,6 +33,22 @@ function Header({ showNav = true }) {
       : ""
   }`;
 
+  const handleAccountClick = () => {
+    const role = localStorage.getItem("role");
+    const userId = localStorage.getItem("userId");
+
+    if (role === "ADMIN" && userId) {
+      navigate("/admin/dashboard");
+      return;
+    }
+
+    if (userId) {
+      navigate("/profile");
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <header className={headerClass}>
       <div className="container">
@@ -60,9 +76,11 @@ function Header({ showNav = true }) {
               onClick={() => navigate("/cart")}
             ></button>
             
-            <Link to="/login" aria-label="Account">
-              <button className="acc-btn"></button>
-            </Link>
+            <button
+              className="acc-btn"
+              aria-label="Account"
+              onClick={handleAccountClick}
+            ></button>
           </div>
         </div>
       </div>
