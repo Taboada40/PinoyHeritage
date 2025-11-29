@@ -7,8 +7,8 @@ function Header({ showNav = true }) {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Detect if we’re on the landing page
-  const isLandingPage = location.pathname === "/" || location.pathname === "/home";
+  // Detect if we’re on the primary landing page (only '/')
+  const isLandingPage = location.pathname === "/";
 
   // Add scroll listener
   useEffect(() => {

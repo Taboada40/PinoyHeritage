@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header.jsx";
+import ProfileSidebar from "../../components/customer/ProfileSidebar.jsx";
+import "../../styles/admin/admin.css";
 import "../../styles/customer/profile.css";
 
 const Profile = () => {
@@ -61,87 +63,86 @@ const Profile = () => {
     <div className="profile-page">
       <Header showNav={false} />
 
-      <div className="profile-container">
-        <div className="profile-card">
-          <h2 className="profile-title">Profile Information</h2>
+      <ProfileSidebar />
 
-          <div className="profile-header">
-            <div className="profile-info">
-              <h3 className="profile-name">{formData.username || "User"}</h3>
+      <main className="main-content">
+        <div className="profile-container">
+          <div className="profile-card">
+            <h2 className="profile-title">Profile Information</h2>
+
+            <div className="profile-header">
+              <div className="profile-info">
+                <h3 className="profile-name">{formData.username || "User"}</h3>
+              </div>
             </div>
+
+            <form className="profile-form">
+              <div className="form-row">
+                <div className="profile-form-group">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="profile-form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                  />
+                </div>
+              </div>
+
+              <div className="profile-form-group">
+                <label>Username</label>
+                <input type="text" name="username" value={formData.username} disabled />
+              </div>
+
+              <div className="profile-form-group">
+                <label>Email</label>
+                <input type="email" name="email" value={formData.email} disabled />
+              </div>
+
+              <div className="profile-form-group">
+                <label>Phone Number</label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                />
+              </div>
+
+              {!isEditing && (
+                <button
+                  type="button"
+                  className="profile-btn btn-edit"
+                  onClick={handleEditClick}
+                >
+                  Edit Profile
+                </button>
+              )}
+              {isEditing && (
+                <button
+                  type="submit"
+                  className="profile-btn btn-update"
+                  onClick={handleUpdateClick}
+                >
+                  Update Profile
+                </button>
+              )}
+            </form>
           </div>
-
-          <form className="profile-form">
-            <div className="form-row">
-              {/* CHANGED CLASS NAME HERE */}
-              <div className="profile-form-group">
-                <label>First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              {/* CHANGED CLASS NAME HERE */}
-              <div className="profile-form-group">
-                <label>Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-
-            {/* CHANGED CLASS NAME HERE */}
-            <div className="profile-form-group">
-              <label>Username</label>
-              <input type="text" name="username" value={formData.username} disabled />
-            </div>
-
-            {/* CHANGED CLASS NAME HERE */}
-            <div className="profile-form-group">
-              <label>Email</label>
-              <input type="email" name="email" value={formData.email} disabled />
-            </div>
-
-            {/* CHANGED CLASS NAME HERE */}
-            <div className="profile-form-group">
-              <label>Phone Number</label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-              />
-            </div>
-
-            {!isEditing && (
-              <button
-                type="button"
-                className="profile-btn btn-edit" // Changed class
-                onClick={handleEditClick}
-              >
-                Edit Profile
-              </button>
-            )}
-            {isEditing && (
-              <button
-                type="submit"
-                className="profile-btn btn-update" // Changed class
-                onClick={handleUpdateClick}
-              >
-                Update Profile
-              </button>
-            )}
-          </form>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import HomePageSection from "../components/home/HomePageSection.jsx";
 function HomePage() {
   return (
     <div className="homepage">
+      {/* Use shared header but hide nav menu on the home page */}
       <Header showNav={true} />
       <HomePageSection />
     </div>
