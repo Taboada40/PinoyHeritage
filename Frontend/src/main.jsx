@@ -13,7 +13,10 @@ import ProductDetails from "./pages/products/ProductDetails.jsx";
 import Profile from "./pages/customer/Profile.jsx";
 import Review from "./pages/customer/Review.jsx";
 import Payment from "./pages/customer/Payment.jsx";
-import CartPage from "./pages/customer/CartPage.jsx";   
+import CartPage from "./pages/customer/CartPage.jsx";  
+import Checkout from "./pages/customer/Checkout.jsx";
+import Orders from "./pages/customer/Orders.jsx";
+import Notifications from "./pages/customer/Notifications.jsx";
 
 import AdminDashboard from "./pages/admin/Dashboard.jsx";
 import AdminUsers from "./pages/admin/Users.jsx";
@@ -125,6 +128,26 @@ const RouteGuard = () => {
         }
       />
       <Route
+        path="/orders"
+        element={
+          <RequireCustomer>
+            <CustomerSessionGuard>
+              <Orders />
+            </CustomerSessionGuard>
+          </RequireCustomer>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <RequireCustomer>
+            <CustomerSessionGuard>
+              <Notifications />
+            </CustomerSessionGuard>
+          </RequireCustomer>
+        }
+      />
+      <Route
         path="/review"
         element={
           <RequireCustomer>
@@ -154,6 +177,17 @@ const RouteGuard = () => {
           </RequireCustomer>
         }
       />   
+
+      <Route
+        path="/checkout"
+        element={
+          <RequireCustomer>
+            <CustomerSessionGuard>
+              <Checkout />
+            </CustomerSessionGuard>
+          </RequireCustomer>
+        }
+      />
 
       {/* Authentication */}
       <Route path="/login" element={<Login />} />

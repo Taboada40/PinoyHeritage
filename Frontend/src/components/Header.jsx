@@ -6,6 +6,7 @@ function Header({ showNav = true }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Detect if we’re on the primary landing page (only '/')
   const isLandingPage = location.pathname === "/";
@@ -23,6 +24,33 @@ function Header({ showNav = true }) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Fetch unread notification count for logged-in customers
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    const userId = localStorage.getItem("userId");
+
+    if (role === "ADMIN" || !userId) {
+      setUnreadCount(0);
+      return;
+    }
+
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/notifications/customer/${userId}/unread-count`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadCount(data.count || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching unread notifications", err);
+      }
+    };
+
+    fetchUnread();
+  }, [location.pathname]);
 
   // Determine header style
   const headerClass = `header ${
@@ -80,7 +108,11 @@ function Header({ showNav = true }) {
               className="acc-btn"
               aria-label="Account"
               onClick={handleAccountClick}
-            ></button>
+            >
+              {unreadCount > 0 && (
+                <span className="notif-badge">{unreadCount}</span>
+              )}
+            </button>
           </div>
         </div>
       </div>

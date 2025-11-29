@@ -1,42 +1,38 @@
 package com.PinoyHeritage.Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "cart")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    // Relationships
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnore
     private Customer customer;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems = new ArrayList<>();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CartItem> cartItems;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
-
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
-
-    @Column(name = "total_amount")
+    @Column(name = "total_amount", nullable = false)
     private Double totalAmount = 0.0;
 
     // Constructors
-    public Cart() {
-        this.createdDate = LocalDateTime.now();
-        this.updatedDate = LocalDateTime.now();
-    }
+    public Cart() {}
 
     public Cart(Customer customer) {
-        this();
         this.customer = customer;
+        this.totalAmount = 0.0;
     }
 
     // Getters and Setters
@@ -49,32 +45,17 @@ public class Cart {
     public List<CartItem> getCartItems() { return cartItems; }
     public void setCartItems(List<CartItem> cartItems) { this.cartItems = cartItems; }
 
-    public LocalDateTime getCreatedDate() { return createdDate; }
-    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
-
-    public LocalDateTime getUpdatedDate() { return updatedDate; }
-    public void setUpdatedDate(LocalDateTime updatedDate) { this.updatedDate = updatedDate; }
-
     public Double getTotalAmount() { return totalAmount; }
     public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
 
-    // Helper methods
-    public void addCartItem(CartItem cartItem) {
-        cartItems.add(cartItem);
-        cartItem.setCart(this);
-        calculateTotalAmount();
-    }
-
-    public void removeCartItem(CartItem cartItem) {
-        cartItems.remove(cartItem);
-        cartItem.setCart(null);
-        calculateTotalAmount();
-    }
-
+    // Helper to recalculate total from items
     public void calculateTotalAmount() {
-        this.totalAmount = cartItems.stream()
-                .mapToDouble(CartItem::getAmount)
-                .sum();
-        this.updatedDate = LocalDateTime.now();
+        if (cartItems == null || cartItems.isEmpty()) {
+            this.totalAmount = 0.0;
+        } else {
+            this.totalAmount = cartItems.stream()
+                    .mapToDouble(ci -> ci.getAmount() != null ? ci.getAmount() : 0.0)
+                    .sum();
+        }
     }
 }

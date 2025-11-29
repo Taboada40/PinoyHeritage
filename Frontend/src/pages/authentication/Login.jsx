@@ -30,11 +30,6 @@ function Login() {
         const data = await res.json();
         alert(`Welcome ${data.username}`);
 
-        // store logged-in user info in localStorage
-        localStorage.setItem("userId", data.id); 
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("email", data.email);
-
         let role = data.role;
 
         // Fallback: treat this specific account as ADMIN even if role is missing
@@ -42,14 +37,33 @@ function Login() {
           role = "ADMIN";
         }
 
-        if (role) {
-          localStorage.setItem("role", role);
-        }
-
-        // Redirect based on role
+        // Store data differently for admin vs customer
         if (role === "ADMIN") {
+          // Clear any previous customer session so admin is NOT treated as a customer
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+          localStorage.removeItem("email");
+          localStorage.removeItem("user");
+
+          localStorage.setItem("role", "ADMIN");
           navigate("/admin/dashboard");
         } else {
+          // Customer session: clear any previous guest cart and store user info + role
+          localStorage.removeItem("guestCart");
+
+          // Customer session: store user info + role
+          localStorage.setItem("userId", data.id); 
+          localStorage.setItem("username", data.username);
+          localStorage.setItem("email", data.email);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ id: data.id, username: data.username, email: data.email, role: role })
+          );
+
+          if (role) {
+            localStorage.setItem("role", role);
+          }
+
           navigate("/home");
         }
       } else {

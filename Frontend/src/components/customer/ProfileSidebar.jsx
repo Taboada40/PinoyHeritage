@@ -1,13 +1,44 @@
-import React from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 
 import homeImg from "../../assets/icons/sidebar/home.png";
 import userImg from "../../assets/icons/sidebar/users.png";
 import ordersImg from "../../assets/icons/sidebar/manage.png";
 import logoutImg from "../../assets/icons/sidebar/logout.png";
 
+// Bell icon for notifications
+const BellIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+  </svg>
+);
+
 const ProfileSidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/notifications/customer/${userId}/unread-count`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadCount(data.count || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching unread count:", err);
+      }
+    };
+
+    fetchUnread();
+  }, [userId, location.pathname]);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -16,6 +47,8 @@ const ProfileSidebar = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
+    localStorage.removeItem("user");
+    localStorage.removeItem("guestCart");
     navigate("/login");
   };
 
@@ -50,15 +83,27 @@ const ProfileSidebar = () => {
           <span>Profile</span>
         </NavLink>
 
-        {/* Orders Link (reusing payment page as Orders for now) */}
+        {/* Orders Link */}
         <NavLink
-          to="/payment"
+          to="/orders"
           className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}
         >
           <span className="menu-icon">
             <img src={ordersImg} alt="Orders" className="icon-img" />
           </span>
           <span>Orders</span>
+        </NavLink>
+
+        {/* Notifications Link */}
+        <NavLink
+          to="/notifications"
+          className={({ isActive }) => (isActive ? "menu-item active" : "menu-item")}
+        >
+          <span className="menu-icon notif-icon-wrapper">
+            <BellIcon />
+            {unreadCount > 0 && <span className="sidebar-notif-badge">{unreadCount}</span>}
+          </span>
+          <span>Notifications</span>
         </NavLink>
       </nav>
 

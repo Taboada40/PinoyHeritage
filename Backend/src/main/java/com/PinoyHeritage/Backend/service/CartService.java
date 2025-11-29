@@ -8,6 +8,8 @@ public interface CartService {
     Cart getCartByCustomerId(Long customerId);
     Cart createCart(Long customerId);
     Cart addItemToCart(Long customerId, CartItem cartItem);
+    Cart addItemToCartFromRequest(Long customerId, String productName, Long categoryId, 
+                                   Integer quantity, Double unitPrice, String productImage, String size);
     Cart updateCartItemQuantity(Long customerId, Long itemId, Integer quantity);
     Cart removeItemFromCart(Long customerId, Long itemId);
     void clearCart(Long customerId);

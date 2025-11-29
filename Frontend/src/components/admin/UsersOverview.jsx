@@ -30,37 +30,23 @@ const ArrowRight = () => (
 );
 
 const UsersOverview = () => {
-  // --- Sample Data ---
-  const sampleUsers = [
-    { id: 101, name: "Marc Benn Secong", email: "mb.secong@gmail.com", address: "Cebu City", phone: "0923-098-0987" },
-    { id: 102, name: "Munchkin Taboada", email: "munchtb@gmail.com", address: "Las Piñas City", phone: "0932-432-1029" },
-    { id: 103, name: "Niña Villadarez", email: "nvlldrx@gmail.com", address: "Quezon City", phone: "0926-457-6229" },
-    { id: 104, name: "Sharbelle Farenheit", email: "sharbzff@gmail.com", address: "Davao City", phone: "0911-080-9232" },
-    { id: 105, name: "Princess Celcius", email: "celciusPP@gmail.com", address: "Bacolod City", phone: "0945-655-9207" },
-    { id: 106, name: "Minji Kim", email: "kminjik@gmail.com", address: "Seoul City", phone: "0965-918-1137" },
-    { id: 107, name: "Kyle Yu", email: "kk_yuk@gmail.com", address: "Marikina City", phone: "0908-509-6901" },
-    { id: 108, name: "Heineka Go", email: "hein.g0@gmail.com", address: "Alabang", phone: "0921-350-8768" },
-  ];
-
   const [searchTerm, setSearchTerm] = useState("");
-  
-  // Initialize with sampleUsers so data is visible immediately
-  const [users, setUsers] = useState(sampleUsers);
-  const [loading, setLoading] = useState(false); // Set false initially to show sample data right away
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // We don't set loading(true) here to avoid flickering the sample data away.
-        // We just try to update it silently.
         const response = await customersApi.get(""); 
         
-        // If we get data, replace the sample data
-        if (response.data && response.data.length > 0) {
+        // Only update if we get a valid array
+        if (response.data && Array.isArray(response.data)) {
             setUsers(response.data);
         }
       } catch (err) {
-        console.warn("Database unavailable. Using sample data fallback.");
+        console.warn("Failed to fetch customers:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -144,7 +130,7 @@ const UsersOverview = () => {
           ))
         ) : (
           <div style={{ textAlign: "center", padding: "20px", color: "#666" }}>
-            No users found matching "{searchTerm}"
+            {searchTerm ? `No users found matching "${searchTerm}"` : "No registered customers yet"}
           </div>
         )}
       </div>

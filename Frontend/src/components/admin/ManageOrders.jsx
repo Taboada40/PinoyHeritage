@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/admin/orders.css";
 
 // --- Icons (Moved outside main component) ---
@@ -20,22 +20,29 @@ const OrdersSection = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  // Data
-  const [orders, setOrders] = useState([
-    { id: "#1006", date: "11/04/25 at 11:53 PM", customer: "Maria Tuazon", total: "P2,570.00", status: "Processing", items: 3 },
-    { id: "#1005", date: "11/03/25 at 7:51 PM", customer: "Kyle Garcia", total: "P1,340.00", status: "Shipped", items: 2 },
-    { id: "#1004", date: "11/03/25 at 5:32 PM", customer: "Juan Luna", total: "P200.00", status: "Pending", items: 1 },
-    { id: "#1003", date: "11/02/25 at 4:17 AM", customer: "Kim Minji", total: "P150.00", status: "Delivered", items: 1 },
-    { id: "#1002", date: "11/01/25 at 12:09 PM", customer: "Sofia Rossi", total: "P400.00", status: "Delivered", items: 1 },
-    { id: "#1001", date: "11/01/25 at 11:58 AM", customer: "Jennie Kim", total: "P650.00", status: "Delivered", items: 2 },
-  ]);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/orders/admin");
+        if (!res.ok) throw new Error("Failed to load orders");
+        const data = await res.json();
+        setOrders(data || []);
+      } catch (err) {
+        console.error("Error fetching orders", err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   // 2. Filter Logic
   const filteredOrders = orders.filter((order) => {
     // A. Search Filter (Checks ID or Customer Name)
     const matchesSearch =
-      order.id.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.toLowerCase().includes(search.toLowerCase());
+      String(order.id).toLowerCase().includes(search.toLowerCase()) ||
+      (order.customerName || "").toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus = selectedStatus
       ? order.status === selectedStatus
@@ -45,18 +52,28 @@ const OrdersSection = () => {
     if (selectedDate) {
       const [year, month, day] = selectedDate.split("-");
       const formattedInput = `${month}/${day}/${year.slice(2)}`;
-      matchesDate = order.date.startsWith(formattedInput);
+      matchesDate = (order.createdAt || "").startsWith(formattedInput);
     }
 
     return matchesSearch && matchesStatus && matchesDate;
   });
 
   // 3. Handler to update status (Uses ID to find correct item)
-  const handleStatusChange = (id, newStatus) => {
-    const updatedOrders = orders.map(order =>
-      order.id === id ? { ...order, status: newStatus } : order
-    );
-    setOrders(updatedOrders);
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await fetch(`http://localhost:8080/api/orders/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const updatedOrders = orders.map((order) =>
+        order.id === id ? { ...order, status: newStatus } : order
+      );
+      setOrders(updatedOrders);
+    } catch (err) {
+      console.error("Error updating order status", err);
+    }
   };
 
   return (
@@ -117,10 +134,10 @@ const OrdersSection = () => {
           filteredOrders.map((order) => (
             <div key={order.id}> {/* Use ID as key, not index */}
               <div className="order-row">
-                <p className="fw-bold">{order.id}</p>
-                <p>{order.date}</p>
-                <p>{order.customer}</p>
-                <p>{order.total}</p>
+                <p className="fw-bold">#{order.id}</p>
+                <p>{order.createdAt || ""}</p>
+                <p>{order.customerName}</p>
+                <p>P{(order.totalAmount || 0).toFixed(2)}</p>
 
                 {/* Dynamic Status Dropdown */}
                 <div className="status-cell">
@@ -137,7 +154,7 @@ const OrdersSection = () => {
                   </select>
                 </div>
 
-                <p className="text-center">{order.items}</p>
+                <p className="text-center">{order.itemsCount}</p>
               </div>
               <div className="order-divider light"></div>
             </div>

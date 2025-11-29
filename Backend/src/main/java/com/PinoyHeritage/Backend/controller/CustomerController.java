@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer")
-@CrossOrigin(origins = "http://localhost:5173") // frontend dev server
 public class CustomerController {
 
     @Autowired
