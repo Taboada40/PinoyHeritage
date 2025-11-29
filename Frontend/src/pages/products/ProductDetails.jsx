@@ -15,8 +15,30 @@ export default function ProductDetails() {
 
   const initialProduct = location.state?.product || null;
   const [product, setProduct] = useState(initialProduct);
-  const [loading, setLoading] = useState(!initialProduct); 
+  const [loading, setLoading] = useState(!initialProduct);
+  const [error, setError] = useState(null);
+
+  // Image carousel state must be declared unconditionally (before any early returns)
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Helper function to parse sizes from JSON string
+  const parseSizes = (sizes) => {
+    if (!sizes) return [];
+    try {
+      // If it's already an array, return it
+      if (Array.isArray(sizes)) return sizes;
+      
+      // If it's a JSON string, parse it
+      const parsed = JSON.parse(sizes);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      // If parsing fails, try to handle as comma-separated string
+      if (typeof sizes === 'string') {
+        return sizes.split(',').map(size => size.trim()).filter(size => size !== '');
+      }
+      return [];
+    }
+  };
 
   // --- API FETCH ---
   useEffect(() => {
@@ -30,40 +52,52 @@ export default function ProductDetails() {
         return res.json();
       })
       .then((data) => {
+        // Parse sizes from JSON string to array
+        const sizesArray = parseSizes(data.sizes);
+        
+        // Normalize backend shape to what UI expects
         const normalized = {
           ...data,
-          image: data.imageUrl || '',
+          image: data.imageUrl || clothingImg,
           stock: data.stock || 0,
           rating: data.rating || 0,
           reviews: data.reviews || [],
-          sizes: data.sizes || []
+          sizes: sizesArray // Use parsed array instead of raw data
         };
         setProduct(normalized);
+        setError(null);
       })
       .catch((err) => {
         console.warn("Backend fetch failed:", err.message);
+        setError(err.message);
         setProduct(null);
       })
       .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Loading product...</p></div>;
-  if (!product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
+  if (error || !product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
 
-  const images = [product.image || ''];
+  // image list (use a fallback if backend didn't provide one)
+  const images = product && product.image ? [product.image] : [clothingImg];
 
   const handlePrev = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex((prev) =>
+      prev === images.length - 1 ? 0 : prev + 1
+    );
   };
 
   return (
     <div className="product-details-page">
       <Header showNav={true} />
 
+      {/* Back Button */}
       <div className="details-header">
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← Back
@@ -72,6 +106,7 @@ export default function ProductDetails() {
 
       <div className="product-main">
         <div className="image-section">
+
           <button className="image-arrow arrow-left" onClick={handlePrev}>
             <img src={arrowImg} alt="Previous"/>
           </button>

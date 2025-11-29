@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 /* Root Variables */
 :root {
   --blue: #0038A8;
@@ -235,7 +233,7 @@ a .landing:hover{
     justify-content: flex-end;
     align-items: center;
     gap: 20px;
-    margin-bottom: 2rem;
+    margin-bottom: 15px;
 }
 
 .products-header {
@@ -278,23 +276,39 @@ a .landing:hover{
 }
 
 .categories-table thead {
-    background: #F5F5F5;
+    background: transparent; 
+    border-bottom: 1px solid #E0E0E0; 
 }
 
 .categories-table th {
-    padding: 1rem 1.5rem;
-    row-gap: 10px;
+    padding: 1rem 0;
+    font-size: 0.95rem;
+    color: #666;
+    font-weight: 600; 
     text-align: left;
-    font-weight: 600;
-    font-size: 14px;
-    color: #000;
-    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
+.categories-table th:last-child {
+    text-align: right;
+    width: 1%; /* Trick: shrink this column to fit content */
+    padding-right: 5rem; /* prevent touching edge */
+}
+
+/* Table Body */
 .categories-table td {
-    padding: 1.25rem 1.5rem;
-    color: #000;
+    padding: 1.5rem 0; /* More spacing for that "airy" look */
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
     border-bottom: 1px solid #F0F0F0;
+    vertical-align: middle; /* Ensures text aligns with buttons */
+}
+
+/* Actions Cell specific styling */
+.categories-table td:last-child {
+    white-space: nowrap;
+    padding-right: 1rem;
 }
 
 .categories-table tbody tr {
@@ -306,71 +320,83 @@ a .landing:hover{
 }
 
 .action-buttons {
-    display: flex;
-    gap: 0.75rem;
+  display: flex;
+  gap: 12px; 
 }
 
 .action-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
+  width: 35px; 
+  height: 35px;
+  border-radius: 10px; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white; 
 }
 
+/* --- Edit Button --- */
 .edit-btn {
-    background: #E3F2FD;
-    color: #0038A8;
+  background-color: #eff6ff; 
+  border: 1px solid #3b82f6; 
 }
 
 .edit-btn:hover {
-    background: #0038A8;
-    color: white;
-    transform: scale(1.1);
+  background-color: #3b82f6; 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); 
 }
 
+/* --- Delete Button --- */
 .delete-btn {
-    background: #FFEBEE;
-    color: #FF4444;
+  background-color: #fef2f2; 
+  border: 1px solid #fecaca; 
 }
 
 .delete-btn:hover {
-    background: #FF4444;
-    color: white;
-    transform: scale(1.1);
+  background-color: #ef4444; 
+  border-color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); 
+}
+
+.action-btn img {
+  transition: filter 0.2s ease;
+}
+
+.action-btn:hover img {
+  filter: brightness(0) invert(1); 
 }
 
 /* Pagination */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 2rem;
+.order-pagination {
+  display: flex;
+  justify-content: center; /* Centered at bottom */
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 16px;
+  color: #666a70;
 }
 
-.page-btn {
-    background: transparent;
+.nav-btn {
+    background: none;
     border: none;
-    color: #0038A8;
     cursor: pointer;
-    padding: 0.5rem;
-    transition: all 0.2s ease;
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: transform 0.2s;
 }
 
-.page-btn:hover {
-    transform: scale(1.2);
+.nav-btn:hover {
+    transform: scale(1.1);
 }
 
-.page-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+.page-text {
+  font-size: 0.95rem;
 }
 
 .page-info {
@@ -534,16 +560,8 @@ a .landing:hover{
     box-shadow: 0 6px 20px rgba(255, 68, 68, 0.3);
 }
 
-.delete-warning {
-    background: #FFF3E0;
-    border-left: 4px solid #FF9800;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-}
-
 .delete-warning p {
-    color: #666;
+    color: #333;
     line-height: 1.6;
 }
 
@@ -850,6 +868,7 @@ a .landing:hover{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
+  row-gap: 0px;
   margin-top: 18px;
 }
 
