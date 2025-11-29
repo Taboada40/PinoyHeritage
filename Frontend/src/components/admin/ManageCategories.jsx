@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import categoriesApi from "../../api/categoriesApi";
 import CategoryModal from "./CategoryModal";
 
+import deleteImg from "../../assets/icons/admin/delete.png";
+import editImg from "../../assets/icons/admin/edit.png";
+
 const CategoriesSection = () => {
   const [categories, setCategories] = useState([]);
   const [modalType, setModalType] = useState(null);
@@ -60,7 +63,10 @@ const CategoriesSection = () => {
       </div>
       <table className="categories-table">
         <thead>
-          <tr><th>Category Name</th><th>Actions</th></tr>
+          <tr>
+            <th>Category Name</th>
+            <th style={{ textAlign: "right"}}>Actions</th>
+          </tr>
         </thead>
         <tbody>
             {paginatedCategories.length > 0 ? (
@@ -69,20 +75,28 @@ const CategoriesSection = () => {
                     <td>{category.name}</td>
                     <td>
                     <div className="action-buttons">
-                        <button
+                      <button
                         className="action-btn edit-btn"
                         onClick={() => openModal("edit", category)}
                         title="Edit"
-                        >
-                        ✏️
-                        </button>
-                        <button
+                      >
+                        <img 
+                          src={editImg} 
+                          alt="Edit" 
+                          style={{ width: '14px', height: '14px' }} 
+                        />
+                      </button>
+                      <button
                         className="action-btn delete-btn"
                         onClick={() => openModal("delete", category)}
                         title="Delete"
-                        >
-                        🗑️
-                        </button>
+                      >
+                        <img 
+                          src={deleteImg} 
+                          alt="Delete" 
+                          style={{ width: '14px', height: '14px' }} 
+                        />
+                      </button>
                     </div>
                     </td>
                 </tr>
