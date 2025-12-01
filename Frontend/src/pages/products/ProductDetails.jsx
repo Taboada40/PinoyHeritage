@@ -1,3 +1,4 @@
+// src/pages/products/ProductDetails.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
@@ -18,23 +19,19 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
 
-  // Image carousel state must be declared unconditionally (before any early returns)
+  // Image carousel state must be declared unconditionally
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Helper function to parse sizes from JSON string
   const parseSizes = (sizes) => {
     if (!sizes) return [];
     try {
-      // If it's already an array, return it
       if (Array.isArray(sizes)) return sizes;
-      
-      // If it's a JSON string, parse it
       const parsed = JSON.parse(sizes);
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      // If parsing fails, try to handle as comma-separated string
       if (typeof sizes === 'string') {
-        return sizes.split(',').map(size => size.trim()).filter(size => size !== '');
+        return sizes.split(',').map(s => s.trim()).filter(s => s !== '');
       }
       return [];
     }
@@ -42,6 +39,7 @@ export default function ProductDetails() {
 
   // --- API FETCH ---
   useEffect(() => {
+    let mounted = true;
     if (!product) setLoading(true);
 
     const API_BASE = 'http://localhost:8080';
@@ -52,17 +50,20 @@ export default function ProductDetails() {
         return res.json();
       })
       .then((data) => {
-        // Parse sizes from JSON string to array
+        if (!mounted) return;
+
         const sizesArray = parseSizes(data.sizes);
-        
-        // Normalize backend shape to what UI expects
+
+        // Use product.imageUrl if provided; otherwise keep any `image` field the API provided
+        const imageSource = data.imageUrl || data.image || '';
+
         const normalized = {
           ...data,
-          image: data.imageUrl || clothingImg,
-          stock: data.stock || 0,
-          rating: data.rating || 0,
-          reviews: data.reviews || [],
-          sizes: sizesArray // Use parsed array instead of raw data
+          image: imageSource,
+          stock: data.stock ?? 0,
+          rating: data.rating ?? 0,
+          reviews: Array.isArray(data.reviews) ? data.reviews : [],
+          sizes: sizesArray
         };
         setProduct(normalized);
         setError(null);
@@ -72,25 +73,32 @@ export default function ProductDetails() {
         setError(err.message);
         setProduct(null);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => { mounted = false; };
   }, [id]);
 
   if (loading) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Loading product...</p></div>;
   if (error || !product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
 
-  // image list (use a fallback if backend didn't provide one)
-  const images = product && product.image ? [product.image] : [clothingImg];
+  // images array (use product.image if available, otherwise empty array)
+  const images = (product && product.image) ? [product.image] : [];
 
   const handlePrev = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
-    );
+    if (images.length === 0) return;
+    setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
   };
 
   const handleNext = () => {
-    setCurrentImageIndex((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
-    );
+    if (images.length === 0) return;
+    setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+  };
+
+  const handleWriteReview = () => {
+    // navigate to route that has productId param that your main.jsx expects
+    navigate(`/product/${id}/review`);
   };
 
   return (
@@ -106,13 +114,12 @@ export default function ProductDetails() {
 
       <div className="product-main">
         <div className="image-section">
-
           <button className="image-arrow arrow-left" onClick={handlePrev}>
             <img src={arrowImg} alt="Previous"/>
           </button>
 
           <img
-            src={images[currentImageIndex]}
+            src={images[currentImageIndex] || product.image || ''}
             alt={`${product.name} view ${currentImageIndex + 1}`}
             className="main-image"
           />
@@ -122,6 +129,9 @@ export default function ProductDetails() {
           </button>
 
           <div className="thumbnail-row">
+            {images.length === 0 && (
+              <div className="thumbnail empty">No image</div>
+            )}
             {images.map((img, index) => (
               <img
                 key={index}
@@ -135,6 +145,13 @@ export default function ProductDetails() {
         </div>
 
         <ProductInfo product={product} />
+      </div>
+
+      {/* Write Review Button (navigates with id in URL) */}
+      <div style={{ padding: "20px 24px" }}>
+        <button className="write-review-btn" onClick={handleWriteReview}>
+          Write a Review
+        </button>
       </div>
 
       <ReviewsSection

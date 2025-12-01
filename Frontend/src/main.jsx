@@ -37,12 +37,10 @@ const RequireCustomer = ({ children }) => {
   const role = localStorage.getItem("role");
   const userId = localStorage.getItem("userId");
 
-  // Block admins from customer pages
   if (role === "ADMIN") {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  // Require a logged-in customer
   if (!userId) {
     return <Navigate to="/login" replace />;
   }
@@ -50,7 +48,6 @@ const RequireCustomer = ({ children }) => {
   return children;
 };
 
-// Customer session + idle timeout guard (3 minutes)
 const CUSTOMER_IDLE_TIMEOUT = 3 * 60 * 1000; // 3 minutes
 
 const CustomerSessionGuard = ({ children }) => {
@@ -160,8 +157,9 @@ const RouteGuard = () => {
           </RequireCustomer>
         }
       />
+      {/* Updated Review route */}
       <Route
-        path="/review"
+        path="/review/:productId"
         element={
           <RequireCustomer>
             <CustomerSessionGuard>
@@ -238,17 +236,6 @@ const RouteGuard = () => {
           </RequireAdmin>
         }
       />
-      <Route
-        path="/product/:productId/review"
-        element={
-          <RequireCustomer>
-            <CustomerSessionGuard>
-              <Review />
-            </CustomerSessionGuard>
-          </RequireCustomer>
-        }
-      />
-
       <Route
         path="/admin/categories"
         element={

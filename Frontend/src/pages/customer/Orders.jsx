@@ -67,9 +67,9 @@ const Orders = () => {
 
   const filteredOrders = filterOrders();
 
-  // --- FIXED: pass productId to Review page ---
+  // --- UPDATED: Use URL param instead of state ---
   const handleLeaveReview = (productId) => {
-    navigate("/review", { state: { productId } });
+    navigate(`/review/${productId}`);
   };
 
   return (
@@ -84,36 +84,11 @@ const Orders = () => {
           </div>
 
           <div className="orders-tabs">
-            <button
-              className={`tab ${activeTab === "all" ? "active" : ""}`}
-              onClick={() => setActiveTab("all")}
-            >
-              All Orders
-            </button>
-            <button
-              className={`tab ${activeTab === "pending" ? "active" : ""}`}
-              onClick={() => setActiveTab("pending")}
-            >
-              Pending
-            </button>
-            <button
-              className={`tab ${activeTab === "processing" ? "active" : ""}`}
-              onClick={() => setActiveTab("processing")}
-            >
-              Processing
-            </button>
-            <button
-              className={`tab ${activeTab === "shipped" ? "active" : ""}`}
-              onClick={() => setActiveTab("shipped")}
-            >
-              Shipped
-            </button>
-            <button
-              className={`tab ${activeTab === "delivered" ? "active" : ""}`}
-              onClick={() => setActiveTab("delivered")}
-            >
-              Delivered
-            </button>
+            <button className={`tab ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>All Orders</button>
+            <button className={`tab ${activeTab === "pending" ? "active" : ""}`} onClick={() => setActiveTab("pending")}>Pending</button>
+            <button className={`tab ${activeTab === "processing" ? "active" : ""}`} onClick={() => setActiveTab("processing")}>Processing</button>
+            <button className={`tab ${activeTab === "shipped" ? "active" : ""}`} onClick={() => setActiveTab("shipped")}>Shipped</button>
+            <button className={`tab ${activeTab === "delivered" ? "active" : ""}`} onClick={() => setActiveTab("delivered")}>Delivered</button>
           </div>
 
           {loading ? (
@@ -131,12 +106,7 @@ const Orders = () => {
               <span className="empty-icon">📦</span>
               <h3>No orders found</h3>
               <p>You haven't placed any orders yet</p>
-              <button
-                className="btn-shop"
-                onClick={() => navigate("/catalog")}
-              >
-                Start Shopping
-              </button>
+              <button className="btn-shop" onClick={() => navigate("/catalog")}>Start Shopping</button>
             </div>
           ) : (
             <div className="orders-list">
@@ -163,35 +133,24 @@ const Orders = () => {
                     {order.products && order.products.map((product) => (
                       <div key={product.productId} className="order-product-item">
                         {product.productImage ? (
-                          <img
-                            src={product.productImage}
-                            alt={product.productName}
-                            className="product-image"
-                          />
+                          <img src={product.productImage} alt={product.productName} className="product-image" />
                         ) : (
-                          <div className="product-image placeholder">
-                            {product.productName?.charAt(0)}
-                          </div>
+                          <div className="product-image placeholder">{product.productName?.charAt(0)}</div>
                         )}
+
                         <div className="product-details">
                           <h4 className="product-name">{product.productName}</h4>
                           <p className="product-quantity">Quantity: {product.quantity}</p>
-                          <p className="product-price">
-                            ₱{((product.unitPrice || 0) * product.quantity).toFixed(2)}
-                          </p>
+                          <p className="product-price">₱{((product.unitPrice || 0) * product.quantity).toFixed(2)}</p>
                         </div>
 
-                        {/* Leave Review button per product */}
+                        {/* --- UPDATED BUTTON --- */}
                         <button
-                          className={`btn-review ${
-                            order.status === "Delivered" ? "" : "disabled"
-                          }`}
+                          className={`btn-review ${order.status === "Delivered" ? "" : "disabled"}`}
                           onClick={() => handleLeaveReview(product.productId)}
                           disabled={order.status !== "Delivered"}
                         >
-                          {order.status === "Delivered"
-                            ? `⭐ Leave a Review`
-                            : "🔒 Review Locked"}
+                          {order.status === "Delivered" ? `⭐ Leave a Review` : "🔒 Review Locked"}
                         </button>
                       </div>
                     ))}
@@ -200,23 +159,20 @@ const Orders = () => {
                   <div className="order-footer">
                     <div className="order-total">
                       <span className="total-label">Total Amount:</span>
-                      <span className="total-amount">
-                        ₱{(order.totalAmount || 0).toFixed(2)}
-                      </span>
+                      <span className="total-amount">₱{(order.totalAmount || 0).toFixed(2)}</span>
                     </div>
                     <div className="order-actions">
-                      <button
-                        className="btn-secondary"
-                        onClick={() => navigate(`/order/${order.orderId}`)}
-                      >
+                      <button className="btn-secondary" onClick={() => navigate(`/order/${order.orderId}`)}>
                         View Details
                       </button>
                     </div>
                   </div>
+
                 </div>
               ))}
             </div>
           )}
+
         </div>
       </div>
     </div>

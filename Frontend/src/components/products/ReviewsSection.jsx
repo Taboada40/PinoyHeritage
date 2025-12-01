@@ -11,7 +11,7 @@ function ReviewsSection({ rating, totalReviews, reviews }) {
   };
 
   return (
-    <div className="reviews-section">
+    <div id="reviews" className="reviews-section">
       <h2 className="reviews-title">Reviews ({totalReviews})</h2>
 
       <div className="overall-rating">
@@ -28,15 +28,17 @@ function ReviewsSection({ rating, totalReviews, reviews }) {
               <div className="review-stars">{renderStars(review.rating)}</div>
               <span className="review-date">{review.date}</span>
             </div>
+
             <p className="review-author">By {review.author}</p>
+
             <div className="review-tags">
               {review.tags.map((tag, index) => (
                 <span key={index} className="review-tag">{tag}</span>
               ))}
             </div>
+
             <p className="review-description">{review.description}</p>
 
-            {/* Media Files */}
             {review.mediaFiles && review.mediaFiles.length > 0 && (
               <div className="review-media-container">
                 {review.mediaFiles.map((media, idx) => {

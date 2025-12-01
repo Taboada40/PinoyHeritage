@@ -1,9 +1,12 @@
 package com.PinoyHeritage.Backend.entity;
- 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
- 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "review")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review {
 
     @Id
@@ -12,40 +15,70 @@ public class Review {
 
     private Integer rating;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false) // keep old column name
+    @JoinColumn(name = "item_id", nullable = false)
+    @JsonIgnoreProperties({"reviews", "category"}) // Prevent circular reference
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnoreProperties({"reviews", "orders", "cart", "wishlist"}) // Prevent circular reference
     private Customer customer;
 
- 
-    // Getters and Setters
+    // JSON array stored as text of base64 data-urls or remote urls
+    @Column(name = "media_json", columnDefinition = "LONGTEXT")
+    private String mediaJson;
+
+    // JSON array of tags stored as text
+    @Column(name = "tags_json", columnDefinition = "LONGTEXT")
+    private String tagsJson;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Getters & Setters
 
     public Long getId() { return id; }
-
     public void setId(Long id) { this.id = id; }
 
     public Integer getRating() { return rating; }
-
     public void setRating(Integer rating) { this.rating = rating; }
 
     public String getComment() { return comment; }
-
     public void setComment(String comment) { this.comment = comment; }
 
     public Product getProduct() { return product; }
-
     public void setProduct(Product product) { this.product = product; }
 
     public Customer getCustomer() { return customer; }
-
     public void setCustomer(Customer customer) { this.customer = customer; }
 
+    public String getMediaJson() { return mediaJson; }
+    public void setMediaJson(String mediaJson) { this.mediaJson = mediaJson; }
+
+    public String getTagsJson() { return tagsJson; }
+    public void setTagsJson(String tagsJson) { this.tagsJson = tagsJson; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
- 
- 
