@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNotification } from '../../context/NotificationContext.jsx';
 import '../../styles/products/ProductInfo.css';
 
 function ProductInfo({ product }) {
+  const { notifyWarning } = useNotification();
   const [selectedSize, setSelectedSize] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -243,12 +245,12 @@ function ProductInfo({ product }) {
   // Add to cart functionality - UPDATED
   const handleAddToCart = async () => {
     if (hasSizes && !selectedSize) {
-      alert('Please select a size');
+      notifyWarning('Please select a size');
       return;
     }
 
     if (product.stock === 0) {
-      alert('Product is out of stock');
+      notifyWarning('Product is out of stock');
       return;
     }
 

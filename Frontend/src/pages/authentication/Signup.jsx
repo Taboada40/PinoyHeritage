@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/auth/auth.css";
 
 function Signup() {
@@ -9,6 +10,7 @@ function Signup() {
     email: "",
     password: "",
   });
+  const { notifySuccess, notifyError } = useNotification();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,12 +25,14 @@ function Signup() {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-        alert("Registration successful!");
+        notifySuccess("Registration successful!", { title: "Welcome" });
         navigate("/login");
+      } else {
+        notifyError("Registration failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      alert("Error signing up.");
+      notifyError("Error signing up. Please try again later.");
     }
   };
 

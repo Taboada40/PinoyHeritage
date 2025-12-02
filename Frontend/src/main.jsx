@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { NotificationProvider } from "./context/NotificationContext.jsx";
 
 import LandingPage from "./pages/LandingPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -259,7 +260,9 @@ const RouteGuard = () => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <RouteGuard />
+      <NotificationProvider>
+        <RouteGuard />
+      </NotificationProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

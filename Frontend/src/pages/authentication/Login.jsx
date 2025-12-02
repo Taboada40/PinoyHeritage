@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/auth/auth.css";
 
 function Login() {
@@ -8,6 +9,7 @@ function Login() {
   // Changed to use username/email and password for consistency with forms
   const [formData, setFormData] = useState({ identifier: "", password: "" }); 
   const [error, setError] = useState("");
+  const { notifySuccess, notifyError } = useNotification();
 
   const handleChange = (e) => {
     // Uses a generic name 'identifier' for the input field to capture either email or username
@@ -28,7 +30,7 @@ function Login() {
 
       if (res.ok) {
         const data = await res.json();
-        alert(`Welcome ${data.username}`);
+        notifySuccess(`Welcome ${data.username}`);
 
         let role = data.role;
 
@@ -68,10 +70,12 @@ function Login() {
         }
       } else {
         setError("Invalid credentials or login failed.");
+        notifyError("Invalid credentials or login failed.");
       }
     } catch (err) {
       console.error(err);
       setError("Error logging in or connecting to the server.");
+      notifyError("Error logging in or connecting to the server.");
     }
   };
 

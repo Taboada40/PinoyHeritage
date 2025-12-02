@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/customer/payment.css";
 
 const Payment = () => {
   const navigate = useNavigate();
+  const { notifyWarning } = useNotification();
 
   const [selectedMethod, setSelectedMethod] = useState("");
   const [cartItems, setCartItems] = useState([]);
@@ -111,7 +113,7 @@ const Payment = () => {
     if (promoCode.toUpperCase() === "SAVE10") {
       setAppliedPromo("SAVE10");
     } else {
-      alert("Invalid promo code");
+      notifyWarning("Invalid promo code");
       setPromoCode("");
     }
   };
@@ -137,39 +139,39 @@ const Payment = () => {
 
   const validatePayment = () => {
     if (!selectedMethod) {
-      alert("Please select a payment method.");
+      notifyWarning("Please select a payment method.");
       return false;
     }
 
     if (selectedMethod === "Credit/Debit Card") {
       if (!cardName || !cardNumber || !expiryDate || !cvv) {
-        alert("Please fill in all card details.");
+        notifyWarning("Please fill in all card details.");
         return false;
       }
       if (cardNumber.replace(/\s/g, "").length !== 16) {
-        alert("Please enter a valid 16-digit card number.");
+        notifyWarning("Please enter a valid 16-digit card number.");
         return false;
       }
       if (cvv.length !== 3) {
-        alert("Please enter a valid 3-digit CVV.");
+        notifyWarning("Please enter a valid 3-digit CVV.");
         return false;
       }
     }
 
     if (selectedMethod === "GCash") {
       if (!gcashNumber || !gcashName) {
-        alert("Please fill in all GCash details.");
+        notifyWarning("Please fill in all GCash details.");
         return false;
       }
       if (gcashNumber.length !== 11) {
-        alert("Please enter a valid 11-digit mobile number.");
+        notifyWarning("Please enter a valid 11-digit mobile number.");
         return false;
       }
     }
 
     if (selectedMethod === "Bank Transfer") {
       if (!bankName || !accountNumber || !accountName) {
-        alert("Please fill in all bank transfer details.");
+        notifyWarning("Please fill in all bank transfer details.");
         return false;
       }
     }

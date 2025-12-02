@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams, Navigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/Header";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/customer/review.css";
 
 const Review = () => {
@@ -9,6 +10,7 @@ const Review = () => {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('orderId');
   const customerId = localStorage.getItem("userId");
+  const { notifySuccess, notifyError } = useNotification();
 
   if (!productId) {
     return <Navigate to="/catalog" replace />;
@@ -63,13 +65,14 @@ const Review = () => {
         throw new Error(errorText);
       }
 
-      alert("Review submitted successfully!");
+      notifySuccess("Review submitted successfully!");
       // Navigate back to ProductDetails and trigger review refresh
       navigate(`/product/${productId}`, { state: { refreshReviews: true } });
 
     } catch (err) {
       console.error("Error submitting review:", err);
       setMessage(`Failed to submit review: ${err.message}`);
+      notifyError("Failed to submit review. Please try again.");
       setTimeout(() => setMessage(""), 5000);
     }
   };

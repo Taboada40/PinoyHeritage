@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/customer/checkout.css";
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { notifyWarning, notifySuccess } = useNotification();
 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,8 +121,9 @@ export default function Checkout() {
   const applyDiscount = () => {
     if (discountCode.toUpperCase() === "SAVE10") {
       setAppliedDiscount("SAVE10");
+      notifySuccess("Discount applied successfully");
     } else {
-      alert("Invalid discount code");
+      notifyWarning("Invalid discount code");
       setDiscountCode("");
     }
   };
@@ -147,10 +150,10 @@ export default function Checkout() {
 
   const handleProceedToPayment = () => {
     if (cartItems.length === 0) {
-      alert("Your cart is empty");
+      notifyWarning("Your cart is empty");
       return;
     }
-    
+
     if (validateFields()) {
       navigate("/payment");
     }
