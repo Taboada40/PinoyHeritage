@@ -7,7 +7,7 @@ function ReviewsSection({ rating = 0, totalReviews = 0, reviews = [], productId:
   const productId = propProductId ?? params.productId ?? params.id;
 
   const navigate = useNavigate();
-  const [hasReviewed, setHasReviewed] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);  
   const userId = localStorage.getItem('userId');
 
   // Format date as "Month Day, Year"
