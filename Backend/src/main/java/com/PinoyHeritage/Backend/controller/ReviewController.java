@@ -32,8 +32,9 @@ public class ReviewController {
             Long customerId = Long.valueOf(data.get("customerId").toString());
             Integer rating = ((Number) data.get("rating")).intValue();
             String comment = (String) data.get("comment");
+            Long orderId = data.get("orderId") != null ? Long.valueOf(data.get("orderId").toString()) : null;
 
-            Review review = reviewService.addReview(productId, customerId, rating, comment);
+            Review review = reviewService.addReview(productId, customerId, rating, comment, orderId);
             return ResponseEntity.status(HttpStatus.CREATED).body(review);
             
         } catch (RuntimeException e) {
@@ -80,9 +81,10 @@ public class ReviewController {
     @GetMapping("/reviews/check")
     public ResponseEntity<?> checkIfUserReviewedProduct(
             @RequestParam Long userId,
-            @RequestParam Long productId) {
+            @RequestParam Long productId,
+            @RequestParam(required = false) Long orderId) {
         try {
-            boolean hasReviewed = reviewService.hasCustomerReviewedProduct(userId, productId);
+            boolean hasReviewed = reviewService.hasCustomerReviewedProduct(userId, productId, orderId);
             return ResponseEntity.ok(Map.of("hasReviewed", hasReviewed));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

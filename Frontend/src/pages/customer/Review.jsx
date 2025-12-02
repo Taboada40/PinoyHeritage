@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, useParams, Navigate } from "react-router-dom";
+import { useNavigate, useParams, Navigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/Header";
 import "../../styles/customer/review.css";
 
 const Review = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('orderId');
   const customerId = localStorage.getItem("userId");
 
   if (!productId) {
@@ -45,7 +47,8 @@ const Review = () => {
     const payload = {
       rating: parseInt(rating),
       comment: finalComment,
-      customerId: parseInt(customerId)
+      customerId: parseInt(customerId),
+      orderId: orderId ? parseInt(orderId) : null
     };
 
     try {

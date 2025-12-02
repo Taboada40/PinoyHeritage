@@ -1,8 +1,11 @@
 package com.PinoyHeritage.Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "review")
@@ -41,6 +44,13 @@ public class Review {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "order_id")
+    private Long orderId;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<ReviewImage> images = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
@@ -81,4 +91,20 @@ public class Review {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Set<ReviewImage> getImages() { return images; }
+    public void setImages(Set<ReviewImage> images) { this.images = images; }
+
+    public Long getOrderId() { return orderId; }
+    public void setOrderId(Long orderId) { this.orderId = orderId; }
+
+    public void addImage(ReviewImage image) {
+        images.add(image);
+        image.setReview(this);
+    }
+
+    public void removeImage(ReviewImage image) {
+        images.remove(image);
+        image.setReview(null);
+    }
 }

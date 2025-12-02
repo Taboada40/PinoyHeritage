@@ -27,7 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review addReview(Long productId, Long customerId, Integer rating, String comment) {
+    public Review addReview(Long productId, Long customerId, Integer rating, String comment, Long orderId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
 
@@ -39,6 +39,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setCustomer(customer);
         review.setRating(rating);
         review.setComment(comment);
+        review.setOrderId(orderId);
 
         return reviewRepository.save(review);
     }
@@ -49,7 +50,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public boolean hasCustomerReviewedProduct(Long customerId, Long productId) {
+    public boolean hasCustomerReviewedProduct(Long customerId, Long productId, Long orderId) {
+        if (orderId != null) {
+            return reviewRepository.existsByCustomer_IdAndProduct_IdAndOrderId(customerId, productId, orderId);
+        }
         return reviewRepository.existsByCustomer_IdAndProduct_Id(customerId, productId);
     }
 

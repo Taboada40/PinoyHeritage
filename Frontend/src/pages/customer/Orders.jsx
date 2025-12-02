@@ -22,32 +22,28 @@ const Orders = () => {
       if (!userId || orders.length === 0) return;
       
       try {
-        // Get all unique product IDs from orders
-        const productIds = [];
-        orders.forEach(order => {
-          if (order.products) {
-            order.products.forEach(product => {
-              if (product.productId && !productIds.includes(product.productId)) {
-                productIds.push(product.productId);
-              }
-            });
-          }
-        });
-
-        // Check each product if it's been reviewed by the user
         const reviewStatus = {};
-        for (const productId of productIds) {
-          try {
-            const res = await fetch(
-              `http://localhost:8080/api/reviews/check?userId=${userId}&productId=${productId}`
-            );
-            if (res.ok) {
-              const data = await res.json();
-              reviewStatus[productId] = data.hasReviewed;
+        
+        // Check each product in each order
+        for (const order of orders) {
+          if (order.products) {
+            for (const product of order.products) {
+              if (product.productId) {
+                const key = `${order.orderId}_${product.productId}`;
+                try {
+                  const res = await fetch(
+                    `http://localhost:8080/api/reviews/check?userId=${userId}&productId=${product.productId}&orderId=${order.orderId}`
+                  );
+                  if (res.ok) {
+                    const data = await res.json();
+                    reviewStatus[key] = data.hasReviewed;
+                  }
+                } catch (err) {
+                  console.error(`Error checking review for product ${product.productId}:`, err);
+                  reviewStatus[key] = false;
+                }
+              }
             }
-          } catch (err) {
-            console.error(`Error checking review for product ${productId}:`, err);
-            reviewStatus[productId] = false;
           }
         }
         
@@ -60,9 +56,10 @@ const Orders = () => {
     checkProductReviews();
   }, [userId, orders]);
 
-  // Check if user has already reviewed a specific product
-  const hasReviewedProduct = (productId) => {
-    return reviewedProducts[productId] === true;
+  // Check if user has already reviewed a product for a specific order
+  const hasReviewedProduct = (orderId, productId) => {
+    const key = `${orderId}_${productId}`;
+    return reviewedProducts[key] === true;
   };
 
   useEffect(() => {
@@ -120,9 +117,9 @@ const Orders = () => {
 
   const filteredOrders = filterOrders();
 
-  // --- UPDATED: Use URL param instead of state ---
-  const handleLeaveReview = (productId) => {
-    navigate(`/review/${productId}`);
+  // Navigate to review page with product and order ID
+  const handleLeaveReview = (productId, orderId) => {
+    navigate(`/review/${productId}?orderId=${orderId}`);
   };
 
   return (
@@ -199,11 +196,11 @@ const Orders = () => {
 
                         {/* --- UPDATED BUTTON --- */}
                         <button
-                          className={`btn-review ${order.status === "Delivered" ? "" : "disabled"} ${hasReviewedProduct(product.productId) ? "reviewed" : ""}`}
-                          onClick={() => handleLeaveReview(product.productId)}
-                          disabled={order.status !== "Delivered" || hasReviewedProduct(product.productId)}
+                          className={`btn-review ${order.status === "Delivered" ? "" : "disabled"} ${hasReviewedProduct(order.orderId, product.productId) ? "reviewed" : ""}`}
+                          onClick={() => handleLeaveReview(product.productId, order.orderId)}
+                          disabled={order.status !== "Delivered" || hasReviewedProduct(order.orderId, product.productId)}
                         >
-                          {hasReviewedProduct(product.productId) 
+                          {hasReviewedProduct(order.orderId, product.productId) 
                             ? "✅ Review Submitted" 
                             : order.status === "Delivered" 
                               ? "⭐ Leave a Review" 

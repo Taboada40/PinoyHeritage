@@ -168,8 +168,9 @@ const Profile = () => {
               )}
             </form>
           </div>
-
-          {/* Notifications Section */}
+          {/* Notifications Section */} 
+          {/* 
+          {}
           <div className="profile-card">
             <h2 className="profile-title">Notifications</h2>
 
@@ -194,7 +195,7 @@ const Profile = () => {
                 ))}
               </ul>
             )}
-          </div>
+          </div> */}
         </div>
       </main>
 
