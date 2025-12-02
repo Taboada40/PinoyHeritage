@@ -56,6 +56,10 @@ function Header({ showNav = true }) {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results | empty | error
 
   // Detect if we're on the primary landing page (only '/')
   const isLandingPage = location.pathname === "/";
@@ -95,6 +99,19 @@ function Header({ showNav = true }) {
       setWishlistCount(0);
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isSearchOpen) return;
+
+    const handleKeyPress = (event) => {
+      if (event.key === "Escape") {
+        closeSearchPanel();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [isSearchOpen]);
 
   const fetchUserData = async (userId) => {
     // Fetch unread notifications
@@ -175,142 +192,278 @@ function Header({ showNav = true }) {
     setIsDropdownOpen(false);
   };
 
+  const resetSearchState = () => {
+    setSearchTerm("");
+    setSearchResults([]);
+    setSearchStatus("idle");
+  };
+
+  const closeSearchPanel = () => {
+    setIsSearchOpen(false);
+    resetSearchState();
+  };
+
+  const handleToggleSearch = () => {
+    if (isSearchOpen) {
+      closeSearchPanel();
+    } else {
+      setIsSearchOpen(true);
+    }
+  };
+
+  const handleNavigateToCatalogProduct = (productId) => {
+    const params = new URLSearchParams({ productId });
+    navigate(`/catalog?${params.toString()}`);
+    closeSearchPanel();
+  };
+
+  const handleSearchSubmit = async (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    const trimmed = searchTerm.trim();
+    if (!trimmed) {
+      setSearchStatus("idle");
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchStatus("loading");
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/products/search?query=${encodeURIComponent(trimmed)}`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to search products");
+      }
+
+      const data = await res.json();
+
+      if (!data || data.length === 0) {
+        setSearchResults([]);
+        setSearchStatus("empty");
+        return;
+      }
+
+      if (data.length === 1) {
+        handleNavigateToCatalogProduct(data[0].id);
+        return;
+      }
+
+      setSearchResults(data);
+      setSearchStatus("results");
+    } catch (error) {
+      console.error("Search error", error);
+      setSearchResults([]);
+      setSearchStatus("error");
+    }
+  };
+
+  const renderSearchFeedback = () => {
+    if (searchStatus === "loading") {
+      return <p className="search-feedback">Searching products…</p>;
+    }
+    if (searchStatus === "empty") {
+      return <p className="search-feedback not-found">Product not found.</p>;
+    }
+    if (searchStatus === "error") {
+      return <p className="search-feedback error">Unable to search right now. Please try again.</p>;
+    }
+    if (searchStatus === "results") {
+      return <p className="search-feedback">Select a product to view it in the Shop.</p>;
+    }
+    return null;
+  };
+
   return (
-    <header className={headerClass}>
-      <div className="container">
-        <div className="nav-content">
-          <div className="logo">
-            <div className="logo-icon">PH</div>
-            <Link to="/" className="nav-link">PinoyHeritage</Link>
-          </div>
+    <>
+      <header className={headerClass}>
+        <div className="container">
+          <div className="nav-content">
+            <div className="logo">
+              <div className="logo-icon">PH</div>
+              <Link to="/" className="nav-link">PinoyHeritage</Link>
+            </div>
 
-          {showNav && (
-            <nav className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link>
-              <a href="#why-section" className="nav-link">About</a>
-              <Link to="/catalog" className="nav-link">Shop</Link>
-            </nav>
-          )}
+            {showNav && (
+              <nav className="nav-menu">
+                <Link to="/home" className="nav-link">Home</Link>
+                <a href="#why-section" className="nav-link">About</a>
+                <Link to="/catalog" className="nav-link">Shop</Link>
+              </nav>
+            )}
 
-          <div className="nav-icons">
-            <button className="search-btn" aria-label="Search"></button>
-            
-            {/* Cart button navigates to /cart */}
-            <button 
-              className="cart-btn" 
-              aria-label="Cart" 
-              onClick={() => navigate("/cart")}
-            ></button>
-            
-            <div className="profile-dropdown">
-              <button
-                className="acc-btn"
-                aria-label="Account"
-                onClick={handleAccountClick}
-              >
-                {(unreadCount > 0 || wishlistCount > 0) && (
-                  <span className="notification-dot"></span>
-                )}
-              </button>
+            <div className="nav-icons">
+              <div className={`header-search-wrapper ${isSearchOpen ? "open" : ""}`}>
+                <div className={`header-search-container ${isSearchOpen ? "open" : ""}`} role="search">
+                  <button
+                    type="button"
+                    className="search-btn search-toggle"
+                    aria-label={isSearchOpen ? "Close search" : "Search"}
+                    aria-pressed={isSearchOpen}
+                    onClick={handleToggleSearch}
+                  ></button>
 
-              {/* Dropdown Menu - Only shows when user is logged in */}
-              {isDropdownOpen && user && (
-                <div className="dropdown-menu">
-                  {/* User Info */}
-                  <div className="dropdown-header">
-                    <div className="user-avatar">
-                      {user.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="user-info">
-                      <div className="user-name">{user.username || 'User'}</div>
-                      <div className="user-email">{user.email}</div>
-                    </div>
-                  </div>
+                  {isSearchOpen && (
+                    <div className="search-expanded">
+                      <form className="header-search-form" onSubmit={handleSearchSubmit}>
+                        <input
+                          type="text"
+                          className="header-search-input"
+                          placeholder="Search products"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          autoFocus
+                        />
+                      </form>
 
-                  <div className="dropdown-divider"></div>
+                      {renderSearchFeedback()}
 
-                  {/* Menu Items */}
-                  <button 
-                    className="dropdown-item"
-                    onClick={() => handleNavigation("/profile")}
-                  >
-                    <span className="dropdown-icon">
-                      <ProfileIcon />
-                    </span>
-                    Profile
-                  </button>
-
-                  <button 
-                    className="dropdown-item"
-                    onClick={() => handleNavigation("/orders")}
-                  >
-                    <span className="dropdown-icon">
-                      <OrdersIcon />
-                    </span>
-                    My Orders
-                  </button>
-
-                  <button 
-                    className="dropdown-item"
-                    onClick={() => handleNavigation("/wishlist")}
-                  >
-                    <span className="dropdown-icon">
-                      <WishlistIcon />
-                      {wishlistCount > 0 && (
-                        <span className="dropdown-badge">{wishlistCount}</span>
+                      {searchStatus === "results" && (
+                        <ul className="search-results-inline" aria-live="polite">
+                          {searchResults.map((product) => (
+                            <li key={product.id} className="search-result-item">
+                              <div>
+                                <p className="result-name">{product.name}</p>
+                                <p className="result-meta">
+                                  {(product.category && (product.category.name || product.category)) || "Catalog"}
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                className="result-action-btn"
+                                onClick={() => handleNavigateToCatalogProduct(product.id)}
+                              >
+                                View
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
                       )}
-                    </span>
-                    Wishlist
-                  </button>
-
-                  <button 
-                    className="dropdown-item"
-                    onClick={() => handleNavigation("/notifications")}
-                  >
-                    <span className="dropdown-icon">
-                      <NotificationsIcon />
-                      {unreadCount > 0 && (
-                        <span className="dropdown-badge">{unreadCount}</span>
-                      )}
-                    </span>
-                    Notifications
-                  </button>
-
-                  <div className="dropdown-divider"></div>
-
-                  {/* Admin Dashboard Link (if admin) */}
-                  {user.role === "ADMIN" && (
-                    <>
-                      <button 
-                        className="dropdown-item admin-item"
-                        onClick={() => handleNavigation("/admin/dashboard")}
-                      >
-                        <span className="dropdown-icon">
-                          <AdminIcon />
-                        </span>
-                        Admin Dashboard
-                      </button>
-                      <div className="dropdown-divider"></div>
-                    </>
+                    </div>
                   )}
-
-                  {/* Logout */}
-                  <button 
-                    className="dropdown-item logout-item"
-                    onClick={handleLogout}
-                  >
-                    <span className="dropdown-icon">
-                      <LogoutIcon />
-                    </span>
-                    Logout
-                  </button>
                 </div>
-              )}
+              </div>
+
+              {/* Cart button navigates to /cart */}
+              <button 
+                className="cart-btn" 
+                aria-label="Cart" 
+                onClick={() => navigate("/cart")}
+              ></button>
+              
+              <div className="profile-dropdown">
+                <button
+                  className="acc-btn"
+                  aria-label="Account"
+                  onClick={handleAccountClick}
+                >
+                  {(unreadCount > 0 || wishlistCount > 0) && (
+                    <span className="notification-dot"></span>
+                  )}
+                </button>
+
+                {/* Dropdown Menu - Only shows when user is logged in */}
+                {isDropdownOpen && user && (
+                  <div className="dropdown-menu">
+                    {/* User Info */}
+                    <div className="dropdown-header">
+                      <div className="user-avatar">
+                        {user.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="user-info">
+                        <div className="user-name">{user.username || 'User'}</div>
+                        <div className="user-email">{user.email}</div>
+                      </div>
+                    </div>
+
+                    <div className="dropdown-divider"></div>
+
+                    {/* Menu Items */}
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => handleNavigation("/profile")}
+                    >
+                      <span className="dropdown-icon">
+                        <ProfileIcon />
+                      </span>
+                      Profile
+                    </button>
+
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => handleNavigation("/orders")}
+                    >
+                      <span className="dropdown-icon">
+                        <OrdersIcon />
+                      </span>
+                      My Orders
+                    </button>
+
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => handleNavigation("/wishlist")}
+                    >
+                      <span className="dropdown-icon">
+                        <WishlistIcon />
+                        {wishlistCount > 0 && (
+                          <span className="dropdown-badge">{wishlistCount}</span>
+                        )}
+                      </span>
+                      Wishlist
+                    </button>
+
+                    <button 
+                      className="dropdown-item"
+                      onClick={() => handleNavigation("/notifications")}
+                    >
+                      <span className="dropdown-icon">
+                        <NotificationsIcon />
+                        {unreadCount > 0 && (
+                          <span className="dropdown-badge">{unreadCount}</span>
+                        )}
+                      </span>
+                      Notifications
+                    </button>
+
+                    <div className="dropdown-divider"></div>
+
+                    {/* Admin Dashboard Link (if admin) */}
+                    {user.role === "ADMIN" && (
+                      <>
+                        <button 
+                          className="dropdown-item admin-item"
+                          onClick={() => handleNavigation("/admin/dashboard")}
+                        >
+                          <span className="dropdown-icon">
+                            <AdminIcon />
+                          </span>
+                          Admin Dashboard
+                        </button>
+                        <div className="dropdown-divider"></div>
+                      </>
+                    )}
+
+                    {/* Logout */}
+                    <button 
+                      className="dropdown-item logout-item"
+                      onClick={handleLogout}
+                    >
+                      <span className="dropdown-icon">
+                        <LogoutIcon />
+                      </span>
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+    </>
   );
 }
 

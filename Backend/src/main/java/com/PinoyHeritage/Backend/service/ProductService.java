@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,12 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<Product> searchProductsByName(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return productRepository.findByNameContainingIgnoreCase(query.trim());
+    }
 
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
