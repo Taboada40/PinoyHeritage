@@ -90,9 +90,7 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <Header showNav={false} />
-
-      <ProfileSidebar />
+      <Header showNav={true} />
 
       <main className="main-content">
         <div className="profile-container">
@@ -170,8 +168,9 @@ const Profile = () => {
               )}
             </form>
           </div>
-
-          {/* Notifications Section */}
+          {/* Notifications Section */} 
+          {/* 
+          {}
           <div className="profile-card">
             <h2 className="profile-title">Notifications</h2>
 
@@ -196,7 +195,7 @@ const Profile = () => {
                 ))}
               </ul>
             )}
-          </div>
+          </div> */}
         </div>
       </main>
 

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-
 import Header from '../../components/Header';
 import ProductInfo from '../../components/products/ProductInfo';
 import ReviewsSection from '../../components/products/ReviewsSection';
-
 import '../../styles/products/ProductDetails.css';
 import arrowImg from "../../assets/imgs/products/arrow-right.png";
 
@@ -18,21 +16,21 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
 
-  // Image carousel state must be declared unconditionally (before any early returns)
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
+
+  // Image carousel state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Helper function to parse sizes from JSON string
   const parseSizes = (sizes) => {
     if (!sizes) return [];
     try {
-      // If it's already an array, return it
       if (Array.isArray(sizes)) return sizes;
-      
-      // If it's a JSON string, parse it
       const parsed = JSON.parse(sizes);
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      // If parsing fails, try to handle as comma-separated string
       if (typeof sizes === 'string') {
         return sizes.split(',').map(size => size.trim()).filter(size => size !== '');
       }
@@ -40,11 +38,11 @@ export default function ProductDetails() {
     }
   };
 
-  // --- API FETCH ---
+  const API_BASE = 'http://localhost:8080';
+
+  // Fetch product
   useEffect(() => {
     if (!product) setLoading(true);
-
-    const API_BASE = 'http://localhost:8080';
 
     fetch(`${API_BASE}/api/admin/products/${id}`)
       .then((res) => {
@@ -52,17 +50,14 @@ export default function ProductDetails() {
         return res.json();
       })
       .then((data) => {
-        // Parse sizes from JSON string to array
         const sizesArray = parseSizes(data.sizes);
-        
-        // Normalize backend shape to what UI expects
         const normalized = {
           ...data,
-          image: data.imageUrl || clothingImg,
+          image: data.imageUrl || data.image,
           stock: data.stock || 0,
           rating: data.rating || 0,
           reviews: data.reviews || [],
-          sizes: sizesArray // Use parsed array instead of raw data
+          sizes: sizesArray
         };
         setProduct(normalized);
         setError(null);
@@ -75,11 +70,44 @@ export default function ProductDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Fetch reviews
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/products/${id}/reviews`);
+      if (!res.ok) throw new Error('Failed to fetch reviews');
+      const data = await res.json();
+      
+      if (data.reviews) {
+        setReviews(data.reviews || []);
+        setTotalReviews(data.reviews.length || 0);
+        setAvgRating(data.rating || 0);
+      } else {
+        const reviewsList = Array.isArray(data) ? data : [];
+        setReviews(reviewsList);
+        setTotalReviews(reviewsList.length);
+        const avg = reviewsList.length > 0 
+          ? reviewsList.reduce((sum, r) => sum + (r.rating || 0), 0) / reviewsList.length 
+          : 0;
+        setAvgRating(avg);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      setReviews([]);
+      setTotalReviews(0);
+      setAvgRating(0);
+    }
+  };
+
+  // Fetch reviews on mount & refresh after submitting review
+  useEffect(() => {
+    fetchReviews();
+  }, [id, location.state?.refreshReviews]);
+
   if (loading) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Loading product...</p></div>;
   if (error || !product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
 
-  // image list (use a fallback if backend didn't provide one)
-  const images = product && product.image ? [product.image] : [clothingImg];
+  // Image list
+  const images = product && product.image ? [product.image] : [];
 
   const handlePrev = () => {
     setCurrentImageIndex((prev) =>
@@ -105,8 +133,8 @@ export default function ProductDetails() {
       </div>
 
       <div className="product-main">
+        {/* Image Section with Carousel */}
         <div className="image-section">
-
           <button className="image-arrow arrow-left" onClick={handlePrev}>
             <img src={arrowImg} alt="Previous"/>
           </button>
@@ -134,13 +162,15 @@ export default function ProductDetails() {
           </div>
         </div>
 
+        {/* Product Info Section */}
         <ProductInfo product={product} />
       </div>
 
+      {/* Reviews Section - Pass the fetched reviews */}
       <ReviewsSection
-        rating={product.rating}
-        totalReviews={product.reviews ? product.reviews.length : 0}
-        reviews={product.reviews || []}
+        rating={avgRating}
+        totalReviews={totalReviews}
+        reviews={reviews}
       />
     </div>
   );
