@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/products/ReviewSection.css';
 
-function ReviewsSection({ rating = 0, totalReviews = 0, reviews = [] }) {
-  const { productId } = useParams();
+function ReviewsSection({ rating = 0, totalReviews = 0, reviews = [], productId: propProductId }) {
+  const params = useParams();
+  const productId = propProductId ?? params.productId ?? params.id;
+
   const navigate = useNavigate();
   const [hasReviewed, setHasReviewed] = useState(false);
   const userId = localStorage.getItem('userId');
@@ -39,6 +41,10 @@ function ReviewsSection({ rating = 0, totalReviews = 0, reviews = [] }) {
   const handleWriteReview = () => {
     if (!userId) {
       navigate('/login', { state: { from: `/product/${productId}` } });
+      return;
+    }
+    if (!productId) {
+      console.warn('ReviewsSection: productId missing, cannot navigate to review page.');
       return;
     }
     navigate(`/review/${productId}`);

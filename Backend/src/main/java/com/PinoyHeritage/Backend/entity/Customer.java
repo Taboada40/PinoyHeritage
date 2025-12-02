@@ -1,5 +1,7 @@
 package com.PinoyHeritage.Backend.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -30,14 +32,19 @@ public class Customer {
     @Column(nullable = true)
     private String phoneNumber;
 
-    // Relationships
+    // Relationships - JsonIgnore to prevent circular references
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Cart> cart;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Order> orders;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Order> orders;
+
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Review> reviews;
 
     // Getters and Setters
