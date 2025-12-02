@@ -1,11 +1,8 @@
-// src/pages/products/ProductDetails.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-
 import Header from '../../components/Header';
 import ProductInfo from '../../components/products/ProductInfo';
 import ReviewsSection from '../../components/products/ReviewsSection';
-
 import '../../styles/products/ProductDetails.css';
 import arrowImg from "../../assets/imgs/products/arrow-right.png";
 
@@ -19,10 +16,14 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
 
-  // Image carousel state must be declared unconditionally
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
+
+  // Image carousel state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Helper function to parse sizes from JSON string
   const parseSizes = (sizes) => {
     if (!sizes) return [];
     try {
@@ -31,18 +32,17 @@ export default function ProductDetails() {
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       if (typeof sizes === 'string') {
-        return sizes.split(',').map(s => s.trim()).filter(s => s !== '');
+        return sizes.split(',').map(size => size.trim()).filter(size => size !== '');
       }
       return [];
     }
   };
 
-  // --- API FETCH ---
-  useEffect(() => {
-    let mounted = true;
-    if (!product) setLoading(true);
+  const API_BASE = 'http://localhost:8080';
 
-    const API_BASE = 'http://localhost:8080';
+  // Fetch product
+  useEffect(() => {
+    if (!product) setLoading(true);
 
     fetch(`${API_BASE}/api/admin/products/${id}`)
       .then((res) => {
@@ -50,19 +50,13 @@ export default function ProductDetails() {
         return res.json();
       })
       .then((data) => {
-        if (!mounted) return;
-
         const sizesArray = parseSizes(data.sizes);
-
-        // Use product.imageUrl if provided; otherwise keep any `image` field the API provided
-        const imageSource = data.imageUrl || data.image || '';
-
         const normalized = {
           ...data,
-          image: imageSource,
-          stock: data.stock ?? 0,
-          rating: data.rating ?? 0,
-          reviews: Array.isArray(data.reviews) ? data.reviews : [],
+          image: data.imageUrl || data.image,
+          stock: data.stock || 0,
+          rating: data.rating || 0,
+          reviews: data.reviews || [],
           sizes: sizesArray
         };
         setProduct(normalized);
@@ -73,32 +67,58 @@ export default function ProductDetails() {
         setError(err.message);
         setProduct(null);
       })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => { mounted = false; };
+      .finally(() => setLoading(false));
   }, [id]);
+
+  // Fetch reviews
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/products/${id}/reviews`);
+      if (!res.ok) throw new Error('Failed to fetch reviews');
+      const data = await res.json();
+      
+      if (data.reviews) {
+        setReviews(data.reviews || []);
+        setTotalReviews(data.reviews.length || 0);
+        setAvgRating(data.rating || 0);
+      } else {
+        const reviewsList = Array.isArray(data) ? data : [];
+        setReviews(reviewsList);
+        setTotalReviews(reviewsList.length);
+        const avg = reviewsList.length > 0 
+          ? reviewsList.reduce((sum, r) => sum + (r.rating || 0), 0) / reviewsList.length 
+          : 0;
+        setAvgRating(avg);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      setReviews([]);
+      setTotalReviews(0);
+      setAvgRating(0);
+    }
+  };
+
+  // Fetch reviews on mount & refresh after submitting review
+  useEffect(() => {
+    fetchReviews();
+  }, [id, location.state?.refreshReviews]);
 
   if (loading) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Loading product...</p></div>;
   if (error || !product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
 
-  // images array (use product.image if available, otherwise empty array)
-  const images = (product && product.image) ? [product.image] : [];
+  // Image list
+  const images = product && product.image ? [product.image] : [];
 
   const handlePrev = () => {
-    if (images.length === 0) return;
-    setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
   };
 
   const handleNext = () => {
-    if (images.length === 0) return;
-    setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
-  };
-
-  const handleWriteReview = () => {
-    // navigate to route that has productId param that your main.jsx expects
-    navigate(`/product/${id}/review`);
+    setCurrentImageIndex((prev) =>
+      prev === images.length - 1 ? 0 : prev + 1
+    );
   };
 
   return (
@@ -113,13 +133,14 @@ export default function ProductDetails() {
       </div>
 
       <div className="product-main">
+        {/* Image Section with Carousel */}
         <div className="image-section">
           <button className="image-arrow arrow-left" onClick={handlePrev}>
             <img src={arrowImg} alt="Previous"/>
           </button>
 
           <img
-            src={images[currentImageIndex] || product.image || ''}
+            src={images[currentImageIndex]}
             alt={`${product.name} view ${currentImageIndex + 1}`}
             className="main-image"
           />
@@ -129,9 +150,6 @@ export default function ProductDetails() {
           </button>
 
           <div className="thumbnail-row">
-            {images.length === 0 && (
-              <div className="thumbnail empty">No image</div>
-            )}
             {images.map((img, index) => (
               <img
                 key={index}
@@ -144,20 +162,15 @@ export default function ProductDetails() {
           </div>
         </div>
 
+        {/* Product Info Section */}
         <ProductInfo product={product} />
       </div>
 
-      {/* Write Review Button (navigates with id in URL) */}
-      <div style={{ padding: "20px 24px" }}>
-        <button className="write-review-btn" onClick={handleWriteReview}>
-          Write a Review
-        </button>
-      </div>
-
+      {/* Reviews Section - Pass the fetched reviews */}
       <ReviewsSection
-        rating={product.rating}
-        totalReviews={product.reviews ? product.reviews.length : 0}
-        reviews={product.reviews || []}
+        rating={avgRating}
+        totalReviews={totalReviews}
+        reviews={reviews}
       />
     </div>
   );

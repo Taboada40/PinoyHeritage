@@ -48,7 +48,18 @@ public class ReviewController {
     public ResponseEntity<?> getReviews(@PathVariable Long productId) {
         try {
             List<Review> reviews = reviewService.getReviewsForProduct(productId);
-            return ResponseEntity.ok(reviews);
+            
+            // Calculate average rating
+            double averageRating = reviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+                
+            // Return both reviews and average rating
+            return ResponseEntity.ok(Map.of(
+                "reviews", reviews,
+                "rating", Math.round(averageRating * 10) / 10.0  // Round to 1 decimal place
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage()));
