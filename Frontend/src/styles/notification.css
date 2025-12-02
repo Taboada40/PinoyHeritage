@@ -1,0 +1,107 @@
+:root {
+  --toast-success-bg: #ecfdf5;
+  --toast-success-border: #34d399;
+  --toast-success-text: #065f46;
+  --toast-error-bg: #fef2f2;
+  --toast-error-border: #f87171;
+  --toast-error-text: #7f1d1d;
+  --toast-warning-bg: #fffbeb;
+  --toast-warning-border: #facc15;
+  --toast-warning-text: #78350f;
+  --toast-info-bg: #eff6ff;
+  --toast-info-border: #60a5fa;
+  --toast-info-text: #1e3a8a;
+}
+
+.notification-stack {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.notification-card {
+  min-width: 280px;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+  border-left: 4px solid transparent;
+  pointer-events: auto;
+  animation: toast-in 0.3s ease forwards;
+}
+
+.notification-card.success {
+  background: var(--toast-success-bg);
+  border-left-color: var(--toast-success-border);
+  color: var(--toast-success-text);
+}
+
+.notification-card.error {
+  background: var(--toast-error-bg);
+  border-left-color: var(--toast-error-border);
+  color: var(--toast-error-text);
+}
+
+.notification-card.warning {
+  background: var(--toast-warning-bg);
+  border-left-color: var(--toast-warning-border);
+  color: var(--toast-warning-text);
+}
+
+.notification-card.info {
+  background: var(--toast-info-bg);
+  border-left-color: var(--toast-info-border);
+  color: var(--toast-info-text);
+}
+
+.notification-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.notification-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.notification-close {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

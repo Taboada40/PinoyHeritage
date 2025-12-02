@@ -1,12 +1,16 @@
 // Newsletter.jsx
 import React, { useState } from "react";
+import { useNotification } from "../../context/NotificationContext.jsx";
 
 function NewsletterSection() {
   const [email, setEmail] = useState("");
+  const { notifySuccess } = useNotification();
 
   const handleSubscribe = (event) => {
     event.preventDefault();
-    alert(`Thank you for subscribing! We'll send updates to ${email}`);
+    notifySuccess("Subscription confirmed", {
+      message: `We'll send updates to ${email}`
+    });
     setEmail(""); // clear input
   };
 
