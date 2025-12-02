@@ -26,8 +26,9 @@
   height: 100vh;
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle at 15% 20%, rgba(252, 209, 22, 0.25), transparent 45%),
-    linear-gradient(135deg, #010b1f 0%, #021842 45%, #0038a8 100%);
+  background: radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.6), transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(252, 209, 22, 0.25), transparent 45%),
+    linear-gradient(135deg, #f0f4ff 0%, #dfe8ff 45%, #93b5ff 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -44,14 +45,14 @@
 }
 
 .home-hero::before {
-  background: radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.15), transparent 55%);
+  background: radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.35), transparent 55%);
   mix-blend-mode: screen;
 }
 
 .home-hero::after {
   background-image:
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0, rgba(255, 255, 255, 0.06) 2px, transparent 2px, transparent 10px);
-  opacity: 0.7;
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 2px, transparent 2px, transparent 10px);
+  opacity: 0.6;
 }
 
 .home-hero-overlay {
@@ -60,7 +61,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, rgba(1, 11, 31, 0.75), rgba(0, 56, 168, 0.65));
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.65), rgba(0, 56, 168, 0.35));
   z-index: 1;
 }
 
