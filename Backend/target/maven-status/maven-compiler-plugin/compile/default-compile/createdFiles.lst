@@ -19,6 +19,7 @@ com\PinoyHeritage\Backend\config\WebConfig.class
 com\PinoyHeritage\Backend\dto\CartItemRequest.class
 com\PinoyHeritage\Backend\service\CartServiceImpl.class
 com\PinoyHeritage\Backend\service\CustomerService.class
+com\PinoyHeritage\Backend\controller\ProductSearchController.class
 com\PinoyHeritage\Backend\entity\Notification.class
 com\PinoyHeritage\Backend\repository\CategoryRepository.class
 com\PinoyHeritage\Backend\service\WishlistService.class
