@@ -191,12 +191,8 @@ function ReviewsSection({ rating = 0, totalReviews = 0, reviews = [] }) {
                     </div>
                   )}
 
-                  {/* Helpful section */}
+                  {/* Footer with verified badge only */}
                   <div className="review-footer">
-                    <button className="helpful-btn">
-                      <span className="helpful-icon">👍</span>
-                      <span>Helpful</span>
-                    </button>
                     <span className="verified-badge">✓ Verified Purchase</span>
                   </div>
                 </div>

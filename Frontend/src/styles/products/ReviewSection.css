@@ -95,6 +95,8 @@
   gap: 60px;
   margin-bottom: 40px;
   animation: fadeInUp 0.6s ease 0.1s both;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .rating-score-section {
@@ -192,6 +194,8 @@
   padding: 80px 40px;
   text-align: center;
   box-shadow: var(--shadow-md);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .empty-icon {
@@ -239,6 +243,8 @@
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   animation: fadeInUp 0.5s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .review-card:hover {
@@ -367,35 +373,10 @@
 /* Review Footer */
 .review-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding-top: 16px;
   border-top: 1px solid var(--border-color);
-}
-
-.helpful-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--bg-gray);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.helpful-btn:hover {
-  background: var(--white);
-  border-color: var(--primary-blue);
-  color: var(--primary-blue);
-}
-
-.helpful-icon {
-  font-size: 16px;
 }
 
 .verified-badge {
@@ -511,9 +492,7 @@
   }
 
   .review-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    justify-content: flex-start;
   }
 }
 
@@ -532,4 +511,15 @@
     width: 80px;
     height: 80px;
   }
+}
+
+/* FIX WIDTH ALIGNMENT */
+.reviews-list {
+  width: 100%;
+}
+
+.review-card {
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }

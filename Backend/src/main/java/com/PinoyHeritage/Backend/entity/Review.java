@@ -18,24 +18,26 @@ public class Review {
 
     private Integer rating;
 
+    // 🚀 FIXED — Forces Hibernate to rebuild column as LONGTEXT
+    @Lob
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String comment;
 
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
-    @JsonIgnoreProperties({"reviews", "category"}) // Prevent circular reference
+    @JsonIgnoreProperties({"reviews", "category"})
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    @JsonIgnoreProperties({"reviews", "orders", "cart", "wishlist"}) // Prevent circular reference
+    @JsonIgnoreProperties({"reviews", "orders", "cart", "wishlist"})
     private Customer customer;
 
-    // JSON array stored as text of base64 data-urls or remote urls
+    @Lob
     @Column(name = "media_json", columnDefinition = "LONGTEXT")
     private String mediaJson;
 
-    // JSON array of tags stored as text
+    @Lob
     @Column(name = "tags_json", columnDefinition = "LONGTEXT")
     private String tagsJson;
 
@@ -64,7 +66,6 @@ public class Review {
     }
 
     // Getters & Setters
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
