@@ -9,8 +9,61 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [userReviews, setUserReviews] = useState([]);
 
   const userId = localStorage.getItem("userId");
+
+  // Check if user has already reviewed a product
+  const [reviewedProducts, setReviewedProducts] = useState({});
+
+  // Check if user has reviewed each product in the orders
+  useEffect(() => {
+    const checkProductReviews = async () => {
+      if (!userId || orders.length === 0) return;
+      
+      try {
+        // Get all unique product IDs from orders
+        const productIds = [];
+        orders.forEach(order => {
+          if (order.products) {
+            order.products.forEach(product => {
+              if (product.productId && !productIds.includes(product.productId)) {
+                productIds.push(product.productId);
+              }
+            });
+          }
+        });
+
+        // Check each product if it's been reviewed by the user
+        const reviewStatus = {};
+        for (const productId of productIds) {
+          try {
+            const res = await fetch(
+              `http://localhost:8080/api/reviews/check?userId=${userId}&productId=${productId}`
+            );
+            if (res.ok) {
+              const data = await res.json();
+              reviewStatus[productId] = data.hasReviewed;
+            }
+          } catch (err) {
+            console.error(`Error checking review for product ${productId}:`, err);
+            reviewStatus[productId] = false;
+          }
+        }
+        
+        setReviewedProducts(reviewStatus);
+      } catch (err) {
+        console.error("Error checking product reviews:", err);
+      }
+    };
+
+    checkProductReviews();
+  }, [userId, orders]);
+
+  // Check if user has already reviewed a specific product
+  const hasReviewedProduct = (productId) => {
+    return reviewedProducts[productId] === true;
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -146,11 +199,15 @@ const Orders = () => {
 
                         {/* --- UPDATED BUTTON --- */}
                         <button
-                          className={`btn-review ${order.status === "Delivered" ? "" : "disabled"}`}
+                          className={`btn-review ${order.status === "Delivered" ? "" : "disabled"} ${hasReviewedProduct(product.productId) ? "reviewed" : ""}`}
                           onClick={() => handleLeaveReview(product.productId)}
-                          disabled={order.status !== "Delivered"}
+                          disabled={order.status !== "Delivered" || hasReviewedProduct(product.productId)}
                         >
-                          {order.status === "Delivered" ? `⭐ Leave a Review` : "🔒 Review Locked"}
+                          {hasReviewedProduct(product.productId) 
+                            ? "✅ Review Submitted" 
+                            : order.status === "Delivered" 
+                              ? "⭐ Leave a Review" 
+                              : "🔒 Review Locked"}
                         </button>
                       </div>
                     ))}

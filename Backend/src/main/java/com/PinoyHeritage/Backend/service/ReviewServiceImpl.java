@@ -47,4 +47,14 @@ public class ReviewServiceImpl implements ReviewService {
     public List<Review> getReviewsForProduct(Long productId) {
         return reviewRepository.findByProduct_Id(productId);
     }
+
+    @Override
+    public boolean hasCustomerReviewedProduct(Long customerId, Long productId) {
+        return reviewRepository.existsByCustomer_IdAndProduct_Id(customerId, productId);
+    }
+
+    @Override
+    public List<Review> getReviewsByCustomer(Long customerId) {
+        return reviewRepository.findByCustomer_Id(customerId);
+    }
 }

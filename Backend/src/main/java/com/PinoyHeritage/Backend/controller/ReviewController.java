@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -20,7 +20,7 @@ public class ReviewController {
     }
 
     // Submit a review
-    @PostMapping("/{productId}/reviews")
+    @PostMapping("/products/{productId}/reviews")
     public ResponseEntity<?> addReview(
             @PathVariable Long productId,
             @RequestBody Map<String, Object> data
@@ -44,8 +44,8 @@ public class ReviewController {
     }
 
     // Get all reviews for a product
-    @GetMapping("/{productId}/reviews")
-    public ResponseEntity<?> getReviews(@PathVariable Long productId) {
+    @GetMapping("/products/{productId}/reviews")
+    public ResponseEntity<?> getProductReviews(@PathVariable Long productId) {
         try {
             List<Review> reviews = reviewService.getReviewsForProduct(productId);
             
@@ -62,6 +62,30 @@ public class ReviewController {
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/reviews/user/{userId}")
+    public ResponseEntity<?> getUserReviews(@PathVariable Long userId) {
+        try {
+            List<Review> reviews = reviewService.getReviewsByCustomer(userId);
+            return ResponseEntity.ok(reviews);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/reviews/check")
+    public ResponseEntity<?> checkIfUserReviewedProduct(
+            @RequestParam Long userId,
+            @RequestParam Long productId) {
+        try {
+            boolean hasReviewed = reviewService.hasCustomerReviewedProduct(userId, productId);
+            return ResponseEntity.ok(Map.of("hasReviewed", hasReviewed));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
         }
     }

@@ -572,3 +572,18 @@ body {
     page-break-inside: avoid;
   }
 }
+
+/* Add this to your orders.css file */
+.btn-review.reviewed {
+  background: var(--gray-200);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  box-shadow: none;
+  border: 2px solid var(--gray-300);
+}
+
+/* Update the hover state to not apply to reviewed buttons */
+.btn-review:not(.reviewed):not(.disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+}
