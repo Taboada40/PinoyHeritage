@@ -58,8 +58,9 @@ function Header({ showNav = true }) {
   const [user, setUser] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results | empty | error
+  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading
+  const [searchMessage, setSearchMessage] = useState(null);
+  const [searchMessageType, setSearchMessageType] = useState("info");
 
   // Detect if we're on the primary landing page (only '/')
   const isLandingPage = location.pathname === "/";
@@ -101,17 +102,13 @@ function Header({ showNav = true }) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isSearchOpen) return;
-
-    const handleKeyPress = (event) => {
-      if (event.key === "Escape") {
-        closeSearchPanel();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isSearchOpen]);
+    if (!searchMessage) return;
+    const timeout = setTimeout(() => {
+      setSearchMessage(null);
+      setSearchMessageType("info");
+    }, 3500);
+    return () => clearTimeout(timeout);
+  }, [searchMessage]);
 
   const fetchUserData = async (userId) => {
     // Fetch unread notifications
@@ -194,8 +191,9 @@ function Header({ showNav = true }) {
 
   const resetSearchState = () => {
     setSearchTerm("");
-    setSearchResults([]);
     setSearchStatus("idle");
+    setSearchMessage(null);
+    setSearchMessageType("info");
   };
 
   const closeSearchPanel = () => {
@@ -208,6 +206,7 @@ function Header({ showNav = true }) {
       closeSearchPanel();
     } else {
       setIsSearchOpen(true);
+      setSearchMessage(null);
     }
   };
 
@@ -224,8 +223,8 @@ function Header({ showNav = true }) {
 
     const trimmed = searchTerm.trim();
     if (!trimmed) {
-      setSearchStatus("idle");
-      setSearchResults([]);
+      setSearchMessageType("info");
+      setSearchMessage("Please enter a product name.");
       return;
     }
 
@@ -239,39 +238,33 @@ function Header({ showNav = true }) {
       }
 
       const data = await res.json();
+      const exactMatch = (data || []).find((product) =>
+        product?.name?.toLowerCase() === trimmed.toLowerCase()
+      );
 
-      if (!data || data.length === 0) {
-        setSearchResults([]);
-        setSearchStatus("empty");
+      if (!exactMatch) {
+        setSearchStatus("idle");
+        setIsSearchOpen(false);
+        setSearchTerm("");
+        setSearchMessageType("warning");
+        setSearchMessage("No product found with that name.");
         return;
       }
 
-      if (data.length === 1) {
-        handleNavigateToCatalogProduct(data[0].id);
-        return;
-      }
-
-      setSearchResults(data);
-      setSearchStatus("results");
+      handleNavigateToCatalogProduct(exactMatch.id);
     } catch (error) {
       console.error("Search error", error);
-      setSearchResults([]);
-      setSearchStatus("error");
+      setSearchStatus("idle");
+      setSearchMessageType("error");
+      setSearchMessage("Unable to search right now. Please try again.");
+      setIsSearchOpen(false);
+      setSearchTerm("");
     }
   };
 
   const renderSearchFeedback = () => {
     if (searchStatus === "loading") {
-      return <p className="search-feedback">Searching products…</p>;
-    }
-    if (searchStatus === "empty") {
-      return <p className="search-feedback not-found">Product not found.</p>;
-    }
-    if (searchStatus === "error") {
-      return <p className="search-feedback error">Unable to search right now. Please try again.</p>;
-    }
-    if (searchStatus === "results") {
-      return <p className="search-feedback">Select a product to view it in the Shop.</p>;
+      return <span className="search-inline-status">Searching…</span>;
     }
     return null;
   };
@@ -295,7 +288,7 @@ function Header({ showNav = true }) {
             )}
 
             <div className="nav-icons">
-              <div className={`header-search-wrapper ${isSearchOpen ? "open" : ""}`}>
+              <div className="header-search-wrapper">
                 <div className={`header-search-container ${isSearchOpen ? "open" : ""}`} role="search">
                   <button
                     type="button"
@@ -316,34 +309,16 @@ function Header({ showNav = true }) {
                           onChange={(e) => setSearchTerm(e.target.value)}
                           autoFocus
                         />
+                        {renderSearchFeedback()}
                       </form>
-
-                      {renderSearchFeedback()}
-
-                      {searchStatus === "results" && (
-                        <ul className="search-results-inline" aria-live="polite">
-                          {searchResults.map((product) => (
-                            <li key={product.id} className="search-result-item">
-                              <div>
-                                <p className="result-name">{product.name}</p>
-                                <p className="result-meta">
-                                  {(product.category && (product.category.name || product.category)) || "Catalog"}
-                                </p>
-                              </div>
-                              <button
-                                type="button"
-                                className="result-action-btn"
-                                onClick={() => handleNavigateToCatalogProduct(product.id)}
-                              >
-                                View
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
                     </div>
                   )}
                 </div>
+                {searchMessage && (
+                  <div className={`search-message-bar ${searchMessageType}`} role="status">
+                    {searchMessage}
+                  </div>
+                )}
               </div>
 
               {/* Cart button navigates to /cart */}

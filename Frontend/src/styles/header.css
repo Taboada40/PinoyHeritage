@@ -128,7 +128,7 @@
 
 .header-search-wrapper {
   position: relative;
-  width: 48px;
+  width: 44px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -144,8 +144,8 @@
   align-items: center;
   gap: 10px;
   border-radius: 999px;
-  padding: 4px;
-  max-width: 48px;
+  padding: 4px 6px;
+  max-width: 44px;
   overflow: visible;
   background: transparent;
   box-shadow: none;
@@ -156,13 +156,13 @@
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
   padding: 6px 16px;
-  max-width: 420px;
+  max-width: 360px;
 }
 
 .search-btn.search-toggle {
-  padding: 0.35rem;
-  width: 32px;
-  height: 32px;
+  padding: 0.5rem;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
 }
 
@@ -173,8 +173,6 @@
 .search-expanded {
   display: none;
   flex-direction: column;
-  gap: 8px;
-  min-width: 260px;
   width: 100%;
 }
 
@@ -186,6 +184,7 @@
   display: flex;
   align-items: center;
   flex: 1;
+  gap: 8px;
 }
 
 .header-search-input {
@@ -205,60 +204,36 @@
   outline: none;
 }
 
-.search-feedback {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.search-feedback.not-found {
-  color: #fed7aa;
-}
-
-.search-feedback.error {
-  color: #fecaca;
-}
-
-.search-results-inline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.result-name {
-  font-weight: 600;
-  color: #fff;
-}
-
-.result-meta {
-  font-size: 0.78rem;
+.search-inline-status {
+  font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.75);
 }
 
-.result-action-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.2);
+.search-message-bar {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: rgba(2, 23, 64, 0.95);
   color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-width: 180px;
+  text-align: center;
 }
 
-.result-action-btn:hover {
-  background: rgba(255, 255, 255, 0.35);
+.search-message-bar.warning {
+  background: rgba(255, 124, 76, 0.95);
+}
+
+.search-message-bar.error {
+  background: rgba(239, 68, 68, 0.95);
+}
+
+.search-message-bar.info {
+  background: rgba(59, 130, 246, 0.95);
 }
 
 .notification-dot {
