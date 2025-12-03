@@ -58,7 +58,8 @@ function Header({ showNav = true }) {
   const [user, setUser] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading
+  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results
+  const [searchResults, setSearchResults] = useState([]);
   const [searchMessage, setSearchMessage] = useState(null);
   const [searchMessageType, setSearchMessageType] = useState("info");
 
@@ -192,6 +193,7 @@ function Header({ showNav = true }) {
   const resetSearchState = () => {
     setSearchTerm("");
     setSearchStatus("idle");
+    setSearchResults([]);
     setSearchMessage(null);
     setSearchMessageType("info");
   };
@@ -229,20 +231,28 @@ function Header({ showNav = true }) {
     }
 
     setSearchStatus("loading");
+    setSearchResults([]);
     try {
       const res = await fetch(
         `http://localhost:8080/api/products/search?query=${encodeURIComponent(trimmed)}`
       );
+
       if (!res.ok) {
         throw new Error("Failed to search products");
       }
 
       const data = await res.json();
+      const normalized = trimmed.toLowerCase();
       const exactMatch = (data || []).find((product) =>
-        product?.name?.toLowerCase() === trimmed.toLowerCase()
+        product?.name?.toLowerCase() === normalized
       );
 
-      if (!exactMatch) {
+      if (exactMatch) {
+        handleNavigateToCatalogProduct(exactMatch.id);
+        return;
+      }
+
+      if (!data || data.length === 0) {
         setSearchStatus("idle");
         setIsSearchOpen(false);
         setSearchTerm("");
@@ -251,12 +261,16 @@ function Header({ showNav = true }) {
         return;
       }
 
-      handleNavigateToCatalogProduct(exactMatch.id);
+      setSearchResults(data);
+      setSearchStatus("results");
+      setIsSearchOpen(true);
+      setSearchMessage(null);
     } catch (error) {
       console.error("Search error", error);
       setSearchStatus("idle");
       setSearchMessageType("error");
       setSearchMessage("Unable to search right now. Please try again.");
+
       setIsSearchOpen(false);
       setSearchTerm("");
     }
@@ -265,6 +279,9 @@ function Header({ showNav = true }) {
   const renderSearchFeedback = () => {
     if (searchStatus === "loading") {
       return <span className="search-inline-status">Searching…</span>;
+    }
+    if (searchStatus === "results" && searchResults.length > 0) {
+      return <span className="search-inline-status">Select a product below.</span>;
     }
     return null;
   };
@@ -311,6 +328,28 @@ function Header({ showNav = true }) {
                         />
                         {renderSearchFeedback()}
                       </form>
+
+                      {searchStatus === "results" && searchResults.length > 0 && (
+                        <ul className="search-results-inline" aria-live="polite">
+                          {searchResults.map((product) => (
+                            <li key={product.id} className="search-result-item">
+                              <div>
+                                <p className="result-name">{product.name}</p>
+                                <p className="result-meta">
+                                  {(product.category && (product.category.name || product.category)) || "Catalog"}
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                className="result-action-btn"
+                                onClick={() => handleNavigateToCatalogProduct(product.id)}
+                              >
+                                View
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   )}
                 </div>

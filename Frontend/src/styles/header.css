@@ -209,6 +209,49 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
+.search-results-inline {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.result-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.result-meta {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.result-action-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.result-action-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 .search-message-bar {
   position: absolute;
   top: calc(100% + 8px);
