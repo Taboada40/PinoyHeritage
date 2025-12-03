@@ -58,8 +58,10 @@ function Header({ showNav = true }) {
   const [user, setUser] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results
   const [searchResults, setSearchResults] = useState([]);
-  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results | empty | error
+  const [searchMessage, setSearchMessage] = useState(null);
+  const [searchMessageType, setSearchMessageType] = useState("info");
 
   // Detect if we're on the primary landing page (only '/')
   const isLandingPage = location.pathname === "/";
@@ -101,17 +103,13 @@ function Header({ showNav = true }) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isSearchOpen) return;
-
-    const handleKeyPress = (event) => {
-      if (event.key === "Escape") {
-        closeSearchPanel();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isSearchOpen]);
+    if (!searchMessage) return;
+    const timeout = setTimeout(() => {
+      setSearchMessage(null);
+      setSearchMessageType("info");
+    }, 3500);
+    return () => clearTimeout(timeout);
+  }, [searchMessage]);
 
   const fetchUserData = async (userId) => {
     // Fetch unread notifications
@@ -194,8 +192,10 @@ function Header({ showNav = true }) {
 
   const resetSearchState = () => {
     setSearchTerm("");
-    setSearchResults([]);
     setSearchStatus("idle");
+    setSearchResults([]);
+    setSearchMessage(null);
+    setSearchMessageType("info");
   };
 
   const closeSearchPanel = () => {
@@ -208,6 +208,7 @@ function Header({ showNav = true }) {
       closeSearchPanel();
     } else {
       setIsSearchOpen(true);
+      setSearchMessage(null);
     }
   };
 
@@ -224,54 +225,63 @@ function Header({ showNav = true }) {
 
     const trimmed = searchTerm.trim();
     if (!trimmed) {
-      setSearchStatus("idle");
-      setSearchResults([]);
+      setSearchMessageType("info");
+      setSearchMessage("Please enter a product name.");
       return;
     }
 
     setSearchStatus("loading");
+    setSearchResults([]);
     try {
       const res = await fetch(
         `http://localhost:8080/api/products/search?query=${encodeURIComponent(trimmed)}`
       );
+
       if (!res.ok) {
         throw new Error("Failed to search products");
       }
 
       const data = await res.json();
+      const normalized = trimmed.toLowerCase();
+      const exactMatch = (data || []).find((product) =>
+        product?.name?.toLowerCase() === normalized
+      );
 
-      if (!data || data.length === 0) {
-        setSearchResults([]);
-        setSearchStatus("empty");
+      if (exactMatch) {
+        handleNavigateToCatalogProduct(exactMatch.id);
         return;
       }
 
-      if (data.length === 1) {
-        handleNavigateToCatalogProduct(data[0].id);
+      if (!data || data.length === 0) {
+        setSearchStatus("idle");
+        setIsSearchOpen(false);
+        setSearchTerm("");
+        setSearchMessageType("warning");
+        setSearchMessage("No product found with that name.");
         return;
       }
 
       setSearchResults(data);
       setSearchStatus("results");
+      setIsSearchOpen(true);
+      setSearchMessage(null);
     } catch (error) {
       console.error("Search error", error);
-      setSearchResults([]);
-      setSearchStatus("error");
+      setSearchStatus("idle");
+      setSearchMessageType("error");
+      setSearchMessage("Unable to search right now. Please try again.");
+
+      setIsSearchOpen(false);
+      setSearchTerm("");
     }
   };
 
   const renderSearchFeedback = () => {
     if (searchStatus === "loading") {
-      return <p className="search-feedback">Searching products…</p>;
+      return <span className="search-inline-status">Searching…</span>;
     }
-    if (searchStatus === "empty") {
-      return <p className="search-feedback not-found">Product not found.</p>;
-    }
-    if (searchStatus === "error") {
-      return <p className="search-feedback error">Unable to search right now. Please try again.</p>;
-    }
-    if (searchStatus === "results") {
-      return <p className="search-feedback">Select a product to view it in the Shop.</p>;
+    if (searchStatus === "results" && searchResults.length > 0) {
+      return <span className="search-inline-status">Select a product below.</span>;
     }
     return null;
   };
@@ -295,7 +305,7 @@ function Header({ showNav = true }) {
             )}
 
             <div className="nav-icons">
-              <div className={`header-search-wrapper ${isSearchOpen ? "open" : ""}`}>
+              <div className="header-search-wrapper">
                 <div className={`header-search-container ${isSearchOpen ? "open" : ""}`} role="search">
                   <button
                     type="button"
@@ -316,11 +326,10 @@ function Header({ showNav = true }) {
                           onChange={(e) => setSearchTerm(e.target.value)}
                           autoFocus
                         />
+                        {renderSearchFeedback()}
                       </form>
 
-                      {renderSearchFeedback()}
-
-                      {searchStatus === "results" && (
+                      {searchStatus === "results" && searchResults.length > 0 && (
                         <ul className="search-results-inline" aria-live="polite">
                           {searchResults.map((product) => (
                             <li key={product.id} className="search-result-item">
@@ -344,6 +353,11 @@ function Header({ showNav = true }) {
                     </div>
                   )}
                 </div>
+                {searchMessage && (
+                  <div className={`search-message-bar ${searchMessageType}`} role="status">
+                    {searchMessage}
+                  </div>
+                )}
               </div>
 
               {/* Cart button navigates to /cart */}

@@ -44,6 +44,7 @@ com\PinoyHeritage\Backend\repository\CustomerRepository.class
 com\PinoyHeritage\Backend\repository\NotificationRepository.class
 com\PinoyHeritage\Backend\repository\OrderRepository.class
 com\PinoyHeritage\Backend\repository\WishlistRepository.class
+com\PinoyHeritage\Backend\repository\ProductOrderRepository.class
 com\PinoyHeritage\Backend\config\DataLoader.class
 com\PinoyHeritage\Backend\entity\Order.class
 com\PinoyHeritage\Backend\controller\ProductController.class
