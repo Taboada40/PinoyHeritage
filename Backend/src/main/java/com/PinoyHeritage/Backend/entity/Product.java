@@ -20,6 +20,9 @@ public class Product {
 
     private Integer stock;
 
+    @Transient
+    private Double rating;
+
     // Store sizes as JSON array in database
     @Column(columnDefinition = "JSON")
     private String sizes; 
@@ -48,6 +51,9 @@ public class Product {
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+
+    public Double getRating() { return rating; }
+    public void setRating(Double rating) { this.rating = rating; }
 
     public String getSizes() { return sizes; }
     public void setSizes(String sizes) { this.sizes = sizes; }

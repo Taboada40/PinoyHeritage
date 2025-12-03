@@ -2,6 +2,8 @@ package com.PinoyHeritage.Backend.service;
 
 import com.PinoyHeritage.Backend.entity.Product;
 import com.PinoyHeritage.Backend.entity.Category;
+import com.PinoyHeritage.Backend.entity.Review;
+
 import com.PinoyHeritage.Backend.repository.ProductRepository;
 import com.PinoyHeritage.Backend.repository.ReviewRepository;
 import com.PinoyHeritage.Backend.repository.ProductOrderRepository;
@@ -32,7 +34,20 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        List<Product> products = productRepository.findAll();
+
+        for (Product product : products) {
+            List<Review> reviews = reviewRepository.findByProduct_Id(product.getId());
+
+            double averageRating = reviews.stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            product.setRating(Math.round(averageRating * 10) / 10.0);
+        }
+
+        return products;
     }
 
     public List<Product> searchProductsByName(String query) {

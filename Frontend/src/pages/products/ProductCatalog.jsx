@@ -40,7 +40,7 @@ export default function ProductCatalog() {
           id: item.id,
           name: item.name,
           price: item.price,
-          rating: item.rating || 4,
+          rating: item.rating ?? 0,
           description: item.description || '',
           category: item.category ? (typeof item.category === 'string' ? item.category.toLowerCase() : item.category.name?.toLowerCase()) : 'clothing', 
           image: item.imageUrl || clothingImg, 
