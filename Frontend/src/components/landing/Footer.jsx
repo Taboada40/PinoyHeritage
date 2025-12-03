@@ -1,60 +1,25 @@
-import "../../styles/landing/landingpage.css";
 import React from "react";
 
+const BRAND_BLUE = "#0038A8";
 // Footer.jsx
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-brand">
-          <div className="footer-logo">
-            <div className="logo-icon">PH</div>
-            <span>Pinoy Heritage</span>
+    <footer className="bg-white pt-20 pb-10 border-t border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-blue-900/20 mb-8" style={{ backgroundColor: BRAND_BLUE }}>
+              P
           </div>
-          <p className="footer-desc">
-            Your trusted marketplace for authentic Filipino handcrafted products. Supporting local artisans since 2025.
-          </p>
-          <div className="social-links">
-            <a href="#" className="social-btn" aria-label="Facebook">f</a>
-            <a href="#" className="social-btn" aria-label="Instagram">📷</a>
-            <a href="#" className="social-btn" aria-label="Twitter">🐦</a>
-            <a href="#" className="social-btn" aria-label="Pinterest">P</a>
+          <p className="text-slate-900 font-bold text-2xl mb-8">Pinoy Heritage</p>
+          
+          <div className="flex flex-wrap justify-center gap-8 mb-12 text-sm font-bold tracking-wide text-slate-500 uppercase">
+            <a href="/home" className="hover:text-blue-800 transition-colors">Home</a>
+            <a href="/catalog" className="hover:text-blue-800 transition-colors">Shop</a>
+            <a href="/about" className="hover:text-blue-800 transition-colors">About</a>
           </div>
-        </div>
-
-        <div className="footer-column">
-          <h4>Shop</h4>
-          <div className="footer-links">
-            <a href="#" className="footer-link">All Products</a>
-            <a href="#" className="footer-link">New Arrivals</a>
-            <a href="#" className="footer-link">Best Sellers</a>
-            <a href="#" className="footer-link">Sale</a>
+          
+          <div className="text-slate-400 text-xs text-center max-w-md leading-relaxed">
+            © 2025 Pinoy Heritage Platform. <br/>Connecting tradition with innovation.
           </div>
-        </div>
-
-        <div className="footer-column">
-          <h4>Support</h4>
-          <div className="footer-links">
-            <a href="#" className="footer-link">Help Center</a>
-            <a href="#" className="footer-link">Shipping Info</a>
-            <a href="#" className="footer-link">Returns</a>
-            <a href="#" className="footer-link">Contact Us</a>
-          </div>
-        </div>
-
-        <div className="footer-column">
-          <h4>Company</h4>
-          <div className="footer-links">
-            <a href="#" className="footer-link">About Us</a>
-            <a href="#" className="footer-link">Our Artisans</a>
-            <a href="#" className="footer-link">Careers</a>
-            <a href="#" className="footer-link">Press</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        <p>&copy; 2025 Pinoy Heritage. All rights reserved. Made with ❤️ in the Philippines</p>
       </div>
     </footer>
   );
