@@ -3,6 +3,8 @@ package com.PinoyHeritage.Backend.service;
 import com.PinoyHeritage.Backend.entity.Product;
 import com.PinoyHeritage.Backend.entity.Category;
 import com.PinoyHeritage.Backend.repository.ProductRepository;
+import com.PinoyHeritage.Backend.repository.ReviewRepository;
+import com.PinoyHeritage.Backend.repository.ProductOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +21,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService; 
+    private final ReviewRepository reviewRepository;
+    private final ProductOrderRepository productOrderRepository;
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, ReviewRepository reviewRepository, ProductOrderRepository productOrderRepository) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.reviewRepository = reviewRepository;
+        this.productOrderRepository = productOrderRepository;
     }
 
     public List<Product> getAllProducts() {
@@ -79,7 +85,10 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
+    @Transactional
     public void deleteProduct(Long id) {
+        productOrderRepository.deleteByProduct_Id(id);
+        reviewRepository.deleteByProduct_Id(id);
         productRepository.deleteById(id);
     }
 
