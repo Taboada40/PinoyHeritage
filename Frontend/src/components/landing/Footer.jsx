@@ -18,7 +18,7 @@ function Footer() {
           </div>
           
           <div className="text-slate-400 text-xs text-center max-w-md leading-relaxed">
-            © 2025 Pinoy Heritage Platform. <br/>Connecting tradition with innovation.
+            © 2025 Pinoy Heritage. <br/>Connecting tradition with innovation.
           </div>
       </div>
     </footer>

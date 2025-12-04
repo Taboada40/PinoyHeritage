@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
+import "./index.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { NotificationProvider } from "./context/NotificationContext.jsx";
 
 import LandingPage from "./pages/LandingPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
+import AboutPage from "./pages/AboutUsPage.jsx";
 import Login from "./pages/authentication/Login.jsx";
 import Signup from "./pages/authentication/Signup.jsx";
 
@@ -106,6 +108,7 @@ const RouteGuard = () => {
       <Route path="/home" element={<HomePage />} />
       <Route path="/catalog" element={<ProductCatalog />} />
       <Route path="/product/:id" element={<ProductDetails />} />
+      <Route path="/about" element={<AboutPage />} />
 
       {/* Customer Pages */}
       <Route
