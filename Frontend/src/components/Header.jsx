@@ -299,7 +299,7 @@ function Header({ showNav = true }) {
             {showNav && (
               <nav className="nav-menu">
                 <Link to="/home" className="nav-link">Home</Link>
-                <a href="#why-section" className="nav-link">About</a>
+                <a href="/about" className="nav-link">About</a>
                 <Link to="/catalog" className="nav-link">Shop</Link>
               </nav>
             )}
