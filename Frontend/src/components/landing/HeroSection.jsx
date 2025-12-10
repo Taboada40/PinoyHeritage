@@ -11,7 +11,7 @@ function HeroSection() {
   };
 
   const iconProps = {
-    color: "#fff", 
+    color: "#0038A8", 
     size: 24, 
     strokeWidth: 2,
   };

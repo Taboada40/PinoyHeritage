@@ -14,7 +14,7 @@ function FeatureCard({ icon, title, text }) {
 
 function WhySection() {
   const iconProps = {
-    color: "#ffffff",
+    color: "#0038A8",
     size: 36,
     strokeWidth: 1.5,
   };
