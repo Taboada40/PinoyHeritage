@@ -1,26 +1,19 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import FilterBar from '../../components/products/FilterBar';
 import ProductCard from '../../components/products/ProductCard';
 import '../../styles/products/ProductCatalog.css';
 
-// Image Imports
-import clothingImg from "../../assets/imgs/landing/clothing.jpg";
-
 export default function ProductCatalog() {
-
   const navigate = useNavigate(); 
-  const [currentPage, setCurrentPage] = useState(1);
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceSort, setPriceSort] = useState("");
 
-  // --- 2. STATE ---
-  // Initialize with empty array - fetch from backend
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- 3. BACKEND FETCH ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -32,24 +25,23 @@ export default function ProductCatalog() {
         
         const data = await res.json();
 
-        // Handle both array and object with 'value' property
         const productsArray = Array.isArray(data) ? data : (data?.value || data);
 
-        // Map backend fields
         const mapped = productsArray.map((item) => ({
           id: item.id,
           name: item.name,
           price: item.price,
           rating: item.rating ?? 0,
           description: item.description || '',
-          category: item.category ? (typeof item.category === 'string' ? item.category.toLowerCase() : item.category.name?.toLowerCase()) : 'clothing', 
+          categoryName: item.categoryName 
+            ? item.categoryName.toLowerCase() 
+            : (item.category ? item.category.name.toLowerCase() : ''),
           image: item.imageUrl || clothingImg, 
         }));
 
         setProducts(mapped);
       } catch (err) {
         console.warn('Error fetching products:', err);
-        // On error, show no products rather than hardcoded samples
         setProducts([]);
       } finally {
         setLoading(false);
@@ -59,12 +51,24 @@ export default function ProductCatalog() {
     fetchProducts();
   }, []);
 
-  // --- 4. FILTER LOGIC ---
+  // Read URL parameter
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const categoryParam = queryParams.get('category');
+    
+    if (categoryParam) {
+      setSelectedCategory(categoryParam.toLowerCase());
+    }
+  }, [location]);
+
+  // Filter Logic
   const filteredProducts = useMemo(() => {
     let updated = [...products];
 
     if (selectedCategory) {
-      updated = updated.filter(p => p.category === selectedCategory);
+      updated = updated.filter(p => 
+        p.categoryName === selectedCategory
+      );
     }
 
     if (priceSort === 'low-high') {
@@ -89,23 +93,28 @@ export default function ProductCatalog() {
           <FilterBar 
             onCategoryChange={setSelectedCategory}
             onPriceChange={setPriceSort}
+            selectedCategory={selectedCategory} 
           />
         </div>
       </div>
 
       <div className="products-grid">
         {loading ? (
-          <div style={{width: '100%', textAlign: 'center', padding: '2rem'}}>Loading...</div>
+          <div className="loading-message">Loading...</div>
         ) : filteredProducts.length > 0 ? (
           filteredProducts.map(product => (
-              <ProductCard 
-                key={product.id}
-                product={product}
-                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-              />
+            <ProductCard 
+              key={product.id}
+              product={product}
+              onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+            />
           ))
         ) : (
-          <div style={{width: '100%', textAlign: 'center', padding: '2rem'}}>No products found.</div>
+          <div className="no-products">
+            {selectedCategory 
+              ? `No products found in "${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}" category.` 
+              : 'No products found.'}
+          </div>
         )}
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import categoriesApi from '../../api/categoriesApi'; 
 import '../../styles/products/FilterBar.css';
 
-function FilterBar({ onCategoryChange, onPriceChange }) {
+function FilterBar({ onCategoryChange, onPriceChange, selectedCategory = "" }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -21,7 +21,10 @@ function FilterBar({ onCategoryChange, onPriceChange }) {
   return (
     <div className="filter-bar">
       <div className="filter-dropdown">
-        <select onChange={(e) => onCategoryChange(e.target.value)} defaultValue="">
+        <select 
+          onChange={(e) => onCategoryChange(e.target.value)} 
+          value={selectedCategory} 
+        >
           <option value="" disabled>Category</option>
           <option value="">All Categories</option>
           {categories.map((category) => (

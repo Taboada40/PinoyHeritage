@@ -1,14 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/landing/landingpage.css";
 
-// Import images
 import clothingImg from "../../assets/imgs/landing/clothing.jpg";
 import textileImg from "../../assets/imgs/landing/textile.jpg";
 import craftsImg from "../../assets/imgs/landing/crafts.jpg";
 import accessoriesImg from "../../assets/imgs/landing/accessories.jpg";
 import souvenirsImg from "../../assets/imgs/landing/souvenirs.jpg";
 
-// Function to store category data
 function getCategoriesData() {
   return [
     {
@@ -18,6 +17,7 @@ function getCategoriesData() {
       btnText: "Explore →",
       img: clothingImg,
       extraClass: "large",
+      categoryName: "Traditional Clothing", 
     },
     {
       name: "Textiles",
@@ -26,6 +26,7 @@ function getCategoriesData() {
       btnText: "Shop →",
       img: textileImg,
       extraClass: "",
+      categoryName: "Textiles", 
     },
     {
       name: "Handicrafts",
@@ -34,6 +35,7 @@ function getCategoriesData() {
       btnText: "Discover →",
       img: craftsImg,
       extraClass: "",
+      categoryName: "Handicrafts", 
     },
     {
       name: "Accessories",
@@ -42,6 +44,7 @@ function getCategoriesData() {
       btnText: "View →",
       img: accessoriesImg,
       extraClass: "",
+      categoryName: "Accessories", 
     },
     {
       name: "Souvenirs",
@@ -50,6 +53,7 @@ function getCategoriesData() {
       btnText: "Browse →",
       img: souvenirsImg,
       extraClass: "",
+      categoryName: "Souvenirs", 
     },
   ];
 }
@@ -82,9 +86,16 @@ function CategorySection() {
 }
 
 // CategoryCard component
-function CategoryCard({ name, tag, desc, btnText, img, extraClass }) {
+function CategoryCard({ name, tag, desc, btnText, img, extraClass, categoryName }) {
+  const navigate = useNavigate();
+
+  const handleCategoryClick = () => {
+    // Navigate to product catalog with category filter
+    navigate(`/catalog?category=${encodeURIComponent(categoryName.toLowerCase())}`);
+  };
+
   return (
-    <div className={`category-card ${extraClass}`}>
+    <div className={`landing-category-card ${extraClass}`}>
       <div
         className="category-image"
         style={{ backgroundImage: `url(${img})` }}
@@ -92,9 +103,14 @@ function CategoryCard({ name, tag, desc, btnText, img, extraClass }) {
         <div className="category-overlay"></div>
         <div className="category-content">
           <span className="category-tag">{tag}</span>
-          <h3 className="category-title">{name}</h3>
-          <p className="category-desc">{desc}</p>
-          <button className="category-btn">{btnText}</button>
+          <h3 className="landing-category-title">{name}</h3>
+          <p className="landing-category-desc">{desc}</p>
+          <button 
+            className="category-btn" 
+            onClick={handleCategoryClick}
+          >
+            {btnText}
+          </button>
         </div>
       </div>
     </div>

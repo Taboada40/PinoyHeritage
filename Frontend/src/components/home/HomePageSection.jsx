@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; 
+import { useLocation } from "react-router-dom"; 
 import "../../styles/home/homepage.css";
 
 const categories = [
@@ -24,13 +25,26 @@ const categories = [
     subtitle: "Royal Threads",
     accentColor: "#0038a8",
     description:
-      "Mindanao’s cultural clothing traces back to Muslim and Lumad heritage. The T’boli ‘T’nalak,’ Maranao ‘Malong,’ and Bagobo garments symbolize royal ancestry, spiritual traditions, and artistic excellence."
+      "Mindanao’s cultural clothing traces back to Muslim and Lumad heritage. The T'boli ‘T'nalak,’ Maranao ‘Malong,’ and Bagobo garments symbolize royal ancestry, spiritual traditions, and artistic excellence."
   }
 ];
 
 export default function HomePageSection() {
   const [selectedIsland, setSelectedIsland] = useState(null);
+  const location = useLocation(); 
+  
   const selectedCategory = categories.find((cat) => cat.id === selectedIsland);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const islandParam = queryParams.get('island');
+    
+    if (islandParam && categories.some(cat => cat.id === islandParam)) {
+      setSelectedIsland(islandParam);
+    } else {
+      setSelectedIsland(null);
+    }
+  }, [location]);
 
   return (
     <section className="home-hero">
@@ -85,7 +99,7 @@ export default function HomePageSection() {
 
       {!selectedCategory && (
         <div className="hero-quote">
-          <p className="cultural-quote">“Discover the traditional clothing of Luzon, Visayas, and Mindanao.”</p>
+          <p className="cultural-quote">"Discover the traditional clothing of Luzon, Visayas, and Mindanao."</p>
           <p className="inspiration-subtext">
             Each weave tells the story of craftsmanship, heritage, and the vibrant spirit of Filipino artistry.
           </p>
