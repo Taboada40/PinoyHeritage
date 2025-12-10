@@ -34,6 +34,7 @@ body {
   display: flex;
   background-color: #f4f6f9; /* Fallback color if image fails */
   padding-top: 80px; /* Space for the fixed header */
+  padding-left: 210px;
 }
 
 /* Fixed Background Image */
