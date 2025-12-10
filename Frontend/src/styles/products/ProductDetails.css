@@ -11,23 +11,40 @@
 .details-header {
   display: flex;
   justify-content: flex-start;
-  padding: 20px 40px;
+  padding: 20px 140px;
   margin-top: 100px;
 }
 
-.back-btn {
-  background: none;
-  border: none;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.2s ease;
+/* Breadcrumbs Styling */
+.breadcrumbs {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.back-btn:hover {
-  color: #FCD116; 
+.breadcrumb-link {
   text-decoration: none;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #0038A8; /* Brand Blue */
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #999;
+  font-size: 12px;
+}
+
+.breadcrumb-current {
+  color: #333;
+  font-weight: 600;
+  cursor: default;
 }
 
 .product-main {

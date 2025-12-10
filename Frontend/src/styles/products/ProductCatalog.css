@@ -31,16 +31,22 @@
   align-items: center;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 auto 10px; 
+  padding: 0 20px;
 }
 
 .back-btn {
   background: transparent;
   border: none;
-  color: #0038A8;
+  color: #333;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.back-btn:hover {
+  color: var(--blue); 
+  text-decoration: none;
 }
 
 .products-grid {

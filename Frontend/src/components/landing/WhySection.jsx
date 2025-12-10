@@ -1,7 +1,7 @@
 import React from "react";
+import { Heart, Package, ShieldCheck, Landmark } from "lucide-react";
 import "../../styles/landing/landingpage.css";
 
-// FeatureCard component
 function FeatureCard({ icon, title, text }) {
   return (
     <div className="feature-card">
@@ -12,8 +12,13 @@ function FeatureCard({ icon, title, text }) {
   );
 }
 
-// WhySection component
 function WhySection() {
+  const iconProps = {
+    color: "#ffffff",
+    size: 36,
+    strokeWidth: 1.5,
+  };
+
   return (
     <section className="features-section" id="why-section">
       <div className="section-header">
@@ -26,22 +31,22 @@ function WhySection() {
 
       <div className="features-grid">
         <FeatureCard
-          icon="💛"
+          icon={<Heart {...iconProps} />}
           title="Support Local Artisans"
           text="Empowering Filipino makers by giving their products a wider audience."
         />
         <FeatureCard
-          icon="📦"
+          icon={<Package {...iconProps} />}
           title="Authentic Products"
           text="Shop genuine items from Luzon, Visayas, and Mindanao — all in one place."
         />
         <FeatureCard
-          icon="🔒"
+          icon={<ShieldCheck {...iconProps} />}
           title="Secure & Simple"
           text="Enjoy safe payments and reliable delivery for a hassle-free shopping experience."
         />
         <FeatureCard
-          icon="🏛️"
+          icon={<Landmark {...iconProps} />}
           title="Cultural Preservation"
           text="Every purchase helps keep Filipino traditions alive for future generations."
         />
@@ -51,4 +56,3 @@ function WhySection() {
 }
 
 export default WhySection;
-

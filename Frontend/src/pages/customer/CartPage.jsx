@@ -182,7 +182,9 @@ export default function CartPage() {
                   <div className="card-details">
                     <div className="details-top">
                       <h3>{item.productName}</h3>
-                      <p className="item-size">Size: {item.size || 'Onesize'}</p>
+                      {!!item.size && item.size.trim() && (
+                        <p className="item-size">Size: {item.size}</p>
+                      )}
                     </div>
                     <div className="quantity-wrapper">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>−</button>

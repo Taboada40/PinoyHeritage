@@ -43,10 +43,9 @@
 }
 
 .back-btn-cart:hover img {
-  filter: invert(75%) sepia(90%) saturate(600%) hue-rotate(359deg) brightness(103%) contrast(106%);
+  filter: invert(13%) sepia(89%) saturate(2618%) hue-rotate(214deg) brightness(94%) contrast(101%);
 }
 
-/* --- CART LIST & CARDS --- */
 .cart-list {
   display: flex;
   flex-direction: column;
