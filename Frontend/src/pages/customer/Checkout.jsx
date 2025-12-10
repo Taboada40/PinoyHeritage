@@ -389,14 +389,14 @@ export default function Checkout() {
 
             <div className="summary-actions">
               <button className="btn-secondary" onClick={() => navigate("/cart")}>
-                ← Back to Cart
+                Back to Cart
               </button>
               <button 
                 className="btn-primary" 
                 onClick={handleProceedToPayment}
                 disabled={cartItems.length === 0}
               >
-                Proceed to Payment →
+                Proceed to Payment
               </button>
             </div>
 

@@ -3,16 +3,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import "../../styles/auth/auth.css";
 
-function Login() {
+const EyeIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+    <circle cx="12" cy="12" r="3"></circle>
+  </svg>
+);
 
+const EyeOffIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+    <line x1="1" y1="1" x2="23" y2="23"></line>
+  </svg>
+);
+
+function Login() {
   const navigate = useNavigate();
-  // Changed to use username/email and password for consistency with forms
   const [formData, setFormData] = useState({ identifier: "", password: "" }); 
+  const [showPassword, setShowPassword] = useState(false); // State for toggle
   const [error, setError] = useState("");
   const { notifySuccess, notifyError } = useNotification();
 
   const handleChange = (e) => {
-    // Uses a generic name 'identifier' for the input field to capture either email or username
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -24,7 +36,6 @@ function Login() {
       const res = await fetch("http://localhost:8080/api/customer/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Assuming your customer API expects 'email' and 'password'
         body: JSON.stringify({ email: formData.identifier, password: formData.password }),
       });
 
@@ -34,26 +45,19 @@ function Login() {
 
         let role = data.role;
 
-        // Fallback: treat this specific account as ADMIN even if role is missing
         if (!role && formData.identifier === "admin@pinoyheritage.com" && formData.password === "admin12345") {
           role = "ADMIN";
         }
 
-        // Store data differently for admin vs customer
         if (role === "ADMIN") {
-          // Clear any previous customer session so admin is NOT treated as a customer
           localStorage.removeItem("userId");
           localStorage.removeItem("username");
           localStorage.removeItem("email");
           localStorage.removeItem("user");
-
           localStorage.setItem("role", "ADMIN");
           navigate("/admin/dashboard");
         } else {
-          // Customer session: clear any previous guest cart and store user info + role
           localStorage.removeItem("guestCart");
-
-          // Customer session: store user info + role
           localStorage.setItem("userId", data.id); 
           localStorage.setItem("username", data.username);
           localStorage.setItem("email", data.email);
@@ -61,11 +65,7 @@ function Login() {
             "user",
             JSON.stringify({ id: data.id, username: data.username, email: data.email, role: role })
           );
-
-          if (role) {
-            localStorage.setItem("role", role);
-          }
-
+          if (role) localStorage.setItem("role", role);
           navigate("/home");
         }
       } else {
@@ -79,7 +79,6 @@ function Login() {
     }
   };
 
-
   return (
     <div className="auth-container">
       <div className="auth-box">
@@ -92,7 +91,7 @@ function Login() {
           <div className="auth-form-group">
             <label>Email</label>
             <input 
-              type="text" // Changed to 'text' to accept 'admin' username
+              type="text" 
               name="identifier" 
               value={formData.identifier}
               onChange={handleChange} 
@@ -102,13 +101,23 @@ function Login() {
           
           <div className="auth-form-group">
             <label>Password </label>
-            <input 
-              type="password" 
-              name="password" 
-              value={formData.password}
-              onChange={handleChange} 
-              required 
-            />
+            <div className="password-wrapper">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                name="password" 
+                value={formData.password}
+                onChange={handleChange} 
+                required 
+              />
+              <button 
+                type="button" 
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex="-1"
+              >
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            </div>
           </div>
           
           {error && <p className="error-message">{error}</p>}
