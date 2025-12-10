@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/admin/orders.css";
 
-// --- Icons (Moved outside main component) ---
 const ArrowLeft = () => (
   <svg width="21" height="15" viewBox="0 0 21 15" fill="none">
     <path d="M1 6.36401C0.447715 6.36401 0 6.81173 0 7.36401C0 7.9163 0.447715 8.36401 1 8.36401V7.36401V6.36401ZM20.7071 8.07112C21.0976 7.6806 21.0976 7.04743 20.7071 6.65691L14.3431 0.292946C13.9526 -0.0975785 13.3195 -0.0975785 12.9289 0.292946C12.5384 0.68347 12.5384 1.31664 12.9289 1.70716L18.5858 7.36401L12.9289 13.0209C12.5384 13.4114 12.5384 14.0446 12.9289 14.4351C13.3195 14.8256 13.9526 14.8256 14.3431 14.4351L20.7071 8.07112ZM1 7.36401V8.36401H20V7.36401V6.36401H1V7.36401Z" fill="#0038A8" transform="scale(-1, 1) translate(-21, 0)" />
@@ -19,6 +18,8 @@ const OrdersSection = () => {
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(10);
 
   const [orders, setOrders] = useState([]);
 
@@ -58,6 +59,29 @@ const OrdersSection = () => {
     return matchesSearch && matchesStatus && matchesDate;
   });
 
+  // Pagination Logic
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  // Change page
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedDate, selectedStatus]);
+
   // 3. Handler to update status (Uses ID to find correct item)
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -74,6 +98,17 @@ const OrdersSection = () => {
     } catch (err) {
       console.error("Error updating order status", err);
     }
+  };
+
+  // Calculate the number of orders being shown on current page
+  const getCurrentPageCount = () => {
+    if (filteredOrders.length === 0) return 0;
+    
+    if (currentPage === totalPages) {
+      return filteredOrders.length - (totalPages - 1) * ordersPerPage;
+    }
+    
+    return ordersPerPage;
   };
 
   return (
@@ -102,7 +137,7 @@ const OrdersSection = () => {
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
         >
-          <option value="">Delivery Status</option> {/* Empty value resets filter */}
+          <option value="">Delivery Status</option>
           <option value="Pending">Pending</option>
           <option value="Processing">Processing</option>
           <option value="Shipped">Shipped</option>
@@ -113,7 +148,7 @@ const OrdersSection = () => {
 
       {/* --- Summary Text --- */}
       <p className="order-summary-text">
-        Showing {filteredOrders.length} of {orders.length} orders
+        Showing {getCurrentPageCount()} of {filteredOrders.length} orders
       </p>
 
       {/* --- Table Header --- */}
@@ -130,9 +165,9 @@ const OrdersSection = () => {
 
       {/* --- Table Rows --- */}
       <div className="orders-list">
-        {filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => (
-            <div key={order.id}> 
+        {currentOrders.length > 0 ? (
+          currentOrders.map((order, index) => (
+            <div key={order.id}>
               <div className="order-row">
                 <p className="fw-bold">#{order.id}</p>
                 <p>{order.createdAt || ""}</p>
@@ -156,7 +191,9 @@ const OrdersSection = () => {
 
                 <p className="text-center">{order.itemsCount}</p>
               </div>
-              <div className="order-divider light"></div>
+              {index < currentOrders.length - 1 && (
+                <div className="order-divider light"></div>
+              )}
             </div>
           ))
         ) : search ? (
@@ -171,11 +208,25 @@ const OrdersSection = () => {
       </div>
 
       {/* --- Pagination --- */}
-      <div className="order-pagination">
-        <button className="nav-btn"><ArrowLeft /></button>
-        <span className="page-text">Page 1 of 2</span>
-        <button className="nav-btn"><ArrowRight /></button>
-      </div>
+      {filteredOrders.length > ordersPerPage && (
+        <div className="order-pagination">
+          <button 
+            className="nav-btn" 
+            onClick={prevPage}
+            disabled={currentPage === 1}
+          >
+            <ArrowLeft />
+          </button>
+          <span className="page-text">Page {currentPage} of {totalPages}</span>
+          <button 
+            className="nav-btn" 
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+          >
+            <ArrowRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
