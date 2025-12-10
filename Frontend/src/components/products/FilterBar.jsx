@@ -23,10 +23,10 @@ function FilterBar({ onCategoryChange, onPriceChange, selectedCategory = "" }) {
       <div className="filter-dropdown">
         <select 
           onChange={(e) => onCategoryChange(e.target.value)} 
-          value={selectedCategory} 
+          value={selectedCategory}
+          aria-label="Filter by Category"
         >
-          <option value="" disabled>Category</option>
-          <option value="">All Categories</option>
+          <option value="" className="placeholder-option">All Categories</option>
           {categories.map((category) => (
             <option key={category.id} value={category.name.toLowerCase()}>
               {category.name}
@@ -36,10 +36,14 @@ function FilterBar({ onCategoryChange, onPriceChange, selectedCategory = "" }) {
       </div>
 
       <div className="filter-dropdown">
-        <select onChange={(e) => onPriceChange(e.target.value)} defaultValue="">
-          <option value="" disabled>Price</option>
-          <option value="low-high">Low to High</option>
-          <option value="high-low">High to Low</option>
+        <select 
+          onChange={(e) => onPriceChange(e.target.value)} 
+          defaultValue=""
+          aria-label="Sort by Price"
+        >
+          <option value="" disabled hidden>Sort by Price</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
         </select>
       </div>
     </div>

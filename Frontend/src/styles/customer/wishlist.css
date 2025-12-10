@@ -1,7 +1,6 @@
-/* Wishlist Page Specific Styles */
 .wishlist-page-container {
   min-height: 100vh;
-  background: #f8f9fa;
+  background-color: #F4F7FE;
 }
 
 .wishlist-page {
@@ -159,6 +158,9 @@
 .wishlist-empty-icon {
   color: #bdc3c7;
   margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .wishlist-empty h3 {

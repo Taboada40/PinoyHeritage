@@ -16,13 +16,11 @@ const Dashboard = () => {
 
   const API_BASE = 'http://localhost:8080';
 
-  // Fetch products and customers data
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         
-        // Fetch products from your existing API
         const productsResponse = await fetch(`${API_BASE}/api/admin/products`);
         
         if (!productsResponse.ok) {
@@ -31,10 +29,8 @@ const Dashboard = () => {
         
         const productsData = await productsResponse.json();
         
-        // Handle both array response and object with 'value' property
         const productsArray = Array.isArray(productsData) ? productsData : (productsData?.value || []);
         
-        // Fetch customers from customersApi
         let customersArray = [];
         try {
           const customersResponse = await customersApi.get("");
@@ -46,15 +42,13 @@ const Dashboard = () => {
           customersArray = [];
         }
 
-        // Filter out admin email from customer count
         const filteredCustomers = customersArray.filter(customer => 
           customer.email !== "admin@pinoyheritage.com"
         );
 
-        // Fetch orders count
         let ordersCount = 0;
         try {
-          const ordersResponse = await fetch(`${API_BASE}/api/orders`);
+          const ordersResponse = await fetch(`${API_BASE}/api/orders/admin`);
           if (ordersResponse.ok) {
             const ordersData = await ordersResponse.json();
             ordersCount = Array.isArray(ordersData) ? ordersData.length : 0;
@@ -63,17 +57,15 @@ const Dashboard = () => {
           console.warn('Failed to fetch orders:', orderError);
         }
 
-        // Update stats with real data 
         setStats({
           customers: filteredCustomers.length,
           products: productsArray.length,
           orders: ordersCount
         });
         
-        // Get the 4 most recent products 
         const recentProductsData = productsArray
-          .sort((a, b) => b.id - a.id) // Sort by ID
-          .slice(0, 4) // Get first 4
+          .sort((a, b) => b.id - a.id) 
+          .slice(0, 4) 
           .map(product => ({
             id: product.id,
             name: product.name,
@@ -87,7 +79,6 @@ const Dashboard = () => {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data');
         
-        // Fallback to 0 if API fails completely
         setStats({
           customers: 0,
           products: 0,
@@ -102,7 +93,6 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // Helper function to handle image errors
   const handleImageError = (e) => {
     e.target.src = 'https://via.placeholder.com/100?text=No+Image';
   };

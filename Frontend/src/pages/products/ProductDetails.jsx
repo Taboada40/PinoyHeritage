@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import ProductInfo from '../../components/products/ProductInfo';
 import ReviewsSection from '../../components/products/ReviewsSection';
@@ -16,12 +16,10 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
 
-  // Reviews state
   const [reviews, setReviews] = useState([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
 
-  // Image carousel state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const parseSizes = (sizes) => {
@@ -98,7 +96,6 @@ export default function ProductDetails() {
     }
   };
 
-  // Fetch reviews on mount & refresh after submitting review
   useEffect(() => {
     fetchReviews();
   }, [id, location.state?.refreshReviews]);
@@ -106,7 +103,6 @@ export default function ProductDetails() {
   if (loading) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Loading product...</p></div>;
   if (error || !product) return <div className="product-details-page"><p style={{padding:'50px', textAlign:'center'}}>Product not found</p></div>;
 
-  // Image list
   const images = product && product.image ? [product.image] : [];
 
   const handlePrev = () => {
@@ -125,15 +121,19 @@ export default function ProductDetails() {
     <div className="product-details-page">
       <Header showNav={true} />
 
-      {/* Back Button */}
+      {/* Breadcrumbs Navigation */}
       <div className="details-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
+        <nav className="breadcrumbs">
+          <Link to="/" className="breadcrumb-link">Home</Link>
+          <span className="breadcrumb-separator">/</span>
+          <Link to="/catalog" className="breadcrumb-link">Shop</Link>
+          <span className="breadcrumb-separator">/</span>
+          <span className="breadcrumb-current">{product.name}</span>
+        </nav>
       </div>
 
       <div className="product-main">
-        {/* Image Section with Carousel */}
+        {/* Image Section */}
         <div className="image-section">
           <button className="image-arrow arrow-left" onClick={handlePrev}>
             <img src={arrowImg} alt="Previous"/>
@@ -162,11 +162,9 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Product Info Section */}
         <ProductInfo product={product} />
       </div>
 
-      {/* Reviews Section - Pass the fetched reviews */}
       <ReviewsSection
         rating={avgRating}
         totalReviews={totalReviews}

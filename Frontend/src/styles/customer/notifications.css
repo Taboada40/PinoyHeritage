@@ -1,4 +1,7 @@
 /* Notifications Page Styles */
+body{
+  background-color: #F4F7FE;
+}
 
 .notifications-card {
   min-height: 400px;

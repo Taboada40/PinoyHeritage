@@ -1,5 +1,6 @@
 import "../../styles/landing/landingpage.css";
 import { Link } from "react-router-dom";
+import { Star, Flag } from "lucide-react";
 
 function HeroSection() {
   const handleScrollToCategories = () => {
@@ -7,6 +8,12 @@ function HeroSection() {
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const iconProps = {
+    color: "#fff", 
+    size: 24, 
+    strokeWidth: 2,
   };
 
   return (
@@ -57,12 +64,16 @@ function HeroSection() {
 
           {/* Floating Cards */}
           <div className="floating-card floating-card-1">
-            <div className="card-icon">⭐</div>
+            <div className="card-icon">
+              <Star {...iconProps} />
+            </div>
             <div className="card-text">Premium Quality</div>
           </div>
 
           <div className="floating-card floating-card-2">
-            <div className="card-icon">🇵🇭</div>
+            <div className="card-icon">
+              <Flag {...iconProps} />
+            </div>
             <div className="card-text">Authentic Crafts</div>
           </div>
         </div>

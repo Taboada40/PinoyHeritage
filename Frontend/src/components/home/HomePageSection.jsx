@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react"; 
 import { useLocation } from "react-router-dom"; 
 import "../../styles/home/homepage.css";
+import homeImg from "../../assets/imgs/home/home.jpg";
 
 const categories = [
   {
     id: "Luzon",
     title: "Luzon",
     subtitle: "Heritage Highlands",
-    accentColor: "#d62828",
+    accentColor: "#CE1126", 
     description:
       "Luzon is home to diverse indigenous groups such as the Ifugao, Kalinga, and Aeta. Traditional clothing includes woven fabrics like the ‘tapis’ and ‘bahag,’ representing rich history, craftsmanship, and cultural identity."
   },
@@ -15,7 +16,7 @@ const categories = [
     id: "Visayas",
     title: "Visayas",
     subtitle: "Vibrant Weaves",
-    accentColor: "#fcd116",
+    accentColor: "#FCD116", 
     description:
       "The Visayas is known for colorful woven textiles such as the ‘Hablon’ and ‘Patadyong.’ These garments reflect centuries of craftsmanship inspired by trade, tradition, and the vibrant spirit of Visayan culture."
   },
@@ -23,7 +24,7 @@ const categories = [
     id: "Mindanao",
     title: "Mindanao",
     subtitle: "Royal Threads",
-    accentColor: "#0038a8",
+    accentColor: "#0038A8", 
     description:
       "Mindanao’s cultural clothing traces back to Muslim and Lumad heritage. The T'boli ‘T'nalak,’ Maranao ‘Malong,’ and Bagobo garments symbolize royal ancestry, spiritual traditions, and artistic excellence."
   }
@@ -47,12 +48,17 @@ export default function HomePageSection() {
   }, [location]);
 
   return (
-    <section className="home-hero">
+    <section className="home-hero" style={{ backgroundImage: `url(${homeImg})` }}>
       <div className="home-hero-overlay"></div>
 
       <div className={`home-container ${selectedIsland ? "shift-left" : ""}`}>
-        {/* Category Cards */}
+        
+        {/* Category Cards (Left Side) */}
         <div className="home-bars-container">
+          <div className="menu-header">
+            <span className="small-label">Select Region</span>
+          </div>
+          
           {categories.map((category) => (
             <button
               key={category.id}
@@ -61,47 +67,57 @@ export default function HomePageSection() {
               type="button"
               style={{ '--category-accent': category.accentColor }}
             >
-              <div
-                className="category-circle"
-                style={{ background: category.accentColor }}
-                aria-hidden
-              >
-                {category.title.charAt(0)}
-              </div>
-              <div className="category-copy">
-                <div className="category-card-header">
-                  <span className="category-title">{category.title}</span>
+              <div className="category-content-wrapper">
+                <div
+                  className="category-circle"
+                  style={{ 
+                    color: selectedIsland === category.id ? '#fff' : category.accentColor,
+                    background: selectedIsland === category.id ? category.accentColor : 'rgba(255,255,255,0.9)'
+                  }}
+                  aria-hidden
+                >
+                  {category.title.charAt(0)}
                 </div>
-                <p className="category-subtitle">{category.subtitle}</p>
+                <div className="category-copy">
+                  <span className="category-title">{category.title}</span>
+                  <p className="category-subtitle">{category.subtitle}</p>
+                </div>
               </div>
-              <span className="category-arrow">Explore →</span>
+              <span className="category-arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </span>
             </button>
           ))}
         </div>
 
-        {/* Description Panel */}
-        {selectedCategory && (
-          <div className="island-description visible">
-            <p className="eyebrow">Cultural Narrative</p>
-            <h2>{selectedCategory.title}</h2>
-            <p>{selectedCategory.description}</p>
-
-            <button
-              className="close-btn"
-              onClick={() => setSelectedIsland(null)}
-              aria-label="Back to categories"
-            >
-              <span aria-hidden="true">←</span>
-            </button>
-          </div>
-        )}
+        <div className={`island-description ${selectedCategory ? "visible" : ""}`}>
+          {selectedCategory && (
+            <>
+              <div className="desc-header">
+                <p className="eyebrow">Cultural Narrative</p>
+                <button
+                  className="close-btn-minimal"
+                  onClick={() => setSelectedIsland(null)}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <h2 style={{ color: selectedCategory.accentColor }}>{selectedCategory.title}</h2>
+              <p className="desc-text">{selectedCategory.description}</p>
+            </>
+          )}
+        </div>
       </div>
 
       {!selectedCategory && (
         <div className="hero-quote">
-          <p className="cultural-quote">"Discover the traditional clothing of Luzon, Visayas, and Mindanao."</p>
+          <p className="cultural-quote">"The fabric of a nation is woven by the stories of its people."</p>
           <p className="inspiration-subtext">
-            Each weave tells the story of craftsmanship, heritage, and the vibrant spirit of Filipino artistry.
+            Discover the heritage of Luzon, Visayas, and Mindanao.
           </p>
         </div>
       )}

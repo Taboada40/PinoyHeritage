@@ -49,7 +49,7 @@ body {
 /* Orders Page */
 .orders-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  background-color: #F4F7FE;
   padding-bottom: 60px;
 }
 

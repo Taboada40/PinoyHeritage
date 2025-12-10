@@ -2,7 +2,6 @@ import "../styles/header.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-// SVG Icons
 const ProfileIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -58,15 +57,13 @@ function Header({ showNav = true }) {
   const [user, setUser] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchStatus, setSearchStatus] = useState("idle"); // idle | loading | results
+  const [searchStatus, setSearchStatus] = useState("idle"); 
   const [searchResults, setSearchResults] = useState([]);
   const [searchMessage, setSearchMessage] = useState(null);
   const [searchMessageType, setSearchMessageType] = useState("info");
 
-  // Detect if we're on the primary landing page (only '/')
-  const isLandingPage = location.pathname === "/";
+  const isLandingPage = location.pathname === "/" || location.pathname === "/home";
 
-  // Add scroll listener
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 80) {
@@ -144,7 +141,6 @@ function Header({ showNav = true }) {
     }
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.profile-dropdown')) {
@@ -156,7 +152,6 @@ function Header({ showNav = true }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Determine header style
   const headerClass = `header ${
     isLandingPage
       ? isScrolled
@@ -378,7 +373,6 @@ function Header({ showNav = true }) {
                   )}
                 </button>
 
-                {/* Dropdown Menu - Only shows when user is logged in */}
                 {isDropdownOpen && user && (
                   <div className="dropdown-menu">
                     {/* User Info */}
@@ -443,7 +437,7 @@ function Header({ showNav = true }) {
 
                     <div className="dropdown-divider"></div>
 
-                    {/* Admin Dashboard Link (if admin) */}
+                    {/* Admin Dashboard */}
                     {user.role === "ADMIN" && (
                       <>
                         <button 
@@ -476,7 +470,6 @@ function Header({ showNav = true }) {
           </div>
         </div>
       </header>
-
     </>
   );
 }
