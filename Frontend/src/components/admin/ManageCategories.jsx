@@ -65,50 +65,50 @@ const CategoriesSection = () => {
         <thead>
           <tr>
             <th>Category Name</th>
-            <th style={{ textAlign: "right"}}>Actions</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
             {paginatedCategories.length > 0 ? (
                 paginatedCategories.map((category) => (
-                <tr key={category.id}>
-                    <td>{category.name}</td>
-                    <td>
-                    <div className="action-buttons">
-                      <button
-                        className="action-btn edit-btn"
-                        onClick={() => openModal("edit", category)}
-                        title="Edit"
-                      >
-                        <img 
-                          src={editImg} 
-                          alt="Edit" 
-                          style={{ width: '14px', height: '14px' }} 
-                        />
-                      </button>
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => openModal("delete", category)}
-                        title="Delete"
-                      >
-                        <img 
-                          src={deleteImg} 
-                          alt="Delete" 
-                          style={{ width: '14px', height: '14px' }} 
-                        />
-                      </button>
-                    </div>
-                    </td>
-                </tr>
+                  <tr key={category.id}>
+                      <td>{category.name}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            className="action-btn edit-btn"
+                            onClick={() => openModal("edit", category)}
+                            title="Edit"
+                          >
+                            <img 
+                              src={editImg} 
+                              alt="Edit" 
+                              className="action-icon-img"
+                            />
+                          </button>
+                          <button
+                            className="action-btn delete-btn"
+                            onClick={() => openModal("delete", category)}
+                            title="Delete"
+                          >
+                            <img 
+                              src={deleteImg} 
+                              alt="Delete" 
+                              className="action-icon-img"
+                            />
+                          </button>
+                        </div>
+                      </td>
+                  </tr>
                 ))
             ) : (
                 <tr>
-                <td colSpan="2" style={{ textAlign: "center", fontStyle: "italic", color: "#666" }}>
-                    No categories found
-                </td>
+                  <td colSpan="2" className="empty-state-cell">
+                      No categories found
+                  </td>
                 </tr>
             )}
-            </tbody>
+        </tbody>
       </table>
       <CategoryModal
         type={modalType}

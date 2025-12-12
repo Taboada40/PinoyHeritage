@@ -5,10 +5,8 @@ import ProductsModal from "./ProductsModal";
 import deleteImg from "../../assets/icons/admin/delete.png";
 import editImg from "../../assets/icons/admin/edit.png";
 
-// API base for direct fetch calls when needed
 const API_BASE = 'http://localhost:8080';
 
-// Enhanced API helper with better error handling
 const api = async (url, options = {}) => {
   const fullUrl = url.startsWith('http') ? url : `${API_BASE}${url}`;
   const opts = { ...options };
@@ -46,16 +44,15 @@ const ArrowRight = () => (
 const ProductsSection = () => {
   const [products, setProducts] = useState([]);
   
-  // --- MODAL STATE ---
   const [showModal, setShowModal] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null); 
-  const [modalType, setModalType] = useState("add"); // <--- ADDED THIS
+  const [modalType, setModalType] = useState("add"); 
 
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const itemsPerPage = 4;
+  
+  const itemsPerPage = 6;
 
-  // Toast State
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
   const showToast = (message, type = 'success') => {
@@ -84,7 +81,6 @@ const ProductsSection = () => {
     fetchProducts(); 
   }, []);
 
-  // Handle image upload separately
   const handleImageUpload = async (productId, files) => {
     if (!files || files.length === 0) return;
     
@@ -105,19 +101,17 @@ const ProductsSection = () => {
     }
   };
 
-  // --- UNIFIED MODAL OPEN FUNCTION ---
   const openModal = (type, product = null) => {
     console.log(`Opening modal: ${type}`, product);
-    setModalType(type);          // Set type (add/edit/delete)
-    setProductToEdit(product);   // Set data
-    setShowModal(true);          // Show it
+    setModalType(type);         
+    setProductToEdit(product);   
+    setShowModal(true);         
   };
 
-  // --- MODAL CLOSE HANDLER ---
   const handleCloseModal = () => {
     setShowModal(false);
     setProductToEdit(null);
-    setModalType("add"); // Reset to default
+    setModalType("add"); 
   };
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -126,7 +120,6 @@ const ProductsSection = () => {
     currentPage * itemsPerPage
   );
 
-  // Helper function to display sizes
   const displaySizes = (sizes) => {
     if (!sizes) return 'None';
     try {
@@ -137,7 +130,6 @@ const ProductsSection = () => {
     }
   };
 
-  // Pagination handlers
   const handlePrevPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
   };
@@ -146,25 +138,18 @@ const ProductsSection = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
-  // Only show pagination if there are more than 9 products
-  const showPagination = products.length > 9;
+  const showPagination = products.length > itemsPerPage;
 
   return (
     <div className="products-section">
       {/* Toast UI */}
       {toast.show && (
-        <div style={{
-          position: 'fixed', right: 20, bottom: 20,
-          backgroundColor: toast.type === 'success' ? '#38a169' : '#e53e3e',
-          color: '#fff', padding: '10px 14px', borderRadius: 8, zIndex: 9999,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-        }}>
+        <div className={`toast-notification ${toast.type === 'success' ? 'toast-success' : 'toast-error'}`}>
           {toast.message}
         </div>
       )}
 
       <div className="products-header">
-        {/* UPDATED: Uses openModal('add') */}
         <button className="add-product-btn" onClick={() => openModal("add")}>
           <span>+</span>
           <span>Add New Product</span>
@@ -172,7 +157,7 @@ const ProductsSection = () => {
       </div>
 
       {loading && (
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <div className="status-message">
           Loading products...
         </div>
       )}
@@ -190,11 +175,7 @@ const ProductsSection = () => {
                     onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
                   />
                 ) : (
-                  <div className="image-placeholder" style={{
-                    width: '100%', height: '100%', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: '#f0f0f0', fontSize: '3rem'
-                  }}>
+                  <div className="image-placeholder">
                     📷
                   </div>
                 )}
@@ -206,42 +187,36 @@ const ProductsSection = () => {
                   {typeof product.category === 'object' ? product.category.name : product.category}
                 </div>
                 
-                <div className="product-sizes" style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>
+                <div className="product-sizes-text">
                   Sizes: {displaySizes(product.sizes)}
                 </div>
                 
-                <div className="product-stock" style={{
-                  backgroundColor: product.stock > 0 ? '#c6f6d5' : '#fed7d7',
-                  color: product.stock > 0 ? '#276749' : '#9b2c2c',
-                  padding: '4px 8px', borderRadius: '4px', fontSize: '0.85rem',
-                  marginTop: '0.5rem', display: 'inline-block'
-                }}>
+                <div className={`stock-badge ${product.stock > 0 ? 'stock-in' : 'stock-out'}`}>
                   Stock: {product.stock || 0}
                 </div>
               </div>
 
-              {/* UPDATED ACTION BUTTONS */}
               <div className="product-actions">
                 <button 
                   className="action-btn edit-btn" 
                   title="Edit"
-                  onClick={() => openModal("edit", product)} // Calls unified function
+                  onClick={() => openModal("edit", product)} 
                 >
                   <img 
                     src={editImg} 
                     alt="Edit" 
-                    style={{ width: '14px', height: '14px' }} 
+                    className="action-icon-img"
                   />
                 </button>
                 <button 
                   className="action-btn delete-btn" 
                   title="Delete"
-                  onClick={() => openModal("delete", product)} // Calls unified function
+                  onClick={() => openModal("delete", product)} 
                 >
                   <img 
                     src={deleteImg} 
                     alt="Delete" 
-                    style={{ width: '14px', height: '14px' }} 
+                    className="action-icon-img"
                   />
                 </button>
               </div>
@@ -249,7 +224,7 @@ const ProductsSection = () => {
           ))
         ) : (
           !loading && (
-            <div style={{ textAlign: 'center', padding: '2rem', fontStyle: 'italic' }}>
+            <div className="status-message italic">
               No products found
             </div>
           )
@@ -277,10 +252,10 @@ const ProductsSection = () => {
         </div>
       )}
 
-      {/* UPDATED MODAL COMPONENT */}
+      {/* Modal Component */}
       <ProductsModal
         show={showModal}
-        onClose={handleCloseModal} // Reset state on close
+        onClose={handleCloseModal} 
         refreshProducts={fetchProducts}
         productToEdit={productToEdit} 
         modalType={modalType} 
