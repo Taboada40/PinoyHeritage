@@ -10,19 +10,15 @@ function ProductInfo({ product }) {
   const [addToCartMessage, setAddToCartMessage] = useState('');
   const [wishlistMessage, setWishlistMessage] = useState('');
 
-  // Helper function to display sizes properly
   const getAvailableSizes = () => {
     if (!product.sizes || product.sizes.length === 0) return [];
     
-    // If sizes is already an array, return it
     if (Array.isArray(product.sizes)) return product.sizes;
     
-    // If it's a JSON string, try to parse it
     try {
       const parsed = JSON.parse(product.sizes);
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      // If parsing fails, try to handle as comma-separated string
       if (typeof product.sizes === 'string') {
         return product.sizes.split(',').map(size => size.trim()).filter(size => size !== '');
       }
@@ -33,7 +29,6 @@ function ProductInfo({ product }) {
   const availableSizes = getAvailableSizes();
   const hasSizes = availableSizes.length > 0;
 
-  // Get current user from localStorage
   const getCurrentUser = () => {
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
@@ -51,7 +46,6 @@ function ProductInfo({ product }) {
     return null;
   };
 
-  // Check if product is already in wishlist on component mount
   useEffect(() => {
     checkIfInWishlist();
   }, [product]);
@@ -76,7 +70,6 @@ function ProductInfo({ product }) {
     }
   };
 
-  // Add to wishlist functionality
   const handleAddToWishlist = async () => {
     const user = getCurrentUser();
     
@@ -108,7 +101,6 @@ function ProductInfo({ product }) {
         const data = await response.json();
         setIsFavorite(true);
         setWishlistMessage('✓ Added to wishlist!');
-        console.log('Wishlist add response:', data);
       } else {
         const errorData = await response.json();
         setWishlistMessage(errorData.error || 'Failed to add to wishlist');
@@ -121,39 +113,29 @@ function ProductInfo({ product }) {
     setTimeout(() => setWishlistMessage(''), 3000);
   };
 
-  // Remove from wishlist functionality
   const handleRemoveFromWishlist = async () => {
     const user = getCurrentUser();
     if (!user || user.role === 'ADMIN') return;
 
     try {
-      console.log('Removing product from wishlist:', product.id, 'for user:', user.id);
-      
       const response = await fetch(`http://localhost:8080/api/wishlist/remove/${product.id}`, {
         method: 'DELETE',
         headers: {
           'userId': user.id
         }
       });
-
-      console.log('Remove response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
         setIsFavorite(false);
         setWishlistMessage('✓ Removed from wishlist');
-        console.log('Wishlist remove response:', data);
       } else {
-        // Try to get error message from response
         let errorMessage = 'Failed to remove from wishlist';
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
-        } catch (e) {
-          console.log('Could not parse error response');
-        }
+        } catch (e) {}
         setWishlistMessage(errorMessage);
-        console.error('Remove failed with status:', response.status);
       }
     } catch (error) {
       console.error('Error removing from wishlist:', error);
@@ -163,7 +145,6 @@ function ProductInfo({ product }) {
     setTimeout(() => setWishlistMessage(''), 3000);
   };
 
-  // Toggle favorite status
   const handleFavoriteToggle = () => {
     if (isFavorite) {
       handleRemoveFromWishlist();
@@ -172,58 +153,10 @@ function ProductInfo({ product }) {
     }
   };
 
-  const addToGuestCart = (cartItem) => {
-    const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
-
-    const existingItemIndex = guestCart.findIndex(item => 
-      item.productName === cartItem.productName && 
-      (!hasSizes || item.size === selectedSize)
-    );
-
-    if (existingItemIndex > -1) {
-      guestCart[existingItemIndex].quantity += cartItem.quantity;
-      guestCart[existingItemIndex].amount = guestCart[existingItemIndex].unitPrice * guestCart[existingItemIndex].quantity;
-    } else {
-      const newItem = {
-        id: Date.now(),
-        ...cartItem
-      };
-      guestCart.push(newItem);
-    }
-
-    localStorage.setItem('guestCart', JSON.stringify(guestCart));
-  };
-
-  const addToUserFallbackCart = (user, cartItem) => {
-    if (!user || !user.id) return;
-    const key = `userCart_${user.id}`;
-    const userCart = JSON.parse(localStorage.getItem(key) || '[]');
-
-    const existingItemIndex = userCart.findIndex(item => 
-      item.productName === cartItem.productName && 
-      (!hasSizes || item.size === selectedSize)
-    );
-
-    if (existingItemIndex > -1) {
-      userCart[existingItemIndex].quantity += cartItem.quantity;
-      userCart[existingItemIndex].amount = userCart[existingItemIndex].unitPrice * userCart[existingItemIndex].quantity;
-    } else {
-      const newItem = {
-        id: Date.now(),
-        ...cartItem
-      };
-      userCart.push(newItem);
-    }
-
-    localStorage.setItem(key, JSON.stringify(userCart));
-  };
-
-  // NEW: Remove from wishlist when adding to cart
   const removeFromWishlistAfterCart = async (user) => {
     if (!user || user.role === 'ADMIN' || !isFavorite) return;
 
     try {
-      console.log('🔄 Removing from wishlist after adding to cart...');
       const response = await fetch(`http://localhost:8080/api/wishlist/remove/${product.id}`, {
         method: 'DELETE',
         headers: {
@@ -233,16 +166,12 @@ function ProductInfo({ product }) {
 
       if (response.ok) {
         setIsFavorite(false);
-        console.log('✅ Successfully removed from wishlist after cart addition');
-      } else {
-        console.warn('⚠️ Could not remove from wishlist after cart addition');
       }
     } catch (error) {
       console.error('Error removing from wishlist after cart:', error);
     }
   };
 
-  // Add to cart functionality - UPDATED
   const handleAddToCart = async () => {
     if (hasSizes && !selectedSize) {
       notifyWarning('Please select a size');
@@ -256,7 +185,12 @@ function ProductInfo({ product }) {
 
     const user = getCurrentUser();
 
-    // Ensure we always send a proper Category reference with an id
+    if (!user) {
+      setAddToCartMessage('Please log in to add to cart');
+      setTimeout(() => setAddToCartMessage(''), 3000);
+      return;
+    }
+
     const categoryPayload = product.category && typeof product.category === 'object'
       ? { id: product.category.id }
       : null;
@@ -268,46 +202,28 @@ function ProductInfo({ product }) {
       unitPrice: parseFloat(product.price || 0),
       amount: parseFloat(product.price || 0) * quantity,
       size: selectedSize,
-      productImage: product.imageUrl || product.image // Add product image
+      productImage: product.imageUrl || product.image
     };
 
     try {
-      if (user) {
-        console.log('Adding to cart for user:', user.id, cartItem);
-        const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(cartItem),
-        });
+      const response = await fetch(`http://localhost:8080/api/cart/customer/${user.id}/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cartItem),
+      });
 
-        const data = await response.json();
-        console.log('Cart response:', data);
+      const data = await response.json();
 
-        if (response.ok && data.success) {
-          setAddToCartMessage('✓ Added to cart!');
-          
-          // NEW: Remove from wishlist if it was in wishlist
-          if (isFavorite) {
-            await removeFromWishlistAfterCart(user);
-          }
-        } else {
-          console.error('Backend error:', data.error);
-          // Backend failed: fall back to per-user local cart
-          addToUserFallbackCart(user, cartItem);
-          setAddToCartMessage('✓ Added to cart (saved locally)');
-          
-          // NEW: Remove from wishlist if it was in wishlist (for local cart too)
-          if (isFavorite) {
-            await removeFromWishlistAfterCart(user);
-          }
+      if (response.ok && data.success) {
+        setAddToCartMessage('✓ Added to cart!');
+        
+        if (isFavorite) {
+          await removeFromWishlistAfterCart(user);
         }
       } else {
-        // Guest users: always use local storage
-        addToGuestCart(cartItem);
-        setAddToCartMessage('✓ Added to cart!');
-        // Guests don't have wishlists, so no need to remove
+        setAddToCartMessage(data.error || 'Failed to add to cart');
       }
 
       setTimeout(() => setAddToCartMessage(''), 3000);
@@ -316,21 +232,7 @@ function ProductInfo({ product }) {
       
     } catch (error) {
       console.error('Error adding to cart:', error);
-
-      // On any unexpected error, still save locally so the user keeps their cart
-      if (user) {
-        addToUserFallbackCart(user, cartItem);
-        setAddToCartMessage('✓ Added to cart (offline)');
-        
-        // NEW: Remove from wishlist if it was in wishlist (for offline too)
-        if (isFavorite) {
-          await removeFromWishlistAfterCart(user);
-        }
-      } else {
-        addToGuestCart(cartItem);
-        setAddToCartMessage('✓ Added to cart!');
-      }
-
+      setAddToCartMessage('Error adding to cart');
       setTimeout(() => setAddToCartMessage(''), 3000);
     }
   };
@@ -356,7 +258,6 @@ function ProductInfo({ product }) {
 
       <p className="product-description-full">{product.description}</p>
 
-      {/* Success Messages */}
       {addToCartMessage && (
         <div className={`add-to-cart-message ${addToCartMessage.includes('✓') ? 'success' : 'error'}`}>
           {addToCartMessage}
@@ -369,7 +270,6 @@ function ProductInfo({ product }) {
         </div>
       )}
 
-      {/* Size Selector - Only show if product has sizes */}
       {hasSizes && (
         <div className="size-selector">
           <label className="size-label">Size</label>
@@ -386,7 +286,6 @@ function ProductInfo({ product }) {
         </div>
       )}
 
-      {/* Quantity Selector */}
       <div className="quantity-selector">
         <label className="quantity-label">Quantity</label>
         <div className="quantity-controls">
@@ -411,7 +310,6 @@ function ProductInfo({ product }) {
         <span className="stock-info">({product.stock} available)</span>
       </div>
 
-      {/* Stock Status */}
       <div className="stock-status">
         {product.stock > 0 ? (
           <span className="in-stock">✓ In Stock</span>
